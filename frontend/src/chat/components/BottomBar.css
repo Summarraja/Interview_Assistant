@@ -1,0 +1,35 @@
+
+  .chat-input-box {
+    display: flex;
+    height: 3.5rem;
+    align-items: center;
+    background: #f0f0f0;
+    justify-content: space-between;
+  }
+
+    
+  .emoji-selector {
+    width: 5%;
+    text-align: center;
+  }
+  .chat-input {
+    width: 90%;
+  }
+
+  .chat-input input {
+    height: 2rem;
+  }
+  input:focus {
+    outline: none;
+  }
+  
+  .send {
+    width: 5%;
+    text-align: center;
+  }
+  
+  .icon {
+    width: 0.75rem;
+    margin: 0 0.5rem;
+    cursor: pointer;
+  }

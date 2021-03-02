@@ -1,36 +1,108 @@
-import React from 'react';
-import moment from 'moment';
+import React from "react";
 import './Message.css';
 
-export default function Message(props) {
-    const {
-      data,
-      isMine,
-      startsSequence,
-      endsSequence,
-      showTimestamp
-    } = props;
+ function Message() {
+ 
+  return (
+<>
 
-    const friendlyTimestamp = moment(data.timestamp).format('LLLL');
-    return (
-      <div className={[
-        'message',
-        `${isMine ? 'mine' : ''}`,
-        `${startsSequence ? 'start' : ''}`,
-        `${endsSequence ? 'end' : ''}`
-      ].join(' ')}>
-        {
-          showTimestamp &&
-            <div className="timestamp">
-              { friendlyTimestamp }
-            </div>
-        }
 
-        <div className="bubble-container">
-          <div className="bubble" title={friendlyTimestamp}>
-            { data.message }
-          </div>
-        </div>
-      </div>
-    );
+<div className="chats">
+                    <div className="message received">
+                       Hello 
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+                    <div className="message sent">
+                       Hi
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+
+                    <div className="message received">
+                       How are you ??
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+                    <div className="message sent">
+                        Fine
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+
+                    <div className="message received">
+                       what are you doing?
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+                    <div className="message sent">
+                       Nothing
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+                    <div className="message received">
+                        can you have a bag with brown color?
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+                    <div className="message sent">
+                       Yes i have
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+
+                    <div className="message received">
+                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consequatur voluptatibus fuga illo.
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+                    <div className="message sent">
+                        Lorem ipsum dolor, sit amet consectetur adipisicing.
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+
+                    <div className="message received">
+                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consequatur voluptatibus fuga illo.
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+                    <div className="message sent">
+                        Lorem ipsum dolor, sit amet consectetur adipisicing.
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+
+                    <div className="message received">
+                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consequatur voluptatibus fuga illo.
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+                    <div className="message sent">
+                        Lorem ipsum dolor, sit amet consectetur adipisicing.
+                        <div className="metadata">
+                            <span className="date">05/20/2020</span>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                </>
+  );
 }
+
+export default Message;

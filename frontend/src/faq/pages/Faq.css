@@ -1,0 +1,19 @@
+.TopHeader {
+  /* background: linear-gradient(rgba(26, 188, 156,0.7), rgba(231, 76, 60,0.7), url("https://www.digital-adoption.com/wp-content/uploads/thumbs/cropped-Digital-Transformation-FAQ-obry2tzpq0ln50tl91h61pil6tj8sm9a183iw13p3a.jpg"));
+color: #000; */
+  width: 100%;
+  height: 250px;
+  margin-top: 50px ;
+
+  /* background:linear-gradient(rgba(0, 28, 47, 0.7), rgba(78, 120, 160,0.7),transparent); 
+ background-color:rgb(14, 85, 121) this your primary color */
+  background-image: linear-gradient(
+      to bottom,
+      rgba(0, 27.8, 46.7, 0.9),
+      rgba(78, 120, 160, 0.9)
+    ),
+    url("../../shared/components/UIElements/Images/Faq_Image.jpg");
+    background-repeat: no-repeat;
+  
+  /*background-image: url("https://www.digital-adoption.com/wp-content/uploads/thumbs/cropped-Digital-Transformation-FAQ-obry2tzpq0ln50tl91h61pil6tj8sm9a183iw13p3a.jpg");
+*/}

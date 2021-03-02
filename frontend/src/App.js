@@ -1,56 +1,56 @@
 import React from 'react';
+import './App.css';
 import {
   BrowserRouter as Router,
-  Route,
   Redirect,
-  Switch
-} from 'react-router-dom';
-import {useMediaQuery } from 'react-responsive';
+  Route,
+  Switch,
+} from "react-router-dom";
 
-import Chat from './chat/components/Chat';
-import Users from './user/pages/Users';
-import NewPlace from './interviews/pages/NewPlace';
-import UserInterviews from './interviews/pages/UserPlaces';
-import UpdatePlace from './interviews/pages/UpdatePlace';
 import Auth from './user/pages/Auth';
-import MainNavigation from './shared/components/Navigation/MainNavigation';
+import signUp from './user/pages/signUp';
+import ForgetPassword from './user/pages/ForgetPassword';
+import EmailVerification from './user/pages/EmailVerification';
+import ResetPassword from './user/pages/ResetPassword';
+import Faq from './faq/pages/Faq';
+import MainNavigation from './shared/components/NavigationElements/MainNavigation';
 import { AuthContext } from './shared/context/auth-context';
 import { useAuth } from './shared/hooks/auth-hook';
+import UserProfile from './user/pages/UserProfile';
+import Interview from './Interviews/pages/Interview';
+import CreateInterview from './Interviews/components/CreateInterview';
+import Chat from './chat/pages/Chat';
+import CandidateList from './Interviews/components/CandidatesList';
 
-import SideNav from './shared/components/Navigation/SideNav';
+
 
 const App = () => {
   const { token, login, logout, userId } = useAuth();
-  const isBigScreen = useMediaQuery({ query: '(min-device-width: 1224px)' });
+
   let routes;
 
   if (token) {
     routes = (
       <Switch>
-        <Route path="/" exact>
-          <Users />
-        </Route>
-        <Route path="/:uid/interviews" exact>
-          <UserInterviews />
-        </Route>
-        <Route path="/interviews/new" exact>
-          <NewPlace />
-        </Route>
-        <Route path="/chat">
-          <Chat />
-        </Route>
+        <Route path="/Faq" exact component={Faq} />
+        <Route path="/profile" exact component={UserProfile} />
+        <Route path="/interviews" exact component={Interview} />
+        <Route path="/chat" exact component={Chat} />
+        <Route path="/interviews/new" exact component={CreateInterview} />
+        <Route path="/interview/candidates" exact component ={CandidateList}/>
+        
         <Redirect to="/" />
       </Switch>
     );
   } else {
     routes = (
       <Switch>
-        <Route path="/auth" exact>
-          <Auth />
-        </Route>
-        <Route path="/auth">
-          <Auth />
-        </Route>
+        <Route path="/signup" exact component={signUp} />
+        <Route path="/auth" exact component={Auth} />
+        <Route path="/forgot" exact component={ForgetPassword} />
+        <Route path="/verifyEmail" exact component={EmailVerification} />
+        <Route path="/Reset" exact component={ResetPassword} />
+        <Route path="/Faq" exact component={Faq} />
         <Redirect to="/auth" />
       </Switch>
     );
@@ -64,13 +64,12 @@ const App = () => {
         userId: userId,
         login: login,
         logout: logout
-      }}
-    >
+      }}>
       <Router>
         <MainNavigation />
-
-        {!!token && isBigScreen&& <SideNav  />}
-        <main>{routes}</main>
+        <main>
+          {routes}
+        </main>
       </Router>
     </AuthContext.Provider>
   );
