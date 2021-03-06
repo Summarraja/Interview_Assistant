@@ -11,7 +11,6 @@ import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import { AuthContext } from '../../shared/context/auth-context';
 import AuthForm from '../components/AuthForm';
-import { useHttpClient } from '../../shared/hooks/http-hook';
 
 
 function Copyright() {
@@ -43,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SignIn = () => {
-  const {error } = useHttpClient();
 
   const auth = useContext(AuthContext);
 
@@ -73,7 +71,7 @@ const SignIn = () => {
               <Typography component="h1" variant="h5">
                 Sign in
              </Typography>
-              <AuthForm error={error}/>
+              <AuthForm />
               <Grid container>
                 <Grid item xs>
                   <Link href="/forgot" variant="body2">

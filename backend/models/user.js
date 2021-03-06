@@ -4,18 +4,16 @@ const uniqueValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true, minlength: 6 },
-  image: { type: String, required: true },
-  places: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Place' }],
   
+  isAdmin:{type:Boolean,default:false},
   email_verified :{type: Boolean,default:false},
   email_verify_token:{type: String,default:''},
   password_reset_token:{type: String,default:''},
   reset_token_expired_at: { type: Date,default:null},
   createdInterviews: [{ type: mongoose.Types.ObjectId, required: true, ref: "Interview" }],
-  sentRRequests: [{ type: mongoose.Types.ObjectId, required: true, ref: "Interview" }],
+  sentRequests: [{ type: mongoose.Types.ObjectId, required: true, ref: "Interview" }],
   receivedRequests: [{ type: mongoose.Types.ObjectId, required: true, ref: "Interview" }],
   resume: { type: mongoose.Types.ObjectId, default:null, ref: "Resume" },
   setting: { type: mongoose.Types.ObjectId, default:null, ref: "Setting"},

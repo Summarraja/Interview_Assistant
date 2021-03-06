@@ -1,9 +1,11 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
+const Resume = require('../models/resume');
 
 const getUsers = async (req, res, next) => {
   let users;
@@ -26,9 +28,7 @@ const signup = async (req, res, next) => {
       new HttpError('Invalid inputs passed, please check your data.', 422)
     );
   }
-
-  const { name, email, password } = req.body;
-
+  const {firstname , lastname, country,dob,  email, phone, password ,address,gender} = req.body;
   let existingUser;
   try {
     existingUser = await User.findOne({ email: email });
@@ -44,40 +44,51 @@ const signup = async (req, res, next) => {
     const error = new HttpError(
       'User exists already, please login instead.',
       422
-    );
-    return next(error);
-  }
-
-  let hashedPassword;
+      );
+      return next(error);
+    }
+    
+    let hashedPassword;
+    try {
+      hashedPassword = await bcrypt.hash(password, 12);
+    } catch (err) {
+      const error = new HttpError(
+        'Could not create user, please try again.',
+        500
+        );
+        return next(error);
+      }
+      const createdResume = new Resume({
+        firstname,
+        lastname,
+        dob,
+        phone,
+        email,
+        country,
+        address,
+        gender
+      });
+      const createdUser = new User({
+        email,
+        password: hashedPassword,
+        createdInterviews:[],
+        sentRRequests:[],
+        receivedRequests:[],
+        certificates:[],
+        stats:[],
+        chats:[],
+        calls:[],
+        notifications:[],
+        resume:createdResume
+      });
+      createdResume.user=createdUser.id;   
   try {
-    hashedPassword = await bcrypt.hash(password, 12);
-  } catch (err) {
-    const error = new HttpError(
-      'Could not create user, please try again.',
-      500
-    );
-    return next(error);
-  }
 
-  const createdUser = new User({
-    name,
-    email,
-    image: req.file.path,
-    password: hashedPassword,
-    places: [],
-
-    notifications:[],
-    chats:[],
-    certificates:[],
-    stats:[],
-    createdInterviews:[],
-    sentRRequests:[],
-    receivedRequests:[],
-    stats:[],
-  });
-
-  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
     await createdUser.save();
+    await createdResume.save();
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
       'Signing up failed, please try again later.',
@@ -124,7 +135,7 @@ const login = async (req, res, next) => {
   if (!existingUser) {
     const error = new HttpError(
       'Invalid credentials, could not log you in.',
-      403
+      401
     );
     return next(error);
   }
@@ -135,7 +146,7 @@ const login = async (req, res, next) => {
   } catch (err) {
     const error = new HttpError(
       'Could not log you in, please check your credentials and try again.',
-      500
+      401
     );
     return next(error);
   }
@@ -143,7 +154,7 @@ const login = async (req, res, next) => {
   if (!isValidPassword) {
     const error = new HttpError(
       'Invalid credentials, could not log you in.',
-      403
+      401
     );
     return next(error);
   }

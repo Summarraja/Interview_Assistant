@@ -3,6 +3,9 @@ const { check } = require('express-validator');
 
 const certificatesControllers = require('../controllers/certificates-controllers');
 const checkAuth = require('../middleware/check-auth');
+const checkAdmin = require('.././middleware/check-admin');
+const fileUpload = require('../middleware/file-upload');
+
 
 const router = express.Router();
 
@@ -13,7 +16,7 @@ router.get('/user/:uid', certificatesControllers.getCertificatesByUserId);
 
 router.post(
     '/',
-    //image
+    fileUpload.single('image'),
     [
         check('title').isLength({ min: 5 }),
         check('description').isLength({ min: 10 }),
@@ -33,8 +36,18 @@ router.patch(
     ],
     certificatesControllers.updateCertificate
 );
-
 router.delete('/:cid', certificatesControllers.deleteCertificate);
 
+router.use(checkAdmin);
+
+router.patch(
+    '/:cid/accept',
+    certificatesControllers.acceptCertificate
+);
+
+router.patch(
+    '/:cid/reject',
+    certificatesControllers.rejectCertificate
+);
 
 module.exports = router;

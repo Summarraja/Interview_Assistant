@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import Radio from "@material-ui/core/Radio";
 import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
-import SelectBox from "../components/SelectBox";
+import SignupForm from '../components/SignupForm'
+import { AuthContext } from '../../shared/context/auth-context';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
 import { useHttpClient } from '../../shared/hooks/http-hook';
 
 
@@ -56,6 +56,7 @@ const initialValues = {
   lastName: "",
   username: "",
   contact: "",
+  email: "",
   password: "",
   confirmPassword: "",
 };
@@ -72,18 +73,22 @@ const validationSchema = yup.object().shape({
     .required("This field is required")
     .matches(/^[A-Za-z ]*$/, "Please enter valid name (Alphabets Only)")
     .min(3, "Last Name must be atleast 3 characters"),
-  username: yup.string()
-  .required("This field is required")
-  .email("Please enter valid username"),
+  email: yup.string()
+    .required("This field is required")
+    .email("Please enter valid username"),
 
   password: yup
     .string()
     .required("This field is required")
-    .min(8, "Password must be atleast 8 characters long")
-    .matches(
-      /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/,
-      "Must contain One Number and One Special Case Character"
-    ),
+    .min(6, "Password must be atleast 6 characters long")
+  // .matches(
+  //   /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/,
+  //   "Must contain One Number and One Special Case Character"
+  // )
+  ,
+  address: yup
+    .string()
+    .required("This field is required"),
 
   confirmPassword: yup
     .string()
@@ -100,35 +105,37 @@ const validationSchema = yup.object().shape({
     .min(11),
 });
 
-
-
 export default function SignUp() {
-
+  const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [gender, setGender] = useState("");
-  const [country, setCountry] = useState('');
-
-  const signUpSubmitHandler = (values, props) => {
+  const [gender, setGender] = useState("other");
+  const [country, setCountry] = useState("Afghanistan");
+  const [dob, setdob] = useState("1900-01-01");
+  const signUpSubmitHandler = async (values, props) => {
     try {
-      console.log(values)
-      console.log(country)
-      // const formData = new FormData();
-      // formData.append("firstname",values.);
-      // formData.append("lastname",values.);
-      // formData.append("country",values.);
-      // formData.append("dob",values.);
-      // formData.append("email",values.);
-      // formData.append("contact",values.);
-      // formData.append("password",values.);
-      // formData.append("address",values.);
-      // formData.append("gender",values.);
-      // const responseData = await sendRequest(
-      //   'http://localhosst:5000/api/user/signup',
-      //   'POST',
-      //   formData
-      // );
+      const responseData = await sendRequest(
+        'http://localhost:5000/api/users/signup',
+        'POST',
+        JSON.stringify({
+          firstname: values.firstName,
+          lastname: values.lastName,
+          country: country,
+          dob: dob,
+          email: values.email,
+          phone: values.contact,
+          password: values.password,
+          address: values.address,
+          gender: gender
+        }),
+        {
+          'Content-Type': 'application/json'
+        }
+      );
+      auth.login(responseData.userId, responseData.token);
     }
-    catch (err) { }
+    catch (err) {
+      console.log(err)
+    }
 
   };
 
@@ -142,12 +149,16 @@ export default function SignUp() {
   const avatarStyle = {
     backgroundColor: "primary",
   };
-  const GenderHandler = (e) => {
-    setGender(e.target.value);
-  };
+
 
   return (
     <Container component="main" maxWidth="sm">
+      <LoadingSpinner open={isLoading} />
+      <Snackbar open={error} autoHideDuration={6000} onClose={clearError}>
+        <MuiAlert elevation={6} variant="filled"  severity="error"  onClose={clearError}>
+          {error}
+        </MuiAlert>
+      </Snackbar>
       <Paper elevation={10} style={paperStyle}>
         <Typography align="center" variant="h3">
           SmartHire
@@ -160,208 +171,17 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Formik
+          <SignupForm
+            signUpSubmitHandler={signUpSubmitHandler}
             initialValues={initialValues}
-            onSubmit={signUpSubmitHandler}
-          //  validationSchema={validationSchema}
-          >
-            {(props) => (
-              <Form className={classes.form}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Field
-                      as={TextField}
-                      autoComplete="fname"
-                      name="firstName"
-                      variant="outlined"
-                      fullWidth
-                      id="firstName"
-                      label="First Name"
-                      autoFocus
-                      helperText={
-                        <ErrorMessage
-                          name="firstName"
-                          style={{ color: "red", fontWeight: "bold" }}
-                        />
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Field
-                      as={TextField}
-                      variant="outlined"
-                      fullWidth
-                      id="lastName"
-                      label="Last Name"
-                      name="lastName"
-                      autoComplete="lname"
-
-                      helperText={
-                        <ErrorMessage
-                          name="lastName"
-                          style={{ color: "red", fontWeight: "bold" }}
-                        />
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-
-                    <SelectBox country={country} setCountry={setCountry}
-                    fullWidth />
-
-
-                  </Grid>
-
-
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      id="date"
-                      label="Date of Birth"
-                      fullWidth
-                      type="date"
-                      defaultValue="2021-01-01"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Field
-                      as={TextField}
-                      variant="outlined"
-                      fullWidth
-                      id="email"
-                      label="Email Address"
-                      name="username"
-                      autoComplete="email"
-                      helperText={
-                        <ErrorMessage
-                          name="username"
-                          style={{ color: "red", fontWeight: "bold" }}
-                        />
-                      }
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Field
-                      as={TextField}
-                      variant="outlined"
-                      fullWidth
-                      name="contact"
-                      label="Contact No"
-                      id="contact"
-                      autoComplete="contact"
-                      helperText={
-                        <ErrorMessage
-                          name="contact"
-                          style={{ color: "red", fontWeight: "bold" }}
-                        />
-                      }
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Field
-                      as={TextField}
-                      variant="outlined"
-                      fullWidth
-                      name="password"
-                      label="Password"
-                      //  type="password"
-                      id="password"
-                      autoComplete="current-password"
-                      helperText={
-                        <ErrorMessage
-                          name="password"
-                          style={{ color: "red", fontWeight: "bold" }}
-                        />
-                      }
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Field
-                      as={TextField}
-                      variant="outlined"
-                      fullWidth
-                      name="confirmPassword"
-                      label="Confirm Password"
-                      type="password"
-                      id="password"
-                      helperText={
-                        <ErrorMessage
-                          name="confirmPassword"
-                          style={{ color: "red", fontWeight: "bold" }}
-                        />
-                      }
-                    />
-                  </Grid>
-
-
-
-
-                  <Grid item xs={12}>
-                    <Field
-                      as={TextField}
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                      id="Address"
-                      label="Address"
-                      name="address"
-                      autoComplete="Address"
-                      helperText={
-                        <ErrorMessage
-                          name="address"
-                          style={{ color: "red", fontWeight: "bold" }}
-                        />
-                      }
-                    />
-                  </Grid>
-{/* 
-                  <Grid item xs={12} sm={6}>
-                    <label required>Gender: </label>
-
-                    <Field
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                      id="Address"
-                      label="Address"
-                      name="address"
-                      autoComplete="Address"
-                      helperText={
-                        <ErrorMessage
-                          name="address"
-                          style={{ color: "red", fontWeight: "bold" }}
-                        />
-                      }
-                    />
-                    <span>Male</span>
-
-
-                    <span>Female</span>
-                  </Grid> */}
-
-
-
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    disabled={!(props.isValid || props.isSubmitting)}
-                  >
-                    Sign Up
-                  </Button>
-                </Grid>
-              </Form>
-            )}
-          </Formik>
+            validationSchema={validationSchema}
+            gender={gender}
+            setGender={setGender}
+            country={country}
+            setCountry={setCountry}
+            dob={dob}
+            setdob={setdob}
+          />
           <Grid container justify="flex-end">
             <Grid item>
               <Link href="/auth" variant="body2">
