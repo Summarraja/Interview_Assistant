@@ -7,19 +7,22 @@ import Radio from "@material-ui/core/Radio";
 import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
-//import "yup-phone";
+import SelectBox from "../components/SelectBox";
+import { useHttpClient } from '../../shared/hooks/http-hook';
+
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="/auth">
+      <Link color="inherit" href="https://material-ui.com/">
         Your Website
       </Link>{" "}
       {new Date().getFullYear()}
@@ -60,48 +63,76 @@ const initialValues = {
 const validationSchema = yup.object().shape({
   firstName: yup
     .string()
+    .required("This field is required")
     .matches(/^[A-Za-z ]*$/, "Please enter valid name (Alphabets Only)")
     .min(3, "First Name must be atleast 3 characters"),
 
   lastName: yup
     .string()
+    .required("This field is required")
     .matches(/^[A-Za-z ]*$/, "Please enter valid name (Alphabets Only)")
     .min(3, "Last Name must be atleast 3 characters"),
-  username: yup.string().email("Please enter valid username"),
+  username: yup.string()
+  .required("This field is required")
+  .email("Please enter valid username"),
 
   password: yup
-  .string()
-  .min(8, "Password must be atleast 8 characters long")
-  .matches(
-    /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/,
-    "Must contain One Number and One Special Case Character"
-  ),
+    .string()
+    .required("This field is required")
+    .min(8, "Password must be atleast 8 characters long")
+    .matches(
+      /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/,
+      "Must contain One Number and One Special Case Character"
+    ),
 
   confirmPassword: yup
     .string()
+    .required("This field is required")
     .oneOf([yup.ref("password"), null], "Passwords must match"),
 
   contact: yup
     .string()
+    .required("This field is required")
     .matches(
       /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/,
       "Please enter valid Contact number"
     )
-    .length(11),
+    .min(11),
 });
 
-const signUpSubmitHandler = (values, props) => {
-  console.log("Signup submit");
-  console.log(values);
-  window.location = '/verifyEmail'
-  setTimeout(() => {
-    props.resetForm();
-    props.setSubmitting(false);
-  }, 1000);
-  console.log(props);
-};
+
 
 export default function SignUp() {
+
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const [gender, setGender] = useState("");
+  const [country, setCountry] = useState('');
+
+  const signUpSubmitHandler = (values, props) => {
+    try {
+      console.log(values)
+      console.log(country)
+      // const formData = new FormData();
+      // formData.append("firstname",values.);
+      // formData.append("lastname",values.);
+      // formData.append("country",values.);
+      // formData.append("dob",values.);
+      // formData.append("email",values.);
+      // formData.append("contact",values.);
+      // formData.append("password",values.);
+      // formData.append("address",values.);
+      // formData.append("gender",values.);
+      // const responseData = await sendRequest(
+      //   'http://localhosst:5000/api/user/signup',
+      //   'POST',
+      //   formData
+      // );
+    }
+    catch (err) { }
+
+  };
+
+
   const classes = useStyles();
   const paperStyle = {
     width: "100%",
@@ -111,9 +142,7 @@ export default function SignUp() {
   const avatarStyle = {
     backgroundColor: "primary",
   };
-  const [gender, setGender] = useState("female");
   const GenderHandler = (e) => {
-    console.log(e.target.value);
     setGender(e.target.value);
   };
 
@@ -134,11 +163,10 @@ export default function SignUp() {
           <Formik
             initialValues={initialValues}
             onSubmit={signUpSubmitHandler}
-            validationSchema={validationSchema}
+          //  validationSchema={validationSchema}
           >
             {(props) => (
               <Form className={classes.form}>
-                  {console.log(props)}
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
                     <Field
@@ -146,7 +174,6 @@ export default function SignUp() {
                       autoComplete="fname"
                       name="firstName"
                       variant="outlined"
-                      required
                       fullWidth
                       id="firstName"
                       label="First Name"
@@ -163,13 +190,12 @@ export default function SignUp() {
                     <Field
                       as={TextField}
                       variant="outlined"
-                      required
                       fullWidth
                       id="lastName"
                       label="Last Name"
                       name="lastName"
                       autoComplete="lname"
-                      autoFocus
+
                       helperText={
                         <ErrorMessage
                           name="lastName"
@@ -179,31 +205,18 @@ export default function SignUp() {
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <label required>Gender: </label>
 
-                    <Radio
-                      value="male"
-                      checked={gender === "male"}
-                      color="secondary"
-                      onChange={GenderHandler}
-                      align="center"
-                    />
-                    <span>Male</span>
+                    <SelectBox country={country} setCountry={setCountry}
+                    fullWidth />
 
-                    <Radio
-                      value="female"
-                      checked={gender === "female"}
-                      color="secondary"
-                      onChange={GenderHandler}
-                      align="center"
-                    />
-                    <span>Female</span>
+
                   </Grid>
+
+
 
                   <Grid item xs={12} sm={6}>
                     <TextField
                       id="date"
-                      required
                       label="Date of Birth"
                       fullWidth
                       type="date"
@@ -218,7 +231,6 @@ export default function SignUp() {
                     <Field
                       as={TextField}
                       variant="outlined"
-                      required
                       fullWidth
                       id="email"
                       label="Email Address"
@@ -237,7 +249,6 @@ export default function SignUp() {
                     <Field
                       as={TextField}
                       variant="outlined"
-                      required
                       fullWidth
                       name="contact"
                       label="Contact No"
@@ -256,7 +267,6 @@ export default function SignUp() {
                     <Field
                       as={TextField}
                       variant="outlined"
-                      required
                       fullWidth
                       name="password"
                       label="Password"
@@ -276,7 +286,6 @@ export default function SignUp() {
                     <Field
                       as={TextField}
                       variant="outlined"
-                      required
                       fullWidth
                       name="confirmPassword"
                       label="Confirm Password"
@@ -290,6 +299,54 @@ export default function SignUp() {
                       }
                     />
                   </Grid>
+
+
+
+
+                  <Grid item xs={12}>
+                    <Field
+                      as={TextField}
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                      id="Address"
+                      label="Address"
+                      name="address"
+                      autoComplete="Address"
+                      helperText={
+                        <ErrorMessage
+                          name="address"
+                          style={{ color: "red", fontWeight: "bold" }}
+                        />
+                      }
+                    />
+                  </Grid>
+{/* 
+                  <Grid item xs={12} sm={6}>
+                    <label required>Gender: </label>
+
+                    <Field
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                      id="Address"
+                      label="Address"
+                      name="address"
+                      autoComplete="Address"
+                      helperText={
+                        <ErrorMessage
+                          name="address"
+                          style={{ color: "red", fontWeight: "bold" }}
+                        />
+                      }
+                    />
+                    <span>Male</span>
+
+
+                    <span>Female</span>
+                  </Grid> */}
+
+
 
                   <Button
                     type="submit"
@@ -313,9 +370,9 @@ export default function SignUp() {
             </Grid>
           </Grid>
         </div>
-      
-          <Copyright />
-        
+
+        <Copyright />
+
       </Paper>
     </Container>
   );

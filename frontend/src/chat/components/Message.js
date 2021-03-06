@@ -47,13 +47,13 @@ import './Message.css';
                         </div>
                     </div>
                     <div className="message received">
-                        can you have a bag with brown color?
+                        can you give me a bag with brown color?
                         <div className="metadata">
                             <span className="date">05/20/2020</span>
                         </div>
                     </div>
                     <div className="message sent">
-                       Yes i have
+                       Yes sure
                         <div className="metadata">
                             <span className="date">05/20/2020</span>
                         </div>

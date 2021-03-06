@@ -2,14 +2,12 @@ import React from "react";
 import "./Faq.css";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
+
 import { makeStyles, fade } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import { Fragment } from "react";
+import FaqCollection from "../components/FaqCollection";
 
 const useStyles = makeStyles((theme) => ({
   // root:{
@@ -34,15 +32,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
 
-  accor: {
-    padding: "20px 40px",
-  },
-
-  heading: {
-    fontSize: theme.typography.pxToRem(20),
-    fontWeight: theme.typography.fontWeightBold,
-    color: "#004777",
-  },
+ 
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -131,92 +121,9 @@ export default function FAQ(props) {
         Frequently Asked Questions
       </Typography>
       <Paper elevation={10} className={classes.paper}>
-        <div className={classes.collapse}>
-          <Accordion className={classes.accor} >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography className={classes.heading} align = "justify">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget.
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography  align = "justify">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget.
-                
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion className={classes.accor}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel2a-content"
-              id="panel2a-header"
-            >
-              <Typography className={classes.heading}>
-                {" "}
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget.
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails >
-              <Typography  >
-                Lorem ipsum dolor sit amet, 
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion className={classes.accor}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel3a-content"
-              id="panel3a-header"
-            >
-              <Typography className={classes.heading}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget.
-              </Typography>
-          
-            </AccordionSummary>
-          </Accordion>
-          <Accordion className={classes.accor}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel3a-content"
-              id="panel3a-header"
-            >
-              <Typography className={classes.heading}>Question 4</Typography>
-            </AccordionSummary>
-          </Accordion>
-          <Accordion className={classes.accor}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel3a-content"
-              id="panel3a-header"
-            >
-              <Typography className={classes.heading}>Question 5</Typography>
-            </AccordionSummary>
-          </Accordion>
-          <Accordion className={classes.accor}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel3a-content"
-              id="panel3a-header"
-            >
-              <Typography className={classes.heading}>Question 6</Typography>
-            </AccordionSummary>
-          </Accordion>
-          
-        </div>
+       <div className={classes.collapse}>
+      <FaqCollection/>
+      </div>
       </Paper>
       </div>
     </Fragment>
