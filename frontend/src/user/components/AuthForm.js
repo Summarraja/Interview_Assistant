@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 const AuthForm = props => {
     const { isLoading, error,status, sendRequest,clearError } = useHttpClient();
+    const [rememberme,setRememberme] = useState(false);
     const auth = useContext(AuthContext);
 
     const classes = useStyles();
@@ -36,7 +37,16 @@ const AuthForm = props => {
         username: "",
         password: "",
     };
-
+    useEffect(()=>{
+        if (localStorage.checkbox ==="true") {
+            setRememberme(true);
+            initialValues.username = localStorage.username;
+            initialValues.password = localStorage.password;
+          } else {
+            setRememberme(false);
+          }
+    },[]);
+    
     const validationSchema = yup.object().shape({
         username: yup.string()
             .email("Please enter valid email")
@@ -47,6 +57,15 @@ const AuthForm = props => {
     });
 
     const onSubmitHandler = async (values) => {
+        if (rememberme) {
+            localStorage.username = values.username;
+            localStorage.password = values.password;
+            localStorage.checkbox = "true";
+          } else {
+            localStorage.username = "";
+            localStorage.password = "";
+            localStorage.checkbox = "false";
+          }
         try {
             const responseData = await sendRequest(
                 'http://localhost:5000/api/users/login',
@@ -119,7 +138,7 @@ const AuthForm = props => {
                         <Field
                             as={FormControlLabel}
                             name="remember"
-                            control={<Checkbox value="remember" color="secondary" />}
+                            control={<Checkbox value="remember" color="secondary" checked={rememberme} onChange={()=>{setRememberme(!rememberme)}}/>}
                             label="Remember me"
                         />
                         {status === 401 ? (
@@ -134,7 +153,7 @@ const AuthForm = props => {
                             className={classes.submit}
                         >
                             Sign In
-     </Button>
+                        </Button>
 
                     </Form>
                 )}
