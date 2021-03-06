@@ -10,9 +10,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useHttpClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth-context';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
-
-
-
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -28,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AuthForm = props => {
-    const { isLoading, error, sendRequest } = useHttpClient();
+    const { isLoading, error,status, sendRequest,clearError } = useHttpClient();
     const auth = useContext(AuthContext);
 
     const classes = useStyles();
@@ -61,11 +60,18 @@ const AuthForm = props => {
                 }
             );
             auth.login(responseData.userId, responseData.token);
-        } catch (err) { }
+        } catch (err) {}
     };
     return (
         <React.Fragment>                
             <LoadingSpinner open={isLoading} />
+            {status!=401&&(      
+            <Snackbar open={error} autoHideDuration={6000} onClose={clearError}>
+                <MuiAlert elevation={6} variant="filled"  severity="error"  onClose={clearError}>
+                  {error}
+                </MuiAlert>
+              </Snackbar>
+              )}
             <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
@@ -116,7 +122,7 @@ const AuthForm = props => {
                             control={<Checkbox value="remember" color="secondary" />}
                             label="Remember me"
                         />
-                        {error !== "" ? (
+                        {status === 401 ? (
                             <Typography className="MuiFormHelperText-root" align="center" variant="body1">{error}</Typography>
                         ) : " "}
                         <Button

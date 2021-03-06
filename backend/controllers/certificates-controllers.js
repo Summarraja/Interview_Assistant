@@ -36,7 +36,6 @@ const getCertificateById = async (req, res, next) => {
 const getCertificatesByUserId = async (req, res, next) => {
     const userId = req.params.uid;
 
-    // let places;
     let userWithCertificate;
     try {
         userWithCertificate = await User.findById(userId).populate('certificates');
@@ -95,7 +94,7 @@ const createCertificate = async (req, res, next) => {
         title,
         description,
         institute,
-        image: req.file.path,
+        image: req.file != undefined ? req.file.path : "/", //change
         field: field.id,
         creator: req.userData.userId
     });
@@ -155,6 +154,13 @@ const updateCertificate = async (req, res, next) => {
         );
         return next(error);
     }
+    if (!certificate) {
+        const error = new HttpError(
+            'Could not find certificate for the provided id.',
+            404
+        );
+        return next(error);
+    }
 
     let field;
     try {
@@ -184,6 +190,7 @@ const updateCertificate = async (req, res, next) => {
     certificate.description = description;
     certificate.institute = institute;
     certificate.field = field.id;
+    certificate.isApproved = false;
 
     try {
         await certificate.save();
@@ -197,7 +204,90 @@ const updateCertificate = async (req, res, next) => {
 
     res.status(200).json({ certificate: certificate.toObject({ getters: true }) });
 };
+const acceptCertificate = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
 
+    const certificateId = req.params.cid;
+
+    let certificate;
+    try {
+        certificate = await Certificate.findById(certificateId);
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not update certificate.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!certificate) {
+        const error = new HttpError(
+            'Could not find certificate for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    certificate.isApproved = true;
+
+    try {
+        await certificate.save();
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not approve certificate.',
+            500
+        );
+        return next(error);
+    }
+
+    res.status(200).json({ certificate: certificate.toObject({ getters: true }) });
+};
+const rejectCertificate = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
+
+    const certificateId = req.params.cid;
+
+    let certificate;
+    try {
+        certificate = await Certificate.findById(certificateId);
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not update certificate.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!certificate) {
+        const error = new HttpError(
+            'Could not find certificate for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    certificate.isApproved = false;
+
+    try {
+        await certificate.save();
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not disapprove certificate.',
+            500
+        );
+        return next(error);
+    }
+
+    res.status(200).json({ certificate: certificate.toObject({ getters: true }) });
+};
 const deleteCertificate = async (req, res, next) => {
     const certificateId = req.params.cid;
 
@@ -254,3 +344,5 @@ exports.getCertificatesByUserId = getCertificatesByUserId;
 exports.createCertificate = createCertificate;
 exports.updateCertificate = updateCertificate;
 exports.deleteCertificate = deleteCertificate;
+exports.acceptCertificate = acceptCertificate;
+exports.rejectCertificate = rejectCertificate;

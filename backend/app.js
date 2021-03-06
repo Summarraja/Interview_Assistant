@@ -2,10 +2,17 @@ const fs = require('fs');
 const path = require('path');
 
 const express = require('express');
+const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const placesRoutes = require('./routes/places-routes');
+const http = require('http')
+const server = http.createServer(app)
+const socket = require('socket.io')
+const io = socket(server)
+const username = require('username-generator')
+const port = process.env.PORT || 5000
+
 const usersRoutes = require('./routes/users-routes');
 const interviewsRoutes = require('./routes/interviews-routes');
 const fieldsRoutes = require('./routes/fields-routes');
@@ -14,7 +21,45 @@ const resumesRoutes = require('./routes/resumes-routes');
 const certificatesRoutes = require('./routes/certificates-routes');
 const HttpError = require('./models/http-error');
 
-const app = express();
+const users = {}
+
+io.on('connection', socket => {
+  //generate username against a socket connection and store it
+  const userid = username.generateUsername('-')
+  if (!users[userid]) {
+    users[userid] = socket.id
+  }
+  console.log(users)
+  //send back username
+  socket.emit('yourID', userid)
+  io.sockets.emit('allUsers', users)
+
+  socket.on('sendId', (data) => {
+    // if (!users[userid]) {
+    //   users[userid] = socket.id
+    // }
+  })
+  socket.on('disconnect', () => {
+    delete users[userid]
+  })
+
+  socket.on('callUser', (data) => {
+    io.to(users[data.userToCall]).emit('hey', { signal: data.signalData, from: data.from })
+  })
+
+  socket.on('acceptCall', (data) => {
+    io.to(users[data.to]).emit('callAccepted', data.signal)
+  })
+
+  socket.on('close', (data) => {
+    io.to(users[data.to]).emit('close')
+  })
+
+  socket.on('rejected', (data) => {
+    io.to(users[data.to]).emit('rejected')
+  })
+})
+
 
 app.use(bodyParser.json());
 
@@ -31,7 +76,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/places', placesRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/interviews', interviewsRoutes);
 app.use('/api/fields', fieldsRoutes);
@@ -60,10 +104,17 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
+    // `mongodb://localhost:27017/smarthireDB`
     `mongodb+srv://Summar:H4NUsZcxzxv0fonF@cluster0.uzdlx.mongodb.net/mern?retryWrites=true&w=majority`
+
+    , {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
   )
   .then(() => {
-    app.listen(5000);
+    server.listen(port);
+    console.log("Connected to Database:")
   })
   .catch(err => {
     console.log(err);
