@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { TiEdit } from "react-icons/ti";
 import BlockIcon from "@material-ui/icons/Block";
@@ -8,9 +8,39 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CandidateList from "./CandidatesList";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
-
+import DeleteInterview from "./DeleteInterview";
+import CancelInterview from "./CancelInterview";
 
 const InterviewMenu = (props) => {
+ 
+  //  const CloseDeleteDialogHandler = () =>{
+  //   setOpenDeleteDialog(false)
+  // }
+
+  //   const [OpenCancelDialog, setOpenCancelDialog] = useState(false);
+  //   const OpenCancelDialogHandler = () =>{
+  //     setOpenCancelDialog(true)
+  //   }
+  const [OpenCancelDialog, setOpenCancelDialog] = useState(false);
+
+  const OpenCancelDialogHandler = () => {
+    setOpenCancelDialog(true);
+  };
+  const CloseCancelDialogHandler = () => {
+    setOpenCancelDialog(false);
+  };
+   
+  // const [OpenCancelDialog, setOpenCancelDialog] = useState(false);
+
+  // const OpenCancelDialogHandler = () => {
+  //   setOpenCancelDialog(true);
+  // };
+
+    const [OpenDeleteDialog, setOpenDeleteDialog] = useState(false);
+   const OpenDeleteDialogHandler = () =>{
+     setOpenDeleteDialog(true)
+   }
+
   return (
     <>
       {" "}
@@ -28,18 +58,21 @@ const InterviewMenu = (props) => {
             <Typography variant="subtitle1">Edit Details</Typography>
           </MenuItem>
           <Divider variant="middle" />
-          <MenuItem
-            onClick={props.closeInterviewMenu}
-            component={Link}
-            to="/signUp"
-            style={{ height: 40 }}
-          >
+          <MenuItem onClick={OpenCancelDialogHandler} style={{ height: 40 }}>
             <IconButton color="primary">
               <BlockIcon />
             </IconButton>
             <Typography variant="subtitle1">Cancel Interview</Typography>
+         
+           
           </MenuItem>
-
+          {OpenCancelDialog && (
+              <CancelInterview
+                OpenCancelDialog={OpenCancelDialog}
+                CloseCancelDialogHandler={CloseCancelDialogHandler}
+              />
+             
+            )}
           <Divider variant="middle" />
           <MenuItem
             onClick={props.closeInterviewMenu}
@@ -60,17 +93,18 @@ const InterviewMenu = (props) => {
         </>
       ) : (
         <>
-          <MenuItem
-            onClick={props.closeInterviewMenu}
-            component={Link}
-            to="/signUp"
-            style={{ height: 40 }}
-          >
+          <MenuItem onClick={OpenDeleteDialogHandler} style={{ height: 40 }}>
             <IconButton color="primary">
               <DeleteIcon />
             </IconButton>
+
             <Typography variant="subtitle1">Delete Interview</Typography>
+          
           </MenuItem>
+          {OpenDeleteDialog && <DeleteInterview    
+                OpenDeleteDialog={OpenDeleteDialog}
+                setOpenDeleteDialog={setOpenDeleteDialog}
+                />}
           <Divider variant="middle" />
           <MenuItem
             onClick={props.closeInterviewMenu}

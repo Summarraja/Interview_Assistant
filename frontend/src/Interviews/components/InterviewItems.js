@@ -18,6 +18,7 @@ import Button from "@material-ui/core/Button";
 import BlockIcon from "@material-ui/icons/Block";
 
 import InterviewMenu from "./InterviewMenu";
+import ViewInterview from "./ViewInterview";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -78,6 +79,15 @@ const InterviewItems = (props) => {
     setInterviewMobAnchorEl(null);
   };
 
+  const [open, setOpen] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -94,23 +104,21 @@ const InterviewItems = (props) => {
       getContentAnchorEl={null}
     >
       {matches && (
-        
         <MenuItem
-          onClick={closeInterviewMenu}
-          component={Link}
-          to="/Faq"
+          onClick={() => {
+            handleOpenDialog();
+          }}
           style={{ height: 40 }}
         >
           <IconButton color="primary">
             <IoMdEye />
           </IconButton>
           <Typography variant="subtitle1">View Details</Typography>
-          <Divider variant="middle" />
         </MenuItem>
-       
-       
-      
-     
+      )}
+      <Divider variant="middle" />
+      {open && (
+        <ViewInterview open={open} handleCloseDialog={handleCloseDialog} />
       )}
       <InterviewMenu
         closeInterviewMenu={closeInterviewMenu}
@@ -135,7 +143,7 @@ const InterviewItems = (props) => {
         <Grid item sm={6} lg={5}>
           <Typography
             variant="subtitle2"
-          //  color="#fff"
+            //  color="#fff"
             className={classes.statusStyle}
           >
             {(props.status === "PENDING" && (
@@ -156,9 +164,15 @@ const InterviewItems = (props) => {
             size="small"
             className={classes.ViewButton}
             startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
+            onClick={() => {
+              handleOpenDialog();
+            }}
           >
             View Details
           </Button>
+          {open && (
+        <ViewInterview open={open} handleCloseDialog={handleCloseDialog} />
+      )}
         </Grid>
       </Grid>
       <OutsideClickHandler onOutsideClick={closeInterviewMenu}>
