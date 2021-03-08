@@ -68,6 +68,12 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 export default function Navbar(props) {
+  const [NavSignUp, setNavSignup] = useState(true);
+
+  const NavsignUpBtnHandler = () =>{
+    setNavSignup(!NavSignUp)
+  }
+
   const ProfileMenuItem = {
     width: "100%",
     marginRight: 80,
@@ -189,18 +195,19 @@ export default function Navbar(props) {
           <Typography variant="h5" className={classes.MainLogo}>
             SmartHire
           </Typography>
-
+               
           <div className={classes.sectionDesktop}>
-            {!auth.isLoggedIn && (
+            {!auth.isLoggedIn &&(
               <>
                 <Button
                   variant="contained"
                   color="secondary"
                   className={classes.button}
                   component={Link}
-                  to="/signup"
+                  to= {NavSignUp? "/signup" : "/auth" }
+                  onClick = {NavsignUpBtnHandler}
                 >
-                  Sign up
+                 {NavSignUp ? "Sign Up" : "Sign In"} 
                 </Button>
                 <IconButton color="secondary" component={Link} to="/Faq">
                   <FaQuestionCircle />

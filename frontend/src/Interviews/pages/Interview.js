@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 // import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import InterviewList from "../components/InterviewList";
@@ -10,6 +10,7 @@ import {Link} from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
 import AddIcon from '@material-ui/icons/Add';
+import CreateInterview from "../components/CreateInterview";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -105,6 +106,15 @@ const DUMMY_INTERVIEWS = [
 ];
 
 const Interview = () => {
+  const [open, setOpen] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
+   
   const classes = useStyles();
   // const userId = useParams().userId;
   //const loadedInterviews = DUMMY_INTERVIEWS.filter(interview => interview.creator === userId);
@@ -122,16 +132,18 @@ const Interview = () => {
               <Button
               variant="contained"
               color="primary"
+              onClick={()=>{
+                handleOpenDialog()
+              }}
               className={classes.button}
               startIcon={<AddIcon />}
-              component = {Link}
-              to="/interviews/new"
-             
             >
               Create Interview
             </Button>
            
-           
+            {open &&   
+            <CreateInterview open={open}  handleCloseDialog={handleCloseDialog}/>}           
+          
             <InterviewList items={DUMMY_INTERVIEWS} />
           </Paper>
         </Container>

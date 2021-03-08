@@ -17,19 +17,6 @@ import Button from "@material-ui/core/Button";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="/">
-        Smarthire
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(2),
@@ -45,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateInterview = (props) => {
+const ViewInterview = (props) => {
   //   const {error } = useHttpClient();
 
   //   const auth = useContext(AuthContext);
@@ -91,14 +78,7 @@ const CreateInterview = (props) => {
         </DialogTitle>
         <DialogContent dividers>
           <div className={classes.demo}>
-            <InterviewForm 
-             field={field}
-             setField={setField}
-             doi={doi}
-             setDoi={setDoi}
-             timeOfInter = {timeOfInter}
-             setTimeOfInter = {setTimeOfInter}
-            />
+          
           </div>
         </DialogContent>
         <DialogActions>
@@ -111,4 +91,4 @@ const CreateInterview = (props) => {
   );
 };
 
-export default CreateInterview;
+export default ViewInterview;
