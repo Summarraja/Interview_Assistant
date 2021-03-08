@@ -39,17 +39,24 @@ const useStyles = makeStyles((theme) => ({
         width: "50px",
         height: "50px",
         textAlign: "center",
-        margin: "10px"
+        margin: "10px",
+        border: "solid",
+        borderColor: "#004777"
+
     },
+    typo:{
+marginBottom:"20px"
+
+    }
 
 }));
 
 export default function EmailVerification() {
-    
+
     const paperStyle = {
-        width: 400,
+        width: "100%",
         padding: 20,
-        margin: "20px auto",
+        marginTop: "70px",
     };
     const avatarStyle = {
         backgroundColor: "primary",
@@ -65,7 +72,7 @@ export default function EmailVerification() {
     };
 
     const typostyle = {
-        color: "#2D5F5D",
+        color: "black",
         fontWeight: "bold"
 
     };
@@ -116,19 +123,19 @@ export default function EmailVerification() {
             SetIsPlay(false);
             return <div className="timer">Press Resend</div>;
         }
-    
+
         return (
             <div className="timer">
                 <Typography variant="h4">{remainingTime}</Typography>
             </div>
         );
     };
-  const  onResendHandler = (e) => {
+    const onResendHandler = (e) => {
         SetIsPlay(true);
         setDisableBtn(true);
-  }
+    }
     return (
-        <Container component="main" maxWidth="xs">
+        <Container component="main"maxWidth="sm" >
             <Paper elevation={10} style={paperStyle}>
                 <Typography align="center" variant="h4">
                     Verification Code
@@ -147,10 +154,10 @@ export default function EmailVerification() {
                         {(props) => (
                             <Form className={classes.form}>
                                 {console.log(props)}
-                                <Typography className={classes.typo} variant="h6">
+                                <Typography className={classes.typo} variant="body1" align="center">
                                     The Verification Code has been sent to your provided Email.
                 </Typography>
-                                <Typography variant="body1" align="center" style={typostyle} >
+                                <Typography variant="h5" align="center" style={typostyle} >
                                     Enter 4-digit Code
                 </Typography>
 
@@ -162,6 +169,7 @@ export default function EmailVerification() {
                                                 className={classes.otpfield}
                                                 type="text"
                                                 name="otp"
+                                                maxLength="1"
                                                 key={index}
                                                 value={data}
                                                 onChange={e => handleChange(e.target, index)}
@@ -171,56 +179,57 @@ export default function EmailVerification() {
                                     })}
                                     <p>OTP Entered - {otp.join("")}</p>
                                     {(error !== "") ? (<Typography className="MuiFormHelperText-root" >{error}</Typography>) : " "}
+                                </Grid >
+                                <Grid align="center" style={{marginTop:"20px"}}>
+                                    <Button
+                                        type="submit"
+                                        variant="contained"
+                                        color="primary"
+                                        style={ButtonStyle}
+                                        onSubmit={onSubmitHandler}
+
+                                    >
+                                        Verify Account
+                </Button>
+
+                                    <Button
+
+                                        variant="outlined"
+                                        color="primary"
+                                        style={ButtonStyle}
+                                        onClick={onCancelHandler}
+
+
+                                    >
+                                        Clear
+                </Button>
+
                                 </Grid>
-
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                    color="primary"
-                                    style={ButtonStyle}
-                                    onSubmit={onSubmitHandler}
-
-                                >
-                                    Verify Account
-                </Button>
-
-                                <Button
-
-                                    variant="outlined"
-                                    color="primary"
-                                    style={ButtonStyle}
-                                    onClick={onCancelHandler}
-
-
-                                >
-                                    Clear
-                </Button>
-                <br/>
-                <br/>
+                                <br />
                                 <Grid className="timer-wrapper" align="center">
                                     <CountdownCircleTimer
-                                        isPlaying = {Play}
+                                        isPlaying={Play}
                                         duration={30}
                                         colors={[["#4E78A0"]]}
                                         onComplete={() => [true, 1000]}
-                                        size = "120"
+                                        size="120"
                                     >
                                         {renderTime}
                                     </CountdownCircleTimer>
                                 </Grid>
                                 <Grid align="center">
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    style={ButtonStyle}
-                                    onClick={onResendHandler}
-                                    disabled={DisableBtn}
-                                    
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        style={ButtonStyle}
+                                        onClick={onResendHandler}
+                                        disabled={DisableBtn}
 
-                                >
-                                    Resend
+
+                                    >
+                                        Resend
                 </Button>
-                </Grid>
+                                </Grid>
 
 
 

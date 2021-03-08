@@ -43,6 +43,63 @@ const ChatArray = () => {
           time : "10:10 AM",
           isRead: false,
         },
+
+        {
+          sender: "Muqaddas",
+          receiver: "Summar",
+          content: "I am Fine",
+          time : "10:05 AM",
+          isRead: true,
+        },
+        {
+          sender: "Summar",
+          receiver: "Muqaddas",
+          content: "Okay.",
+          time : "10:10 AM",
+          isRead: false,
+        },
+        {
+          sender: "Muqaddas",
+          receiver: "Summar",
+          content: "I am Fine",
+          time : "10:05 AM",
+          isRead: true,
+        },
+        {
+          sender: "Summar",
+          receiver: "Muqaddas",
+          content: "Okay.",
+          time : "10:10 AM",
+          isRead: false,
+        },
+        {
+          sender: "Muqaddas",
+          receiver: "Summar",
+          content: "I am Fine",
+          time : "10:05 AM",
+          isRead: true,
+        },
+        {
+          sender: "Summar",
+          receiver: "Muqaddas",
+          content: "Okay.",
+          time : "10:10 AM",
+          isRead: false,
+        },
+        {
+          sender: "Muqaddas",
+          receiver: "Summar",
+          content: "I am Fine",
+          time : "10:05 AM",
+          isRead: true,
+        },
+        {
+          sender: "Summar",
+          receiver: "Muqaddas",
+          content: "Okay.",
+          time : "10:10 AM",
+          isRead: false,
+        },
     
       ]
     },

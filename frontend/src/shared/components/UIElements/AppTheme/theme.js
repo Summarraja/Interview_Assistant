@@ -23,6 +23,10 @@ const theme = createMuiTheme({
       fontSize: "1rem",
       fontWeight: "bold",
     },
+    body1:{
+      fontSize: "1.2rem",
+
+    }
   },
   overrides: {
     MuiTooltip: {

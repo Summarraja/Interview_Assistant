@@ -46,9 +46,9 @@ const SignIn = () => {
   const auth = useContext(AuthContext);
 
   const paperStyle = {
-    width: 400,
+    width:"80%",
     padding: 20,
-    margin: "100px auto",
+    margin: "80px auto"
   };
   const avatarStyle = {
     backgroundColor: "primary",
@@ -58,9 +58,9 @@ const SignIn = () => {
   return (
     <Fragment>
       {!auth.isLoggedIn && (
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="sm" style={{padding:"0px"}}>
           <Paper elevation={10} style={paperStyle}>
-            <Typography align="center" variant="h3">
+            <Typography align="center" variant="h4">
               SmartHire
             </Typography>
             <CssBaseline />
