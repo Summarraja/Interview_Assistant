@@ -6,34 +6,32 @@ import "./ConversationList.css";
 import Divider from '@material-ui/core/Divider';
 
 
-function ConversationList() {
-
+function ConversationList({contact, setcontactSelected}) {
   return (
+
+  
     <>
-
-
-
-      <div className="contact-box">
+      <div className="contact-box" onClick={()=>setcontactSelected(contact)}>
         <div className="avatar-component">
-          <Avatar style={{ height: "50px", width: "50px", marginRight: "10px" }}
-            src="data:image/png;base64,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"
-            alt="">
+          <Avatar style={{ height: "50px", width: "50px", marginRight: "10px" }}>        
           </Avatar>
         </div>
-
+    
         <div className="right-section">
-          <div className="contact-box-header">
-            <Typography variant="h6" className="avatar-title">Summar Raja</Typography>
-            <span className="time-mark">yesterday</span>
-          </div>
-          <div className="last-msg">
-            <Typography className="text">Hello ! How are you!!</Typography>
-          </div>
-        </div>
-      </div>
+           <div className="contact-box-header">
+     
+            <Typography variant="h6" className="avatar-title">{contact.with}</Typography>
+        
+             <span className="time-mark">yesterday</span>
+           </div>
+           <div className="last-msg">
+             <Typography className="text">Hello ! How are you!!</Typography>
+           </div>
+         </div>
+       </div> 
 
-
-      <div className="contact-box">
+      
+      {/* <div className="contact-box">
         <div className="avatar-component">
           <Avatar style={{ height: "50px", width: "50px", marginRight: "10px" }}
            src="https://media.istockphoto.com/vectors/girl-in-a-hijab-young-arab-business-woman-female-portrait-vector-id1273238550?k=6&m=1273238550&s=612x612&w=0&h=TkssDjmcvM0L2sLYobE3TvEZxRkSHxqTtIa3D_f2uZo= "
@@ -92,7 +90,7 @@ function ConversationList() {
           </div>
         </div>
       </div>
-     
+      */}
     </>
   );
 }

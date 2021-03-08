@@ -60,6 +60,7 @@ const AuthForm = props => {
                 }
             );
             auth.login(responseData.userId, responseData.token);
+            {console.log(responseData.userId)}
         } catch (err) {}
     };
     return (

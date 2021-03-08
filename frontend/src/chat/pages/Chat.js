@@ -1,7 +1,7 @@
 
 import { Divider, Grid, Paper, Typography, } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BottomBar from "../components/BottomBar";
 import ChatSearch from "../components/ChatSearch";
 import ConversationList from "../components/ConversationList";
@@ -63,31 +63,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function Chat() {
+function Chat(props) {
 const classes = useStyles();
-  
+
+const [data, setdata]=useState(props.chatList)
+const [contactSelected, setcontactSelected]=useState({})
+const [currentMessages, setCurrentMessages] = useState([])
+
+useEffect(()=>{
+  const currentContact= data.find(d=>d.id===contactSelected.id)
+  setCurrentMessages((currentContact && currentContact.messages)|| [])
+},[contactSelected, data])
+
+console.log(currentMessages)
 
   return (
     
    <div className="app">
-  
-
      <div className={classes.aside} >
            <header>
          <LeftTopBar/>
            </header>
            <ChatSearch/>
            <div className="contact-boxes">
-           <ConversationList/>
+         
+       {data.map(chat=>(
+            <ConversationList
+               contact ={chat} key={chat.id} setcontactSelected={setcontactSelected}
+            />
+       ))}        
            </div>
            </div>
-    
-
-           <div className={classes.mainChat}>
+             <div className={classes.mainChat}>
            <header>
-         <RightTopBar/>
+         <RightTopBar user={contactSelected}         
+         />
            </header>
-          <MessageBox/>
+        
+          <MessageBox
+            chatMessage = {currentMessages}
+               />
           <BottomBar/>
              </div>
              

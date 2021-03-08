@@ -7,7 +7,7 @@ import VideocamIcon from '@material-ui/icons/Videocam';
  import './RightTopBar.css';
 
 
- function RightTopBar() {
+ function RightTopBar(props) {
 
   
   return (
@@ -15,13 +15,11 @@ import VideocamIcon from '@material-ui/icons/Videocam';
 
     <div className="avatar-component">
 
-    <Avatar
-        src="https://media.istockphoto.com/vectors/girl-in-a-hijab-young-arab-business-woman-female-portrait-vector-id1273238550?k=6&m=1273238550&s=612x612&w=0&h=TkssDjmcvM0L2sLYobE3TvEZxRkSHxqTtIa3D_f2uZo= "
-        alt="">  
+    <Avatar>  
         </Avatar>
         <div style={{margin:"10px"}}>
       <Typography variant="h6" >
-     Urooj Tahir
+     {props.user.with}
      </Typography>
      </div>
      
