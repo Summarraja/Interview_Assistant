@@ -37,8 +37,7 @@ return (
  
   
     <Accordion className={classes.accor} 
-    expanded={expanded === {AccordID} && setExpanded(true)}
-    onChange={handleChange(AccordID)}
+   
     >
         {console.log("accor "+AccordID)}
         {console.log("expanded "+expanded)}

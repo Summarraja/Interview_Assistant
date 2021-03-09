@@ -27,8 +27,8 @@ export const useHttpClient = () => {
           reqCtrl => reqCtrl !== httpAbortCtrl
         );
 
+        setStatus(response.status);
         if (!response.ok) {
-          setStatus(response.status);
           throw new Error(responseData.message);
         }
 

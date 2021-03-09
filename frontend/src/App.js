@@ -22,6 +22,7 @@ import CreateInterview from './Interviews/components/CreateInterview';
 import Chat from './chat/pages/Chat';
 import CandidateList from './Interviews/components/CandidatesList';
 import ChatDummy from './chat/pages/ChatDummy';
+import ViewInterview from './Interviews/pages/ViewInterview';
 
 
 
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/chat" exact component={ChatDummy} />
         <Route path="/interviews/new" exact component={CreateInterview} />
         <Route path="/interview/candidates" exact component ={CandidateList}/>
+        <Route path="/interview/view" exact component ={ViewInterview}/>
         
         <Redirect to="/" />
       </Switch>

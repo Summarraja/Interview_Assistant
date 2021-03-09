@@ -19,8 +19,10 @@ router.post(
       .not()
       .isEmpty(),
     check('title').isLength({ min: 5 }),
-    check('description').isLength({ min: 10 }),
-     check('date').isDate()
+    check('description').isLength({ min: 15 }),
+    check('fieldTitle').not().isEmpty(),
+    check('date').not().isEmpty(),
+    check('time').not().isEmpty(),
   ],
   interviewsControllers.createInterview
 );

@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import React  from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -35,7 +33,7 @@ const ProfileForm = (props) => {
         props.setValue(event.target.value);
     };
     const names = props.data;
-
+    console.log("disabeld "+props.value)
     return (
         <FormControl className={classes.formControl}>
             <InputLabel
@@ -46,8 +44,9 @@ const ProfileForm = (props) => {
                 labelId="handle"
                 id="handle"
                 value={props.value}
-                onChange={handleSelect}
+                onChange={!props.disabled ? handleSelect : props.setValue(props.value)}
                 MenuProps={MenuProps}
+                disabled = {props.disabled}
 
             >
                 {names.map((name) => (

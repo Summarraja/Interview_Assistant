@@ -33,7 +33,7 @@ const getInterviewById = async (req, res, next) => {
 
 const getInterviewsByUserId = async (req, res, next) => {
     const userId = req.params.uid;
-
+    console.log(req.params.uid)
     let userWithInterviews;
     try {
         userWithInterviews = await User.findById(userId).populate('interviews');
@@ -45,13 +45,14 @@ const getInterviewsByUserId = async (req, res, next) => {
         return next(error);
     }
 
-    if (!userWithInterviews || userWithInterviews.interviews.length === 0) {
+    if (!userWithInterviews || userWithInterviews.createdInterviews.length === 0) {
         return next(
             new HttpError('Could not find interviews for the provided user id.', 404)
         );
     }
+    console.log(userWithInterviews.createdInterviews);
     res.json({
-        interviews: userWithInterviews.interviews.map(interview =>
+        interviews: userWithInterviews.createdInterviews.map(interview =>
             interview.toObject({ getters: true })
         )
     });
@@ -65,7 +66,7 @@ const createInterview = async (req, res, next) => {
         );
     }
 
-    const { title, description, date, fieldTitle } = req.body;
+    const { title, description, date, time , fieldTitle } = req.body;
 
     let field;
     try {
@@ -90,9 +91,12 @@ const createInterview = async (req, res, next) => {
         title,
         description,
         date,
+        time,
         field: field.id,
         creator: req.userData.userId,
-        candidates:[]
+        candidates:[],
+        sentRequests:[],
+        receivedRequests:[],
     });
 
     let user;
@@ -100,7 +104,7 @@ const createInterview = async (req, res, next) => {
         user = await User.findById(req.userData.userId);
     } catch (err) {
         const error = new HttpError(
-            'Creating place failed, please try again.',
+            'Finding user failed, please try again.',
             500
         );
         return next(error);
@@ -115,7 +119,7 @@ const createInterview = async (req, res, next) => {
         const sess = await mongoose.startSession();
         sess.startTransaction();
         await createdInterview.save({ session: sess });
-        user.interviews.push(createdInterview);
+        user.createdInterviews.push(createdInterview);
         await user.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {

@@ -22,8 +22,8 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+      <Link color="inherit" href="/auth">
+       Copyright@2021 
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -111,6 +111,8 @@ export default function SignUp() {
   const [gender, setGender] = useState("other");
   const [country, setCountry] = useState("Afghanistan");
   const [dob, setdob] = useState("1900-01-01");
+
+
   const signUpSubmitHandler = async (values, props) => {
     try {
       const responseData = await sendRequest(

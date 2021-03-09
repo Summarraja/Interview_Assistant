@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TextField from "@material-ui/core/TextField";
 
 const DatePicker = (props) => {
@@ -6,20 +6,21 @@ const DatePicker = (props) => {
         props.setDate(e.target.value);
         console.log(props.date)
       };
-
+console.log("date "+props.disabled)
      
     return (
 
         <TextField
         id="date"
-        label="Date of Birth"
+        label={props.label}
         fullWidth
         type="date"
-        onChange={handleDateChange}
         defaultValue={props.date}
+        onChange={!props.disabled ? handleDateChange : props.setDate(props.date)}
         InputLabelProps={{
           shrink: true,
         }}
+        disabled={props.disabled}
       />
 
     );

@@ -10,15 +10,15 @@ import Grid from "@material-ui/core/Grid";
 import { useTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { Link } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import { grey } from "@material-ui/core/colors";
 import Button from "@material-ui/core/Button";
 
+import {Link} from "react-router-dom";
 import BlockIcon from "@material-ui/icons/Block";
 
 import InterviewMenu from "./InterviewMenu";
-import ViewInterview from "./ViewInterview";
+import ViewInterview from "../pages/ViewInterview";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -79,14 +79,7 @@ const InterviewItems = (props) => {
     setInterviewMobAnchorEl(null);
   };
 
-  const [open, setOpen] = useState(false);
 
-  const handleOpenDialog = () => {
-    setOpen(true);
-  };
-  const handleCloseDialog = () => {
-    setOpen(false);
-  };
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
@@ -105,9 +98,8 @@ const InterviewItems = (props) => {
     >
       {matches && (
         <MenuItem
-          onClick={() => {
-            handleOpenDialog();
-          }}
+        component={Link}
+        to="/interview/view"
           style={{ height: 40 }}
         >
           <IconButton color="primary">
@@ -117,9 +109,7 @@ const InterviewItems = (props) => {
         </MenuItem>
       )}
       <Divider variant="middle" />
-      {open && (
-        <ViewInterview open={open} handleCloseDialog={handleCloseDialog} />
-      )}
+     
       <InterviewMenu
         closeInterviewMenu={closeInterviewMenu}
         status={props.status}
@@ -164,15 +154,14 @@ const InterviewItems = (props) => {
             size="small"
             className={classes.ViewButton}
             startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
-            onClick={() => {
-              handleOpenDialog();
-            }}
+           component={Link}
+           to="/interview/view"
           >
             View Details
           </Button>
-          {open && (
-        <ViewInterview open={open} handleCloseDialog={handleCloseDialog} />
-      )}
+         
+        
+    
         </Grid>
       </Grid>
       <OutsideClickHandler onOutsideClick={closeInterviewMenu}>
@@ -181,6 +170,7 @@ const InterviewItems = (props) => {
         </IconButton>
       </OutsideClickHandler>
       {InterviewMobileMenu}
+    
     </Card>
   );
 };

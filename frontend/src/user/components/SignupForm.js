@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -94,6 +94,7 @@ const SignupForm = (props) => {
                             <DatePicker
                                 date={props.dob}
                                 setDate={props.setdob}
+                                label="Date of Birth"
                             />
                         </Grid>
 
