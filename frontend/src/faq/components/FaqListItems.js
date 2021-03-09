@@ -25,23 +25,23 @@ const FaqListItems = (props) =>{
 //     const AccordianHandler = ()=>{
 //         setOpen(open)
     //}
-    const AccordID =  props.id
-    const [expanded, setExpanded] = useState(false);
-    const handleChange = panel => (isExpanded) => {
-      setExpanded(isExpanded ? panel : false);
-      console.log("Panel "+panel)
-    };
+    // const AccordID =  props.id
+    // const [expanded, setExpanded] = useState(false);
+    // const handleChange = panel => (isExpanded) => {
+    //   setExpanded(isExpanded ? panel : false);
+    //   console.log("Panel "+panel)
+    // };
 
     const classes = useStyles();
 return (
  
   
     <Accordion className={classes.accor} 
-    expanded={expanded === {AccordID} && setExpanded(true)}
-    onChange={handleChange(AccordID)}
+    // expanded={expanded === {AccordID} && setExpanded(true)}
+    // onChange={handleChange(AccordID)}
     >
-        {console.log("accor "+AccordID)}
-        {console.log("expanded "+expanded)}
+        {/* {console.log("accor "+AccordID)}
+        {console.log("expanded "+expanded)} */}
       <AccordionSummary
         expandIcon={<ExpandMoreIcon/>}
         aria-controls="panel1a-content"

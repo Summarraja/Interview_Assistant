@@ -1,45 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FaqList from "./FaqList";
+import { useHttpClient } from '../../shared/hooks/http-hook';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+
 
 const FaqCollection = () => {
-  const FAQS = [
-    {
-      id: "q1",
-     Question: " Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo lobortis",   
-     Answer:" Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo loborti"
-    },
-    {
-        id: "q2",
-       Question: " Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo lobortis",   
-       Answer:" Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo loborti"
-      },
+  const [faqs, setFaqs] = useState();
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
-      {
-        id: "q3",
-       Question: " Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo lobortis",   
-       Answer:" Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo loborti"
-      },
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const responseData = await sendRequest(
+          'http://localhost:5000/api/faqs/'
+        );
+        setFaqs(responseData.faqs);
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    if (!faqs)
+      getData();
 
-      {
-        id: "q4",
-       Question: " Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo lobortis",   
-       Answer:" Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo loborti"
-      },
+  }, [faqs])
 
-      {
-        id: "q5",
-       Question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit lleo lobortis",   
-       Answer:"Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo loborti"
-      },
-
-      {
-        id: "q6",
-       Question: " Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo lobortis",   
-       Answer:" Lorem ipsum dolor sit amet, consectetur adipiscing elit Suspendisse malesuada lacus ex, sit amet blandit leo loborti"
-      },
-
-  ];
-  return <FaqList items={FAQS} />;
+  return (
+  <React.Fragment>
+    <LoadingSpinner open={isLoading} />
+    {faqs && (<FaqList items={faqs} />)}
+  </React.Fragment>
+  )
 };
 
 export default FaqCollection;

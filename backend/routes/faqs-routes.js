@@ -6,11 +6,11 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
-router.use(checkAuth);
 
 router.get('/:fid', faqsControllers.getFaqById);
 router.get('/', faqsControllers.getAllFaqs);
 
+// router.use(checkAuth);
 router.post(
     '/',
     [

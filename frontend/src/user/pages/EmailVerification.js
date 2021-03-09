@@ -180,7 +180,7 @@ export default function EmailVerification() {
                                     <p>OTP Entered - {otp.join("")}</p>
                                     {(error !== "") ? (<Typography className="MuiFormHelperText-root" >{error}</Typography>) : " "}
                                 </Grid >
-                                <Grid align="center" style={{marginTop:"20px"}}>
+                                <Grid align="center" style={{marginTop:"10px"}}>
                                     <Button
                                         type="submit"
                                         variant="contained"
