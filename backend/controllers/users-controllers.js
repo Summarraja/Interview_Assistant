@@ -78,6 +78,8 @@ const sendCode = async (req, res, next) => {
   }
   transporter.sendMail(mailOptions, (err, response) => {
     if (err) {
+      console.log(err);
+      console.log(response);
       const error = new HttpError(
         'Something went wrong, code not sent',
         500
