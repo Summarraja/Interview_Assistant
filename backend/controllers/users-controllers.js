@@ -77,6 +77,8 @@ const sendCode = async (req, res, next) => {
   }
   transporter.sendMail(mailOptions, (err, response) => {
     if (err) {
+      console.log(err);
+      console.log(response);
       const error = new HttpError(
         'Something went wrong, code not sent',
         500
@@ -238,8 +240,11 @@ const signup = async (req, res, next) => {
     auth: {
       user: 'lawara41@gmail.com',
       pass: 'fypproject'
+
     },
-  });
+
+    }
+  );
 
   const mailOptions = {
     from: 'lawara41@gmail.com',

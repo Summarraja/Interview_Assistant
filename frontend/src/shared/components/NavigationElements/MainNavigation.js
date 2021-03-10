@@ -133,7 +133,29 @@ const MainNavigation = () => {
       </Tooltip>
       <Divider variant="middle" className={classes.divider}/>
       <Tooltip
+
         title={OpenDrawer ? "" : "Resume"}
+        title={OpenDrawer ? "" : "Certificates"}
+        placement="right"
+        TransitionComponent={Fade}
+        TransitionProps={{ timeout: 600 }}
+      >
+        <ListItem
+          button
+          key="Certificates"
+          onClick={() => {
+            SetOpenDrawer(false);
+          }}
+        >
+          <ListItemIcon>
+            <FaGraduationCap className = {classes.Navicon}/>
+          </ListItemIcon>
+          <ListItemText primary="Certificates" />
+        </ListItem>
+      </Tooltip>
+      <Divider variant="middle" className={classes.divider}/>
+      <Tooltip
+        title={OpenDrawer ? "" : "Reports"}
         placement="right"
         TransitionComponent={Fade}
         TransitionProps={{ timeout: 600 }}
@@ -176,6 +198,7 @@ const MainNavigation = () => {
         </ListItem>
       </Tooltip>
       <Divider variant="middle" className={classes.divider}/>
+
       <Tooltip
         title={OpenDrawer ? "" : "Charts"}
         placement="right"
