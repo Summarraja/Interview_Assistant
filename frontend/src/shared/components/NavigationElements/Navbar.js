@@ -148,7 +148,7 @@ export default function Navbar(props) {
           style={{ height: "70px", width: "70px", marginRight: 10 }}
         />
         <div>
-          <Typography variant="h6">{auth.resume.firstname+ " " +auth.resume.lastname}</Typography>
+          <Typography variant="h6">{auth.resume && (auth.resume.firstname+ " " +auth.resume.lastname)}</Typography>
           <Typography variant="body1">See your profile</Typography>
         </div>
       </MenuItem>

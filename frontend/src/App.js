@@ -58,9 +58,9 @@ const App = () => {
       </Switch>
     );
   }
-  if(!resume&&localStorage.getItem('userData')){
-    return <LoadingSpinner open={true} />
-  }
+  // if(!resume&&localStorage.getItem('userData')){
+  //   return <LoadingSpinner open={true} />
+  // }
 
   return (
     <React.Fragment>

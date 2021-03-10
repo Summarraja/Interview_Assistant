@@ -52,10 +52,17 @@ const InterviewList = (props) => {
       </Container>
     );
   }
+  const today = new Date();
+
+  const CurrentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  console.log(CurrentDate);
 
   return (
   
       <>
+      
+
+      {console.log("2021-04-14" < CurrentDate)}
       {props.items.map(interview => (
         <InterviewItems
           key={interview.id}
@@ -68,7 +75,7 @@ const InterviewList = (props) => {
           candidates={interview.candidates}
           sendRequests={interview.sendRequests}
           receiveRequests={interview.receiveRequests}
-          status = {interview.status}
+          status = {interview.date < CurrentDate && !interview.isCancelled  ? "PENDING" : "CANCELLED"}
           creatorId={interview.creator}
         />
       ))}
