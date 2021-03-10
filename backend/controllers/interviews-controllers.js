@@ -36,7 +36,7 @@ const getInterviewsByUserId = async (req, res, next) => {
 
     let userWithInterviews;
     try {
-        userWithInterviews = await User.findById(userId).populate('interviews');
+        userWithInterviews = await User.findById(userId).populate('createdInterviews');
     } catch (err) {
         const error = new HttpError(
             'Fetching places failed, please try again later.',
@@ -45,13 +45,13 @@ const getInterviewsByUserId = async (req, res, next) => {
         return next(error);
     }
 
-    if (!userWithInterviews || userWithInterviews.interviews.length === 0) {
+    if (!userWithInterviews || userWithInterviews.createdInterviews.length === 0) {
         return next(
             new HttpError('Could not find interviews for the provided user id.', 404)
         );
     }
     res.json({
-        interviews: userWithInterviews.interviews.map(interview =>
+        interviews: userWithInterviews.createdInterviews.map(interview =>
             interview.toObject({ getters: true })
         )
     });

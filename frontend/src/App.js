@@ -9,8 +9,8 @@ import {
 
 import Auth from './user/pages/Auth';
 import signUp from './user/pages/signUp';
-import ForgetPassword from './user/pages/ForgetPassword';
 import EmailVerification from './user/pages/EmailVerification';
+import CodeVerification from './user/pages/CodeVerification';
 import ResetPassword from './user/pages/ResetPassword';
 import Faq from './faq/pages/Faq';
 import MainNavigation from './shared/components/NavigationElements/MainNavigation';
@@ -48,8 +48,9 @@ const App = () => {
       <Switch>
         <Route path="/signup" exact component={signUp} />
         <Route path="/auth" exact component={Auth} />
-        <Route path="/forgot" exact component={ForgetPassword} />
-        <Route path="/verifyEmail" exact component={EmailVerification} />
+        <Route path="/verifyemail" exact component={(props) => <EmailVerification {...props}/>} />
+        <Route path="/forgotpassword" exact component={(props) => <EmailVerification {...props}/>} />
+        <Route path="/verifycode" exact component={(props) => <CodeVerification {...props}/>} />
         <Route path="/Reset" exact component={ResetPassword} />
         <Route path="/Faq" exact component={Faq} />
         <Redirect to="/auth" />

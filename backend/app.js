@@ -19,6 +19,7 @@ const fieldsRoutes = require('./routes/fields-routes');
 const skillsRoutes = require('./routes/skills-routes');
 const resumesRoutes = require('./routes/resumes-routes');
 const certificatesRoutes = require('./routes/certificates-routes');
+const faqsRoutes = require('./routes/faqs-routes');
 const HttpError = require('./models/http-error');
 
 const users = {}
@@ -82,7 +83,7 @@ app.use('/api/fields', fieldsRoutes);
 app.use('/api/skills', skillsRoutes);
 app.use('/api/resumes', resumesRoutes);
 app.use('/api/certificates', certificatesRoutes);
-app.use('/api/faqs', certificatesRoutes);
+app.use('/api/faqs', faqsRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError('Could not find this route.', 404);

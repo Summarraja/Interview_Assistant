@@ -7,11 +7,8 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import { useHttpClient } from '../../shared/hooks/http-hook';
-import { AuthContext } from '../../shared/context/auth-context';
-import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+
+
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -27,26 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AuthForm = props => {
-    const { isLoading, error,status, sendRequest,clearError } = useHttpClient();
-    const [rememberme,setRememberme] = useState(false);
-    const auth = useContext(AuthContext);
-
     const classes = useStyles();
-
-    const initialValues = {
-        username: "",
-        password: "",
-    };
-    useEffect(()=>{
-        if (localStorage.checkbox ==="true") {
-            setRememberme(true);
-            initialValues.username = localStorage.username;
-            initialValues.password = localStorage.password;
-          } else {
-            setRememberme(false);
-          }
-    },[]);
-    
     const validationSchema = yup.object().shape({
         username: yup.string()
             .email("Please enter valid email")
@@ -56,46 +34,14 @@ const AuthForm = props => {
             .required("Password is required"),
     });
 
-    const onSubmitHandler = async (values) => {
-        if (rememberme) {
-            localStorage.username = values.username;
-            localStorage.password = values.password;
-            localStorage.checkbox = "true";
-          } else {
-            localStorage.username = "";
-            localStorage.password = "";
-            localStorage.checkbox = "false";
-          }
-        try {
-            const responseData = await sendRequest(
-                'http://localhost:5000/api/users/login',
-                'POST',
-                JSON.stringify({
-                    email: values.username,
-                    password: values.password
-                }),
-                {
-                    'Content-Type': 'application/json'
-                }
-            );
-            auth.login(responseData.userId, responseData.token);
-            {console.log(responseData.userId)}
-        } catch (err) {}
-    };
+
     return (
-        <React.Fragment>                
-            <LoadingSpinner open={isLoading} />
-            {status!=401&&(      
-            <Snackbar open={error} autoHideDuration={6000} onClose={clearError}>
-                <MuiAlert elevation={6} variant="filled"  severity="error"  onClose={clearError}>
-                  {error}
-                </MuiAlert>
-              </Snackbar>
-              )}
+        <React.Fragment>
+
             <Formik
-                initialValues={initialValues}
+                initialValues={props.initialValues}
                 validationSchema={validationSchema}
-                onSubmit={onSubmitHandler}
+                onSubmit={props.onSubmitHandler}
             >
 
                 {(props) => (
@@ -139,11 +85,11 @@ const AuthForm = props => {
                         <Field
                             as={FormControlLabel}
                             name="remember"
-                            control={<Checkbox value="remember" color="secondary" checked={rememberme} onChange={()=>{setRememberme(!rememberme)}}/>}
+                            control={<Checkbox value="remember" color="secondary" checked={props.rememberme} onChange={() => { props.setRememberme(!props.rememberme) }} />}
                             label="Remember me"
                         />
-                        {status === 401 ? (
-                            <Typography className="MuiFormHelperText-root" align="center" variant="body1">{error}</Typography>
+                        {props.status === 401 ? (
+                            <Typography className="MuiFormHelperText-root" align="center" variant="body1">{props.error}</Typography>
                         ) : " "}
                         <Button
                             type="submit"

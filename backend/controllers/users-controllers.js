@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const nodemailer = require('nodemailer');
 
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
@@ -21,6 +22,137 @@ const getUsers = async (req, res, next) => {
   res.json({ users: users.map(user => user.toObject({ getters: true })) });
 };
 
+const sendCode = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    );
+  }
+  const { email } = req.body;
+
+  let user;
+  try {
+    user = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError(
+      'Fetching user failed, please try again later.',
+      500
+    );
+    return next(error);
+  }
+  if (!user) {
+    const error = new HttpError(
+      'This email does not belong to any account, Signup first..',
+      500
+    );
+    return next(error);
+  }
+  const code = random4Digit();
+  user.email_verify_token = code;
+  user.reset_token_expired_at = Date.now() + 3600000;
+  try {
+    await user.save();
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not send code.',
+      500
+    );
+    return next(error);
+  }
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: '',
+      pass: ''
+    },
+  });
+
+  const mailOptions = {
+    from: '',
+    to: user.email,
+    subject: 'SmartHire Password Reset Code',
+    text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account. \n\n'
+      + `The code is ${code}\n\n`,
+  }
+  transporter.sendMail(mailOptions, (err, response) => {
+    if (err) {
+      const error = new HttpError(
+        'Something went wrong, code not sent',
+        500
+      );
+      return next(error);
+    }
+  });
+
+  res.status(200).json({ status: true });
+};
+
+const verifyCode = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    );
+  }
+  const { email , code} = req.body;
+
+  let user;
+  try {
+    user = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError(
+      'Fetching user failed, please try again later.',
+      500
+    );
+    return next(error);
+  }
+  if (!user) {
+    const error = new HttpError(
+      'This email does not belong to any account, Signup first..',
+      500
+    );
+    return next(error);
+  }
+
+  if(user.email_verify_token!=code){
+    const error = new HttpError(
+      'Invalid Code',
+      500
+    );
+    return next(error);
+  }
+  user.email_verify_token  = null;
+  user.reset_token_expired_at = null;
+  user.email_verified = true;
+  try {
+    await user.save();
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not verify email',
+      500
+    );
+    return next(error);
+  }
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: user.id, email: user.email },
+      'supersecret_dont_share',
+      { expiresIn: '12h' }
+    );
+  } catch (err) {
+    const error = new HttpError(
+      'Logging in failed, please try again later.',
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ isVerified: true, userId:user.id, token:token });
+};
+
+
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -28,7 +160,7 @@ const signup = async (req, res, next) => {
       new HttpError('Invalid inputs passed, please check your data.', 422)
     );
   }
-  const {firstname , lastname, country,dob,  email, phone, password ,address,gender} = req.body;
+  const { firstname, lastname, country, dob, email, phone, password, address, gender } = req.body;
   let existingUser;
   try {
     existingUser = await User.findOne({ email: email });
@@ -44,44 +176,49 @@ const signup = async (req, res, next) => {
     const error = new HttpError(
       'User exists already, please login instead.',
       422
-      );
-      return next(error);
-    }
-    
-    let hashedPassword;
-    try {
-      hashedPassword = await bcrypt.hash(password, 12);
-    } catch (err) {
-      const error = new HttpError(
-        'Could not create user, please try again.',
-        500
-        );
-        return next(error);
-      }
-      const createdResume = new Resume({
-        firstname,
-        lastname,
-        dob,
-        phone,
-        email,
-        country,
-        address,
-        gender
-      });
-      const createdUser = new User({
-        email,
-        password: hashedPassword,
-        createdInterviews:[],
-        sentRRequests:[],
-        receivedRequests:[],
-        certificates:[],
-        stats:[],
-        chats:[],
-        calls:[],
-        notifications:[],
-        resume:createdResume
-      });
-      createdResume.user=createdUser.id;   
+    );
+    return next(error);
+  }
+
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 12);
+  } catch (err) {
+    const error = new HttpError(
+      'Could not create user, please try again.',
+      500
+    );
+    return next(error);
+  }
+  const createdResume = new Resume({
+    firstname,
+    lastname,
+    dob,
+    phone,
+    email,
+    country,
+    address,
+    gender
+  });
+
+  const code = random4Digit();
+
+  const createdUser = new User({
+    email,
+    password: hashedPassword,
+    email_verify_token:code,
+    reset_token_expired_at:Date.now() + 3600000,
+    createdInterviews: [],
+    sentRRequests: [],
+    receivedRequests: [],
+    certificates: [],
+    stats: [],
+    chats: [],
+    calls: [],
+    notifications: [],
+    resume: createdResume
+  });
+  createdResume.user = createdUser.id;
   try {
 
     const sess = await mongoose.startSession();
@@ -96,25 +233,34 @@ const signup = async (req, res, next) => {
     );
     return next(error);
   }
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: '',
+      pass: ''
+    },
+  });
 
-  let token;
-  try {
-    token = jwt.sign(
-      { userId: createdUser.id, email: createdUser.email },
-      'supersecret_dont_share',
-      { expiresIn: '12h' }
-    );
-  } catch (err) {
-    const error = new HttpError(
-      'Signing up failed, please try again later.',
-      500
-    );
-    return next(error);
+  const mailOptions = {
+    from: '',
+    to: createdUser.email,
+    subject: 'SmartHire Email Verification Code',
+    text: 'You are receiving this because you (or someone else) have created new account. \n\n'
+      + `Your Email Verification Code is ${code}\n\n`,
   }
+  transporter.sendMail(mailOptions, (err, response) => {
+    if (err) {
+      const error = new HttpError(
+        'Account is created but code not sent',
+        200  //not handled
+      );
+      return next(error);
+    }
+  });
 
   res
     .status(201)
-    .json({ userId: createdUser.id, email: createdUser.email, token: token });
+    .json({ userId: createdUser.id, email: createdUser.email });
 };
 
 const login = async (req, res, next) => {
@@ -158,13 +304,20 @@ const login = async (req, res, next) => {
     );
     return next(error);
   }
+  if (!existingUser.email_verified) {
+    const error = new HttpError(
+      'Email_not_verified',
+      401
+    );
+    return next(error);
+  }
 
   let token;
   try {
     token = jwt.sign(
       { userId: existingUser.id, email: existingUser.email },
       'supersecret_dont_share',
-      { expiresIn: '1h' }
+      { expiresIn: '12h' }
     );
   } catch (err) {
     const error = new HttpError(
@@ -181,6 +334,17 @@ const login = async (req, res, next) => {
   });
 };
 
+function random4Digit() {
+  return shuffle("0123456789".split('')).join('').substring(0, 4);
+}
+
+function shuffle(o) {
+  for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+  return o;
+}
+
 exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;
+exports.sendCode = sendCode;
+exports.verifyCode=verifyCode;

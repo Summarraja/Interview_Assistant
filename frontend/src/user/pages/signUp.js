@@ -14,7 +14,7 @@ import { AuthContext } from '../../shared/context/auth-context';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-
+import { Redirect } from 'react-router'
 import { useHttpClient } from '../../shared/hooks/http-hook';
 
 
@@ -107,10 +107,12 @@ const validationSchema = yup.object().shape({
 
 export default function SignUp() {
   const auth = useContext(AuthContext);
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const { isLoading, error,status, sendRequest, clearError } = useHttpClient();
   const [gender, setGender] = useState("other");
   const [country, setCountry] = useState("Afghanistan");
   const [dob, setdob] = useState("1900-01-01");
+  const [userEmail, setUserEmail] = useState('');
+
   const signUpSubmitHandler = async (values, props) => {
     try {
       const responseData = await sendRequest(
@@ -131,10 +133,9 @@ export default function SignUp() {
           'Content-Type': 'application/json'
         }
       );
-      auth.login(responseData.userId, responseData.token);
+      setUserEmail(responseData.email)
     }
     catch (err) {
-      console.log(err)
     }
 
   };
@@ -150,12 +151,19 @@ export default function SignUp() {
     backgroundColor: "primary",
   };
 
-
+  if (userEmail!=='') {
+    return <Redirect 
+    to={{
+        pathname: "/verifycode",
+        state: { email: userEmail }
+      }}
+    />;;
+  }
   return (
     <Container component="main" maxWidth="sm">
       <LoadingSpinner open={isLoading} />
       <Snackbar open={error} autoHideDuration={6000} onClose={clearError}>
-        <MuiAlert elevation={6} variant="filled"  severity="error"  onClose={clearError}>
+        <MuiAlert elevation={6} variant="filled" severity="error" onClose={clearError}>
           {error}
         </MuiAlert>
       </Snackbar>
