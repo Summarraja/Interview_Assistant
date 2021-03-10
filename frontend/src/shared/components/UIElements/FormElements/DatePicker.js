@@ -5,7 +5,7 @@ const DatePicker = (props) => {
     const handleDateChange = (e) => {
         props.setDate(e.target.value);
       };
-console.log("date "+props.disabled)
+
      
     return (
 

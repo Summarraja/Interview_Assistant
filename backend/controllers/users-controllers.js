@@ -63,13 +63,13 @@ const sendCode = async (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: '',
-      pass: ''
+      user: 'smarthire.interview@gmail.com',
+      pass: 'fypproject'
     },
   });
 
   const mailOptions = {
-    from: '',
+    from: 'smarthire.interview@gmail.com',
     to: user.email,
     subject: 'SmartHire Password Reset Code',
     text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account. \n\n'
@@ -236,13 +236,13 @@ const signup = async (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: '',
-      pass: ''
+      user: 'smarthire.interview@gmail.com',
+      pass: 'fypproject'
     },
   });
 
   const mailOptions = {
-    from: '',
+    from: 'smarthire.interview@gmail.com',
     to: createdUser.email,
     subject: 'SmartHire Email Verification Code',
     text: 'You are receiving this because you (or someone else) have created new account. \n\n'

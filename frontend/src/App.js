@@ -22,6 +22,7 @@ import CreateInterview from './Interviews/components/CreateInterview';
 import Chat from './chat/pages/Chat';
 import CandidateList from './Interviews/components/CandidatesList';
 import ViewInterview from './Interviews/pages/ViewInterview';
+import Certificate from './certificates/pages/Certificate';
 
 
 const App = () => {
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/interviews/new" exact component={CreateInterview} />
         <Route path="/interview/candidates" exact component ={CandidateList}/>
         <Route path="/interview/view" exact component ={ViewInterview}/>
+        <Route path="/certificates" exact component={Certificate} />
         
         <Redirect to="/" />
       </Switch>

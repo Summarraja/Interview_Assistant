@@ -15,6 +15,7 @@ import Button from "@material-ui/core/Button";
 import "./UserItem.css";
 import WorkIcon from "@material-ui/icons/Work";
 import Paper from "@material-ui/core/Paper";
+import {Link} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   Avatar: {
@@ -165,6 +166,8 @@ const UserItem = (props) => {
                 variant="contained"
                 color="primary"
                 size="small"
+                component= {Link}
+                to = "/certificates"
               >
                 View Certificates
               </Button>
