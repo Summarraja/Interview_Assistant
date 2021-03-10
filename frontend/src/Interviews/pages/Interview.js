@@ -1,4 +1,4 @@
-import React, { useContext, useState , useEffect} from "react";
+import React, { useContext, useState, useEffect } from "react";
 // import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import InterviewList from "../components/InterviewList";
@@ -12,6 +12,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import CreateInterview from "../components/CreateInterview";
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -107,38 +108,30 @@ const DUMMY_INTERVIEWS = [
 ];
 
 const Interview = () => {
-  const [interviews, setInterviews] = useState();
+  const [interviews, setInterviews] = useState([]);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
 
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     try {
-  //       const responseData = await sendRequest(
-  //         "http://localhost:5000/api/interviews/user/" + auth.userId,
-  //         'GET',
-  //         null,
-  //         {
-  //           "Content-Type": "application/json",
-  //           Authorization: "Bearer " + auth.token,
-  //         }
-  //       );
-  //       console.log("print"+responseData);
-  //       setInterviews(responseData);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   getData();
-  
-  // },[interviews]);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/interviews/user/" + auth.userId,
+          'GET',
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setInterviews(responseData.interviews);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getData();
 
-
-
-
-
-
-
+  }, []);
 
   const [open, setOpen] = useState(false);
 
@@ -153,6 +146,7 @@ const Interview = () => {
 
   return (
     <React.Fragment>
+
       <div className={classes.root}>
         <Box className={classes.hero}>
           <Box>Interviews</Box>
@@ -178,8 +172,11 @@ const Interview = () => {
                 setOpen={setOpen}
               />
             )}
+            {
+              (!isLoading)? (<InterviewList items={interviews} />) :
+                <LoadingSpinner open={true} />
+            }
 
-            <InterviewList items={DUMMY_INTERVIEWS} />
           </Paper>
         </Container>
       </div>

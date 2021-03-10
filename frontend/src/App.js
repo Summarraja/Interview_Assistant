@@ -22,11 +22,11 @@ import CreateInterview from './Interviews/components/CreateInterview';
 import Chat from './chat/pages/Chat';
 import CandidateList from './Interviews/components/CandidatesList';
 import ViewInterview from './Interviews/pages/ViewInterview';
+import LoadingSpinner from './shared/components/UIElements/LoadingSpinner';
 
 
 const App = () => {
-  const { token, login, resume, logout, userId } = useAuth();
-
+  const { token, login, logout, userId, resume } = useAuth();
   let routes;
 
   if (token) {
@@ -37,9 +37,9 @@ const App = () => {
         <Route path="/interviews" exact component={Interview} />
         <Route path="/chat" exact component={Chat} />
         <Route path="/interviews/new" exact component={CreateInterview} />
-        <Route path="/interview/candidates" exact component ={CandidateList}/>
-        <Route path="/interview/view" exact component ={ViewInterview}/>
-        
+        <Route path="/interview/candidates" exact component={CandidateList} />
+        <Route path="/interview/view" exact component={ViewInterview} />
+
         <Redirect to="/" />
       </Switch>
     );
@@ -48,33 +48,38 @@ const App = () => {
       <Switch>
         <Route path="/signup" exact component={signUp} />
         <Route path="/auth" exact component={Auth} />
-        <Route path="/verifyemail" exact component={(props) => <EmailVerification {...props}/>} />
-        <Route path="/forgotpassword" exact component={(props) => <EmailVerification {...props}/>} />
-        <Route path="/verifycode" exact component={(props) => <CodeVerification {...props}/>} />
+        <Route path="/verifyemail" exact component={(props) => <EmailVerification {...props} />} />
+        <Route path="/forgotpassword" exact component={(props) => <EmailVerification {...props} />} />
+        <Route path="/verifycode" exact component={(props) => <CodeVerification {...props} />} />
         <Route path="/Reset" exact component={ResetPassword} />
         <Route path="/Faq" exact component={Faq} />
         <Redirect to="/auth" />
       </Switch>
     );
   }
+  if(!resume&&localStorage.getItem('userData')){
+    return <LoadingSpinner open={true} />
+  }
 
   return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn: !!token,
-        token: token,
-        userId: userId,
-        login: login,
-        logout: logout,
-        resume:resume,
-      }}>
-      <Router>
-        <MainNavigation />
-        <main>
-          {routes}
-        </main>
-      </Router>
-    </AuthContext.Provider>
+    <React.Fragment>
+      <AuthContext.Provider
+        value={{
+          isLoggedIn: !!token,
+          token: token,
+          userId: userId,
+          login: login,
+          logout: logout,
+          resume: resume,
+        }}>
+        <Router>
+          <MainNavigation />
+          <main>
+            {routes}
+          </main>
+        </Router>
+      </AuthContext.Provider>
+    </React.Fragment>
   );
 };
 

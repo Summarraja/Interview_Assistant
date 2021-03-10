@@ -22,10 +22,7 @@ import { IoLogOut } from "react-icons/io5";
 import { MdArrowDropDownCircle } from "react-icons/md";
 import { AiFillLock } from "react-icons/ai";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { AuthContext } from "../../context/auth-context";
-
-
-
+import { AuthContext } from "../../../shared/context/auth-context";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -69,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function Navbar(props) {
   const [NavSignUp, setNavSignup] = useState(true);
+  const auth = useContext(AuthContext);
 
   const NavsignUpBtnHandler = () =>{
     setNavSignup(!NavSignUp)
@@ -79,12 +77,11 @@ export default function Navbar(props) {
     marginRight: 80,
   };
 
-  const auth = useContext(AuthContext);
   const classes = useStyles();
 
-  const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
+  const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(false);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
-  const [desktopMenuAnchorEl, setDesktopMenuAnchorEl] = useState(null);
+  const [desktopMenuAnchorEl, setDesktopMenuAnchorEl] = useState(false);
   const isNavMenuOpen = Boolean(desktopMenuAnchorEl);
 
   const openMobileMenu = (event) => {
@@ -146,11 +143,12 @@ export default function Navbar(props) {
     >
       <MenuItem style={ProfileMenuItem} component={Link} to="/profile">
         <Avatar
-          src="https://data.whicdn.com/images/295658437/original.jpg"
+          src={null}
+          alt = {null}
           style={{ height: "70px", width: "70px", marginRight: 10 }}
         />
         <div>
-          <Typography variant="h6">Urooj Tahir</Typography>
+          <Typography variant="h6">{auth.resume.firstname+ " " +auth.resume.lastname}</Typography>
           <Typography variant="body1">See your profile</Typography>
         </div>
       </MenuItem>

@@ -96,8 +96,7 @@ const SignIn = () => {
           'Content-Type': 'application/json'
         }
       );
-      auth.resume=responseData.resume;
-      auth.login(responseData.userId, responseData.token);
+      auth.login(responseData.userId, responseData.token,responseData.resume);
     } catch (err) {
     }
 

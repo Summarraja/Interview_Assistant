@@ -33,7 +33,6 @@ const getInterviewById = async (req, res, next) => {
 
 const getInterviewsByUserId = async (req, res, next) => {
     const userId = req.params.uid;
-    console.log(req.params.uid)
     let userWithInterviews;
     try {
         userWithInterviews = await User.findById(userId).populate('createdInterviews');
@@ -50,7 +49,6 @@ const getInterviewsByUserId = async (req, res, next) => {
             new HttpError('Could not find interviews for the provided user id.', 404)
         );
     }
-    console.log(userWithInterviews.createdInterviews);
     res.json({
         interviews: userWithInterviews.createdInterviews.map(interview =>
             interview.toObject({ getters: true })
