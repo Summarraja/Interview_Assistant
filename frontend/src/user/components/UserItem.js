@@ -36,9 +36,9 @@ const useStyles = makeStyles((theme) => ({
     width: 40,
     height: 30,
     color:"#004777",
-    transform: "translate(20rem, 25px)",
+    transform: "translate(19rem, 2rem)",
     [theme.breakpoints.down("xs")]:{
-      transform: "translate(80px, 25px)",
+      transform: "translate(16rem, 2rem)",
     }
   },
   heading: {
