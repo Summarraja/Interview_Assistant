@@ -144,6 +144,8 @@ const MainNavigation = () => {
           onClick={() => {
             SetOpenDrawer(false);
           }}
+          component={Link}
+          to="/certificates"
         >
           <ListItemIcon>
             <FaGraduationCap className = {classes.Navicon}/>
