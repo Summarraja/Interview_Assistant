@@ -24,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AuthForm = props => {
+    const setRememberme=props.setRememberme;
+    const rememberme=props.rememberme;
     const classes = useStyles();
     const validationSchema = yup.object().shape({
         username: yup.string()
@@ -85,7 +87,7 @@ const AuthForm = props => {
                         <Field
                             as={FormControlLabel}
                             name="remember"
-                            control={<Checkbox value="remember" color="secondary" checked={props.rememberme} onChange={() => { props.setRememberme(!props.rememberme) }} />}
+                            control={<Checkbox value="remember" color="secondary" checked={!!rememberme} onChange={() => { setRememberme(!rememberme) }} />}
                             label="Remember me"
                         />
                         {props.status === 401 ? (

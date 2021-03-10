@@ -104,7 +104,13 @@ const SignIn = () => {
   };
   if (error == 'Email_not_verified') {
 
-    return <Redirect to="/verifyEmail" />;
+    return <Redirect
+      to={{
+        pathname: "/verifyEmail",
+        state: { emailverification: true,
+          forgotpassword:false
+         }
+      }} />;
   }
   return (
     <Fragment>

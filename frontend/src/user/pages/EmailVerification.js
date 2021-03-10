@@ -16,7 +16,7 @@ import { useHttpClient } from '../../shared/hooks/http-hook';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-
+import {useHistory} from 'react-router';
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(2),
@@ -33,15 +33,17 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: "80%",
     margin: "0px 20px"
-
+    
   },
   formControl: {
     width: "100%",
-
+    
   }
 }));
 
 export default function ForgetPassword(props) {
+  const history = useHistory();
+ 
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const [success, setSuccess] = useState(false);
   const [userEmail, setUserEmail] = useState('');
@@ -94,14 +96,22 @@ export default function ForgetPassword(props) {
       }}
     />
   }
+  if (!props.location.state) {
+    // history.push("/");
+    return <Redirect
+    to={{
+      pathname: "/",
+    }}
+  />
+  }
   return (
     <Container component="main" maxWidth="sm">
       <LoadingSpinner open={isLoading} />
       <Snackbar open={!!error} autoHideDuration={6000} onClose={clearError}>
-          <MuiAlert elevation={6} variant="filled" severity="error" onClose={clearError}>
-            {error}
-          </MuiAlert>
-        </Snackbar>
+        <MuiAlert elevation={6} variant="filled" severity="error" onClose={clearError}>
+          {error}
+        </MuiAlert>
+      </Snackbar>
       <Paper elevation={10} style={paperStyle}>
         <Typography align="center" variant="h5">
           {props.location.state.emailverification && (<>Verify Your Email?</>)}
@@ -168,4 +178,4 @@ export default function ForgetPassword(props) {
       </Paper>
     </Container>
   );
-                                  }
+}
