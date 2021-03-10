@@ -18,6 +18,7 @@ import Hidden from "@material-ui/core/Hidden";
 import { Divider } from "@material-ui/core";
 import { AuthContext } from "../../context/auth-context";
 import { Link } from "react-router-dom";
+import { FaGraduationCap } from "react-icons/fa";
 //import white from '@material-ui/core/colors/white';
 
 //import { AuthContext } from "../   context/auth-context";
@@ -131,6 +132,26 @@ const MainNavigation = () => {
       </Tooltip>
       <Divider variant="middle" className={classes.divider}/>
       <Tooltip
+        title={OpenDrawer ? "" : "Certificates"}
+        placement="right"
+        TransitionComponent={Fade}
+        TransitionProps={{ timeout: 600 }}
+      >
+        <ListItem
+          button
+          key="Certificates"
+          onClick={() => {
+            SetOpenDrawer(false);
+          }}
+        >
+          <ListItemIcon>
+            <FaGraduationCap className = {classes.Navicon}/>
+          </ListItemIcon>
+          <ListItemText primary="Certificates" />
+        </ListItem>
+      </Tooltip>
+      <Divider variant="middle" className={classes.divider}/>
+      <Tooltip
         title={OpenDrawer ? "" : "Reports"}
         placement="right"
         TransitionComponent={Fade}
@@ -150,6 +171,7 @@ const MainNavigation = () => {
         </ListItem>
       </Tooltip>
       <Divider variant="middle" className={classes.divider}/>
+
       <Tooltip
         title={OpenDrawer ? "" : "Charts"}
         placement="right"

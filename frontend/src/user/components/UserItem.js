@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useContext} from "react";
 import { IconButton, makeStyles } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -16,6 +16,7 @@ import "./UserItem.css";
 import WorkIcon from "@material-ui/icons/Work";
 import Paper from "@material-ui/core/Paper";
 import {Link} from "react-router-dom";
+
 
 const useStyles = makeStyles((theme) => ({
   Avatar: {
@@ -89,12 +90,12 @@ const UserItem = (props) => {
         <div style={topBorder}>
           <Avatar
             className={classes.Avatar}
-            alt={props.name}
-            src={props.image}
+            alt={null}
+            src={null}
           />
         </div>
         <div style={{ textAlign: "center", marginTop: 70 }}>
-          <Typography variant="h4">{props.name}</Typography>
+          <Typography variant="h4">{props.resume.firstname + " " + props.resume.lastname}</Typography>
           <Grid align="center">
             <IconButton>
               <ChatIcon style={RTCiconStyle} />
@@ -109,14 +110,22 @@ const UserItem = (props) => {
         </div>
         <div style={divstyle}>
           <Typography variant="subtitle1">
-            <WorkIcon style={divIconStyle} /> {props.profession}
+            <WorkIcon style={divIconStyle} /> Frontend Developer
           </Typography>
 
           <Typography variant="subtitle1">
-            <LocationOnIcon style={divIconStyle} /> From {props.city},{" "}
-            {props.country}
+            <LocationOnIcon style={divIconStyle} /> From Islamabad,{" "}
+            {props.resume.country}
           </Typography>
+
+          <Typography variant="subtitle1">
+            {props.resume.address}
+          </Typography>
+
+    
         </div>
+
+
 
         <Accordion style={accordStyle}>
           <AccordionSummary
@@ -130,8 +139,8 @@ const UserItem = (props) => {
           </AccordionSummary>
           <AccordionDetails lg={12} md={6}>
             <Typography style={typoStyle}>
-              {props.interviewCount}{" "}
-              {props.interviewCount === 1 ? "Interview" : "Interviews"}
+              {0}{" "}
+              {0 === 1 ? "Interview" : "Interviews"}
             </Typography>
             <Button
               type="submit"
@@ -158,8 +167,8 @@ const UserItem = (props) => {
           <AccordionDetails lg={12} md={6}>
             <div style={divDetails}>
               <Typography style={typoStyle}>
-                {props.certificateCount}{" "}
-                {props.certificateCount === 1 ? "Certificate" : "Certificates"}
+                {0}{" "}
+                {0 === 1 ? "Certificate" : "Certificates"}
               </Typography>
               <Button
                 type="submit"
