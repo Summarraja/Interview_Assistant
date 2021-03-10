@@ -82,6 +82,7 @@ const SignupForm = (props) => {
                             <DatePicker
                                 date={props.dob}
                                 setDate={props.setdob}
+                                label="Date of Birth"
                             />
                         </Grid>
 

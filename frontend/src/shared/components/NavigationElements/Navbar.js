@@ -117,11 +117,12 @@ export default function Navbar(props) {
       open={isMobileMenuOpen}
       className={classes.MoreIconButton}
     >
-      <MenuItem onClick={closeMobileMenu} component={Link} to="/signUp">
+      <MenuItem    onClick = {NavsignUpBtnHandler} component={Link} to= {NavSignUp? "/signup" : "/auth" }
+                 >
         <IconButton color="primary">
           <AiFillLock />
         </IconButton>
-        <Typography variant="subtitle1">Sign Up</Typography>
+        <Typography variant="subtitle1"> {NavSignUp ? "Sign Up" : "Sign In"} </Typography>
       </MenuItem>
       <MenuItem onClick={closeMobileMenu} component={Link} to="/Faq">
         <IconButton color="primary">

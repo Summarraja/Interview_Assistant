@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 const CustomizedDialogs = (props) => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
 
 const handleOpenDialog = () => {
   setOpen(true);
@@ -46,12 +46,6 @@ const handleCloseDialog = () => {
 
   return (
     <div>
-         <MenuItem onClick={handleOpenDialog} style={{ height: 40 }}>
-          <IconButton color="primary">
-              <IoIosPeople />
-            </IconButton>
-            <Typography variant="subtitle1">Candidates</Typography>
-      </MenuItem>
       <Dialog
         onClose={handleCloseDialog}
         open={open}

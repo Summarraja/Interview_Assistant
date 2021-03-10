@@ -16,6 +16,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
 
 function Copyright() {
   return (
@@ -43,16 +45,16 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     backgroundColor: theme.palette.primary.main,
   },
+
 }));
 
 const CreateInterview = (props) => {
-  //   const {error } = useHttpClient();
+ 
 
-  //   const auth = useContext(AuthContext);
   var curr = new Date();
   curr.setDate(curr.getDate() + 3);
   var date = curr.toISOString().substr(0, 10);
-  const [field, setField] = useState("Field");
+  const [field, setField] = useState("Computer Science");
   const [doi, setDoi] = useState(date);
   const [timeOfInter, setTimeOfInter] = useState("12:00");
 
@@ -69,7 +71,7 @@ const CreateInterview = (props) => {
   return (
     <Fragment>
       <Dialog
-        open={props.open}
+        open={props.open }
         onClose={props.handleCloseDialog}
         fullWidth
         maxWidth="sm"
@@ -77,11 +79,11 @@ const CreateInterview = (props) => {
       
         <DialogTitle
           onClose={props.handleCloseDialog}
-          className={classes.dialogTitle}
+          disableTypography
         >
-        <Typography align="center" variant="h4">
-            Schedule Interview
-          </Typography>
+          <Typography variant="h4" align="center">Schedule Interview</Typography>
+           
+            
           <CssBaseline />
           <div className={classes.paper}>
             <Avatar className={classes.avatar}>
@@ -98,6 +100,7 @@ const CreateInterview = (props) => {
              setDoi={setDoi}
              timeOfInter = {timeOfInter}
              setTimeOfInter = {setTimeOfInter}
+             setOpen = {props.setOpen}
             />
           </div>
         </DialogContent>

@@ -6,13 +6,12 @@ const FaqList = props => {
   return (
 
 <>
-{console.log(props.items.Question)}
       {props.items.map(faq => (
         <FaqListItems
-          key={faq.id}
-          id={faq.id}
-          question = {faq.Question}
-          answer = {faq.Answer}
+          key={faq._id}
+          id={faq._id}
+          question = {faq.question}
+          answer = {faq.answer}
         
         />
       ))}

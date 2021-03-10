@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Message from "./Message";
 
 import './Message.css';
 function MessageBox(props) {
+const endDiv= useRef(null)
+useEffect(()=>{
+endDiv.current.scrollIntoView()
+})
 
   return (
     <>
@@ -10,18 +14,11 @@ function MessageBox(props) {
                 
     {props.chatMessage.map(msg =>(
       <Message 
-      oneChatMsgSender = {msg.sender}
-      oneChatMsgReceiver = {msg.receiver}
-      oneChatMsgContent = {msg.content}
-      oneChatMsgTime = {msg.time}
-      oneChatMsgRead = {msg.isRead}
-      />
-        
+       message={msg}
+      />       
     ))}
+    <div style={{float:"right", clear:"both"}} ref={endDiv}> </div>
     </div>
-       
-        
- 
     </>
   );
 }

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useContext, useState , useEffect} from "react";
 // import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import InterviewList from "../components/InterviewList";
@@ -6,10 +6,11 @@ import bgInterview5 from "../../shared/components/UIElements/Images/bgInterview5
 import Box from "@material-ui/core/Box";
 import { Paper } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import {Link} from "react-router-dom";
-
+import { Link } from "react-router-dom";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
 import Button from "@material-ui/core/Button";
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from "@material-ui/icons/Add";
 import CreateInterview from "../components/CreateInterview";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,10 +44,10 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px 50px",
     backgroundColor: "#d3d3d3",
   },
-  button:{
+  button: {
     float: "right",
     marginBottom: 15,
-  }
+  },
 }));
 
 const DUMMY_INTERVIEWS = [
@@ -106,6 +107,39 @@ const DUMMY_INTERVIEWS = [
 ];
 
 const Interview = () => {
+  const [interviews, setInterviews] = useState();
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const auth = useContext(AuthContext);
+
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     try {
+  //       const responseData = await sendRequest(
+  //         "http://localhost:5000/api/interviews/user/" + auth.userId,
+  //         'GET',
+  //         null,
+  //         {
+  //           "Content-Type": "application/json",
+  //           Authorization: "Bearer " + auth.token,
+  //         }
+  //       );
+  //       console.log("print"+responseData);
+  //       setInterviews(responseData);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   getData();
+  
+  // },[interviews]);
+
+
+
+
+
+
+
+
   const [open, setOpen] = useState(false);
 
   const handleOpenDialog = () => {
@@ -114,11 +148,8 @@ const Interview = () => {
   const handleCloseDialog = () => {
     setOpen(false);
   };
-   
+
   const classes = useStyles();
-  // const userId = useParams().userId;
-  //const loadedInterviews = DUMMY_INTERVIEWS.filter(interview => interview.creator === userId);
-  // const loadedInterviews = {DUMMY_INTERVIEWS}
 
   return (
     <React.Fragment>
@@ -128,22 +159,26 @@ const Interview = () => {
         </Box>
         <Container maxWidth="lg" component="main">
           <Paper elevation={5} className={classes.paper}>
-          
-              <Button
+            <Button
               variant="contained"
               color="primary"
-              onClick={()=>{
-                handleOpenDialog()
+              onClick={() => {
+                handleOpenDialog();
               }}
               className={classes.button}
               startIcon={<AddIcon />}
             >
               Create Interview
             </Button>
-           
-            {open &&   
-            <CreateInterview open={open}  handleCloseDialog={handleCloseDialog}/>}           
-          
+
+            {open && (
+              <CreateInterview
+                open={open}
+                handleCloseDialog={handleCloseDialog}
+                setOpen={setOpen}
+              />
+            )}
+
             <InterviewList items={DUMMY_INTERVIEWS} />
           </Paper>
         </Container>

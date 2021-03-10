@@ -10,17 +10,9 @@ import CandidateList from "./CandidatesList";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import DeleteInterview from "./DeleteInterview";
 import CancelInterview from "./CancelInterview";
+import { IoIosPeople } from "react-icons/io";
 
 const InterviewMenu = (props) => {
- 
-  //  const CloseDeleteDialogHandler = () =>{
-  //   setOpenDeleteDialog(false)
-  // }
-
-  //   const [OpenCancelDialog, setOpenCancelDialog] = useState(false);
-  //   const OpenCancelDialogHandler = () =>{
-  //     setOpenCancelDialog(true)
-  //   }
   const [OpenCancelDialog, setOpenCancelDialog] = useState(false);
 
   const OpenCancelDialogHandler = () => {
@@ -29,17 +21,17 @@ const InterviewMenu = (props) => {
   const CloseCancelDialogHandler = () => {
     setOpenCancelDialog(false);
   };
-   
-  // const [OpenCancelDialog, setOpenCancelDialog] = useState(false);
 
-  // const OpenCancelDialogHandler = () => {
-  //   setOpenCancelDialog(true);
-  // };
+  const [callComp, setCallComp] = useState(false);
 
-    const [OpenDeleteDialog, setOpenDeleteDialog] = useState(false);
-   const OpenDeleteDialogHandler = () =>{
-     setOpenDeleteDialog(true)
-   }
+  const CallCompHandler = () => {
+    setCallComp(true);
+  };
+
+  const [OpenDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const OpenDeleteDialogHandler = () => {
+    setOpenDeleteDialog(true);
+  };
 
   return (
     <>
@@ -63,22 +55,24 @@ const InterviewMenu = (props) => {
               <BlockIcon />
             </IconButton>
             <Typography variant="subtitle1">Cancel Interview</Typography>
-         
-           
           </MenuItem>
           {OpenCancelDialog && (
-              <CancelInterview
-                OpenCancelDialog={OpenCancelDialog}
-                CloseCancelDialogHandler={CloseCancelDialogHandler}
-              />
-             
-            )}
+            <CancelInterview
+              OpenCancelDialog={OpenCancelDialog}
+              CloseCancelDialogHandler={CloseCancelDialogHandler}
+            />
+          )}
           <Divider variant="middle" />
-          <MenuItem
-            onClick={props.closeInterviewMenu}
-            component={CandidateList}
-          />
+          <MenuItem onClick={CallCompHandler} style={{ height: 40 }}>
+            <IconButton color="primary">
+              <IoIosPeople />
+            </IconButton>
+            <Typography variant="subtitle1">Candidates</Typography>
+          </MenuItem>
+          {callComp && <CandidateList />}
+
           <Divider variant="middle" />
+
           <MenuItem
             onClick={props.closeInterviewMenu}
             component={Link}
@@ -99,12 +93,13 @@ const InterviewMenu = (props) => {
             </IconButton>
 
             <Typography variant="subtitle1">Delete Interview</Typography>
-          
           </MenuItem>
-          {OpenDeleteDialog && <DeleteInterview    
-                OpenDeleteDialog={OpenDeleteDialog}
-                setOpenDeleteDialog={setOpenDeleteDialog}
-                />}
+          {OpenDeleteDialog && (
+            <DeleteInterview
+              OpenDeleteDialog={OpenDeleteDialog}
+              setOpenDeleteDialog={setOpenDeleteDialog}
+            />
+          )}
           <Divider variant="middle" />
           <MenuItem
             onClick={props.closeInterviewMenu}

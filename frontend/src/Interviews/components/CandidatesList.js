@@ -21,6 +21,7 @@ const addedCandidates = [
 ];
 
 const CandidateList = () => {
+
   return <InterviewCandidates items={addedCandidates} />;
 };
 
