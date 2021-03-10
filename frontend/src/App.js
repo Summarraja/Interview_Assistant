@@ -23,6 +23,7 @@ import Chat from './chat/pages/Chat';
 import CandidateList from './Interviews/components/CandidatesList';
 import ViewInterview from './Interviews/pages/ViewInterview';
 import LoadingSpinner from './shared/components/UIElements/LoadingSpinner';
+import Certificate from './certificates/pages/Certificate';
 
 
 const App = () => {
@@ -37,9 +38,9 @@ const App = () => {
         <Route path="/interviews" exact component={Interview} />
         <Route path="/chat" exact component={Chat} />
         <Route path="/interviews/new" exact component={CreateInterview} />
-        <Route path="/interview/candidates" exact component={CandidateList} />
-        <Route path="/interview/view" exact component={ViewInterview} />
-
+        <Route path="/interview/candidates" exact component ={CandidateList}/>
+        <Route path="/interview/view" exact component ={ViewInterview}/>
+        <Route path="/certificates" exact component={Certificate} />
         <Redirect to="/" />
       </Switch>
     );

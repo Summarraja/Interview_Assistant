@@ -4,7 +4,7 @@ import TextField from "@material-ui/core/TextField";
 const DatePicker = (props) => {
     const handleDateChange = (e) => {
         props.setDate(e.target.value);
-      };     
+    }
     return (
 
         <TextField
