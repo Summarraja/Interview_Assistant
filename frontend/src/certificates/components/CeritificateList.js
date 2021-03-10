@@ -35,6 +35,7 @@ const CertificateList = (props) => {
   return (
   
       <>
+      {console.log(props.items)}
       {props.items.map(certificate => (
         <CertificateItems
           key={certificate.id}

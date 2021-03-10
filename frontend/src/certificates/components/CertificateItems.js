@@ -69,14 +69,15 @@ const CertificateItem = (props) => {
         <Grid item sm={6} lg={7} style={{ flexGrow: 1 }}>
           <div className={classes.header}>
             <Typography variant="h5" align="justify">
-              {props.title}
+            Certificate
             </Typography>
             <Typography variant="subtitle1" style={{ color: grey[900] }}>
-              {props.date}
+             date
             </Typography>
           </div>
         </Grid>
-        <Grid item sm={6} lg={5}>
+        </Grid>
+        {/* <Grid item sm={6} lg={5}>
           <Typography
             variant="subtitle2"
             //  color="#fff"
@@ -109,7 +110,7 @@ const CertificateItem = (props) => {
         
     
         </Grid>
-      </Grid>
+      </Grid> */}
       {/* <OutsideClickHandler onOutsideClick={closeInterviewMenu}>
         <IconButton onClick={openInterviewMenu}>
           <MoreVertIcon style={MoreIconStyle} />

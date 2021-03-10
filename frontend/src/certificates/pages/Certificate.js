@@ -12,6 +12,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import CandidateList from "../../Interviews/components/CandidatesList";
+import CertificateList from "../components/CeritificateList";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -87,10 +88,10 @@ const Certificate = () => {
   return (
  
       <div className={classes.root}>
-        
+        {console.log("manhos")}
         <Container maxWidth="lg" component="main">
           <Paper elevation={5} className={classes.paper}>
-          <CandidateList items = {DUMMY_CERTIFICATES} />
+          <CertificateList items = {DUMMY_CERTIFICATES} />
           </Paper>
         </Container>
       </div>
