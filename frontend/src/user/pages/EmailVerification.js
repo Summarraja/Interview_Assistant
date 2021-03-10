@@ -61,6 +61,7 @@ export default function ForgetPassword(props) {
     minHeight: "40px",
     margin: "20px 8px ",
   };
+
   const validationSchema = yup.object().shape({
     username: yup.string().email("Please enter valid username"),
   });
@@ -91,7 +92,7 @@ export default function ForgetPassword(props) {
         pathname: "/verifycode",
         state: { email: userEmail }
       }}
-    />;;
+    />
   }
   return (
     <Container component="main" maxWidth="sm">
@@ -149,51 +150,6 @@ export default function ForgetPassword(props) {
                   disabled={!(props.isValid || props.isSubmitting)}
                 >
                   NEXT
-                                <Typography variant="h5" align="center" style={typostyle} >
-                                    Enter 4-digit Code
-                </Typography>
-
-                                <Grid align="center">
-
-                                    {otp.map((data, index) => {
-                                        return (
-                                            <input
-                                                className={classes.otpfield}
-                                                type="text"
-                                                name="otp"
-                                                maxLength="1"
-                                                key={index}
-                                                value={data}
-                                                onChange={e => handleChange(e.target, index)}
-                                                onFocus={e => e.target.select()}
-                                            />
-                                        );
-                                    })}
-                                    <p>OTP Entered - {otp.join("")}</p>
-                                    {(error !== "") ? (<Typography className="MuiFormHelperText-root" >{error}</Typography>) : " "}
-                                </Grid >
-                                <Grid align="center" style={{marginTop:"10px"}}>
-                                    <Button
-                                        type="submit"
-                                        variant="contained"
-                                        color="primary"
-                                        style={ButtonStyle}
-                                        onSubmit={onSubmitHandler}
-
-                                    >
-                                        Verify Account
-                </Button>
-
-                                    <Button
-
-                                        variant="outlined"
-                                        color="primary"
-                                        style={ButtonStyle}
-                                        onClick={onCancelHandler}
-
-
-                                    >
-                                        Clear
                 </Button>
                 <Button
                   type="submit"
@@ -208,8 +164,8 @@ export default function ForgetPassword(props) {
             )}
           </Formik>
         </div>
-        {/* <Box mt={3}></Box> */}
+
       </Paper>
     </Container>
   );
-}
+                                  }
