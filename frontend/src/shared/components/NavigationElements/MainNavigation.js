@@ -14,6 +14,7 @@ import Navbar from "./Navbar";
 import Fade from "@material-ui/core/Fade";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import InsertChartIcon from "@material-ui/icons/InsertChart";
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import Hidden from "@material-ui/core/Hidden";
 import { Divider } from "@material-ui/core";
 import { AuthContext } from "../../context/auth-context";
@@ -132,6 +133,8 @@ const MainNavigation = () => {
       </Tooltip>
       <Divider variant="middle" className={classes.divider}/>
       <Tooltip
+
+        title={OpenDrawer ? "" : "Resume"}
         title={OpenDrawer ? "" : "Certificates"}
         placement="right"
         TransitionComponent={Fade}
@@ -159,15 +162,39 @@ const MainNavigation = () => {
       >
         <ListItem
           button
-          key="Reports"
+          key="Resume"
           onClick={() => {
             SetOpenDrawer(false);
           }}
+          component={Link}
+          to="/resume"
         >
           <ListItemIcon>
-            <ListAltIcon className = {classes.Navicon}/>
+            <AssignmentIndIcon className = {classes.Navicon}/>
           </ListItemIcon>
-          <ListItemText primary="Reports" />
+          <ListItemText primary="Resume" />
+        </ListItem>
+      </Tooltip>
+      <Divider variant="middle" className={classes.divider}/>
+      <Tooltip
+        title={OpenDrawer ? "" : "Certificates"}
+        placement="right"
+        TransitionComponent={Fade}
+        TransitionProps={{ timeout: 600 }}
+      >
+        <ListItem
+          button
+          key="Certificates"
+          onClick={() => {
+            SetOpenDrawer(false);
+          }}
+          component={Link}
+          to="/certificate"
+        >
+          <ListItemIcon>
+            <FaGraduationCap className = {classes.Navicon}/>
+          </ListItemIcon>
+          <ListItemText primary="Certificates" />
         </ListItem>
       </Tooltip>
       <Divider variant="middle" className={classes.divider}/>
