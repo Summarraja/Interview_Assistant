@@ -15,6 +15,9 @@ import Button from "@material-ui/core/Button";
 import "./UserItem.css";
 import WorkIcon from "@material-ui/icons/Work";
 import Paper from "@material-ui/core/Paper";
+import EditIcon from '@material-ui/icons/Edit';
+import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+
 
 const useStyles = makeStyles((theme) => ({
   Avatar: {
@@ -24,6 +27,16 @@ const useStyles = makeStyles((theme) => ({
     width: 150,
     height: 150,
     transform: "translate(0px, 65px)",
+  },
+  cameraIcon:{
+    display: "flex",
+    width: 40,
+    height: 30,
+    color:"#004777",
+    transform: "translate(20rem, 25px)",
+    [theme.breakpoints.down("xs")]:{
+      transform: "translate(80px, 25px)",
+    }
   },
   heading: {
     fontSize: theme.typography.pxToRem(20),
@@ -89,11 +102,28 @@ const UserItem = (props) => {
           <Avatar
             className={classes.Avatar}
             alt={props.name}
-            src={props.image}
+            // src={props.image}
           />
+          
+            <Button style={{float : "right", marginTop:"10px", marginRight: "10px"}}
+                type="submit"
+                variant="contained"
+                color="primary"
+                startIcon = {<EditIcon/>}
+                size="small"
+              >
+               Edit Profile
+              </Button>
+              <IconButton className={classes.cameraIcon} >
+              <PhotoCameraIcon style={{width:"30px", height:"40px"}}/>
+            </IconButton>
+             
         </div>
+       
+      
         <div style={{ textAlign: "center", marginTop: 70 }}>
           <Typography variant="h4">{props.name}</Typography>
+
           <Grid align="center">
             <IconButton>
               <ChatIcon style={RTCiconStyle} />

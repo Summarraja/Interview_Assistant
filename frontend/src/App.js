@@ -22,6 +22,8 @@ import CreateInterview from './Interviews/components/CreateInterview';
 import Chat from './chat/pages/Chat';
 import CandidateList from './Interviews/components/CandidatesList';
 import ViewInterview from './Interviews/pages/ViewInterview';
+import Resume from './Resumes/Pages/Resume';
+import CreateResume from './Resumes/Components/CreateResume';
 
 
 const App = () => {
@@ -39,7 +41,7 @@ const App = () => {
         <Route path="/interviews/new" exact component={CreateInterview} />
         <Route path="/interview/candidates" exact component ={CandidateList}/>
         <Route path="/interview/view" exact component ={ViewInterview}/>
-        
+        <Route path="/resume" exact component={Resume} />
         <Redirect to="/" />
       </Switch>
     );
@@ -53,6 +55,7 @@ const App = () => {
         <Route path="/verifycode" exact component={(props) => <CodeVerification {...props}/>} />
         <Route path="/Reset" exact component={ResetPassword} />
         <Route path="/Faq" exact component={Faq} />
+        <Route path="/resume" exact component={Resume} />
         <Redirect to="/auth" />
       </Switch>
     );

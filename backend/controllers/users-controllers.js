@@ -64,7 +64,7 @@ const sendCode = async (req, res, next) => {
     service: 'gmail',
     auth: {
       user: 'lawara41@gmail.com',
-      pass: ''
+      pass: 'fypproject'
     },
   });
 
@@ -237,7 +237,7 @@ const signup = async (req, res, next) => {
     service: 'gmail',
     auth: {
       user: 'lawara41@gmail.com',
-      pass: ''
+      pass: 'fypproject'
     },
   });
 
