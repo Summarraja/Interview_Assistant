@@ -26,7 +26,7 @@ import Certificate from './certificates/pages/Certificate';
 
 
 const App = () => {
-  const { token, login, logout, userId } = useAuth();
+  const { token, login, resume, logout, userId } = useAuth();
 
   let routes;
 
@@ -67,7 +67,8 @@ const App = () => {
         token: token,
         userId: userId,
         login: login,
-        logout: logout
+        logout: logout,
+        resume:resume,
       }}>
       <Router>
         <MainNavigation />

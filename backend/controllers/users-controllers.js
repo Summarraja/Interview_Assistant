@@ -65,6 +65,7 @@ const sendCode = async (req, res, next) => {
     auth: {
       user: 'lawara41@gmail.com',
       pass: 'fypproject'
+
     },
   });
 
@@ -238,7 +239,7 @@ const signup = async (req, res, next) => {
     auth: {
       user: 'lawara41@gmail.com',
       pass: 'fypproject'
-    },
+    }
   });
 
   const mailOptions = {
@@ -269,7 +270,7 @@ const login = async (req, res, next) => {
   let existingUser;
 
   try {
-    existingUser = await User.findOne({ email: email });
+    existingUser =  await User.findOne({ email: email }).populate('resume');
   } catch (err) {
     const error = new HttpError(
       'Logging in failed, please try again later.',
@@ -328,6 +329,7 @@ const login = async (req, res, next) => {
   }
 
   res.json({
+    resume:existingUser.resume,
     userId: existingUser.id,
     email: existingUser.email,
     token: token
