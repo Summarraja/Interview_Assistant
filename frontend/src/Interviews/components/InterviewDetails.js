@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
       {(fProps) => (
         <Form>
           <Grid container>
-            <Grid item = {true} xs={12} sm={7}>
+            <Grid item = {true} xs={12} sm={12}>
               <Grid item = {true} xs={12}>
                 <Field
                   as={TextField}

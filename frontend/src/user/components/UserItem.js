@@ -187,6 +187,8 @@ const UserItem = (props) => {
               variant="contained"
               color="primary"
               size="small"
+              component = {Link}
+              to ="/interviews"
             >
               View Interviews
             </Button>

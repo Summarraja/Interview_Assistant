@@ -40,7 +40,7 @@ const ViewInterview = (props) => {
   const classes = useStyles();
 
   return (
-    <Container component="main" maxWidth="md">
+    <Container component="main" maxWidth="sm">
       <Paper elevation={10} style={paperStyle}>
         <Typography align="center" variant="h4">
           Interview Details
