@@ -33,7 +33,6 @@ const ProfileForm = (props) => {
         props.setValue(event.target.value);
     };
     const names = props.data;
-    console.log("disabeld "+props.value)
     return (
         <FormControl className={classes.formControl}>
             <InputLabel

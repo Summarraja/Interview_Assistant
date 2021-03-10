@@ -63,13 +63,13 @@ const sendCode = async (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: '',
+      user: 'lawara41@gmail.com',
       pass: ''
     },
   });
 
   const mailOptions = {
-    from: '',
+    from: 'lawara41@gmail.com',
     to: user.email,
     subject: 'SmartHire Password Reset Code',
     text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account. \n\n'
@@ -236,13 +236,13 @@ const signup = async (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: '',
+      user: 'lawara41@gmail.com',
       pass: ''
     },
   });
 
   const mailOptions = {
-    from: '',
+    from: 'lawara41@gmail.com',
     to: createdUser.email,
     subject: 'SmartHire Email Verification Code',
     text: 'You are receiving this because you (or someone else) have created new account. \n\n'
@@ -269,7 +269,7 @@ const login = async (req, res, next) => {
   let existingUser;
 
   try {
-    existingUser = await User.findOne({ email: email });
+    existingUser =  await User.findOne({ email: email }).populate('resume');
   } catch (err) {
     const error = new HttpError(
       'Logging in failed, please try again later.',
@@ -328,6 +328,7 @@ const login = async (req, res, next) => {
   }
 
   res.json({
+    resume:existingUser.resume,
     userId: existingUser.id,
     email: existingUser.email,
     token: token

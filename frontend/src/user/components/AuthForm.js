@@ -26,6 +26,8 @@ const useStyles = makeStyles((theme) => ({
 const AuthForm = props => {
     const setRememberme=props.setRememberme;
     const rememberme=props.rememberme;
+    const error = props.error;
+    const status = props.status;
     const classes = useStyles();
     const validationSchema = yup.object().shape({
         username: yup.string()
@@ -90,8 +92,8 @@ const AuthForm = props => {
                             control={<Checkbox value="remember" color="secondary" checked={!!rememberme} onChange={() => { setRememberme(!rememberme) }} />}
                             label="Remember me"
                         />
-                        {props.status === 401 ? (
-                            <Typography className="MuiFormHelperText-root" align="center" variant="body1">{props.error}</Typography>
+                        {status === 401 ? (
+                            <Typography className="MuiFormHelperText-root" align="center" variant="body1">{error}</Typography>
                         ) : " "}
                         <Button
                             type="submit"
