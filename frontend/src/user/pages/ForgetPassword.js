@@ -28,16 +28,21 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
   },
   form: {
-    width: "100%",
-    marginTop: theme.spacing(2),
+    width: "80%",
+    margin:"0px 20px"
+  
   },
+  formControl:{
+   width: "100%",
+ 
+  }
 }));
 
 export default function ForgetPassword() {
   const paperStyle = {
-    width: 400,
+    width: "80%",
     padding: 20,
-    margin: "20px auto",
+    margin: "80px auto",
   };
   const avatarStyle = {
     backgroundColor: "primary",
@@ -46,9 +51,9 @@ export default function ForgetPassword() {
     username: "",
   };
   const ButtonStyle = {
-    minWidth: "160px",
+    minWidth: "140px",
     minHeight: "40px",
-    margin: "10px 8px ",
+    margin: "20px 8px ",
   };
   const validationSchema = yup.object().shape({
     username: yup.string().email("Please enter valid username"),
@@ -66,7 +71,7 @@ export default function ForgetPassword() {
   const classes = useStyles();
   
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="sm">
       <Paper elevation={10} style={paperStyle}>
         <Typography align="center" variant="h5">
           Forgot Your Password?
@@ -84,13 +89,13 @@ export default function ForgetPassword() {
             {(props) => (
               <Form  className={classes.form}>
                 {console.log(props)}
-                <Typography  variant="body1">
+                <Typography  variant="body1" style={{margin: "10px", textAlign: "center"}}>
                   Please enter your username associated with your account to start password recovery process
                 </Typography>
                 <Field
                   as={TextField}
                   variant="outlined"
-                  margin="normal"
+                 className={classes.formControl}
                   required
                   fullWidth
                   id="email"
@@ -98,6 +103,7 @@ export default function ForgetPassword() {
                   name="username"
                   autoComplete="email"
                   autoFocus
+                
                   helperText={
                     <ErrorMessage
                       name="username"
@@ -128,7 +134,7 @@ export default function ForgetPassword() {
             )}
           </Formik>
         </div>
-        <Box mt={3}></Box>
+        {/* <Box mt={3}></Box> */}
       </Paper>
     </Container>
   );

@@ -162,7 +162,7 @@ export default function SignUp() {
         </MuiAlert>
       </Snackbar>
       <Paper elevation={10} style={paperStyle}>
-        <Typography align="center" variant="h3">
+        <Typography align="center" variant="h4">
           SmartHire
         </Typography>
         <CssBaseline />
