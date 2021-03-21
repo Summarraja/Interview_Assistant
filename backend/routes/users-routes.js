@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.get('/', usersController.getUsers);
 
+
 router.post('/sendCode',
   [
     check('email').normalizeEmail().isEmail()

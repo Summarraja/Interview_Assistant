@@ -14,6 +14,7 @@ import AddIcon from "@material-ui/icons/Add";
 import CreateInterview from "../components/CreateInterview";
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#fff",
@@ -51,61 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DUMMY_INTERVIEWS = [
-  {
-    id: "I1",
-    title: "Interview for Hiring QA testing Team",
-    description:
-      "Team that ensures the quality of software or application being developed",
-    date: new Date().toLocaleString(),
-    isCancelled: false,
-    field: null,
-    candidates: null,
-    sendRequests: null,
-    receiveRequests: null,
-    status: "TAKEN",
-    creator: "u1",
-  },
-  {
-    id: "I2",
-    title: "Interview for Architecture designing of Systems",
-    description: "building system and object designs of the system",
-    date: new Date().toLocaleString(),
-    isCancelled: true,
-    field: null,
-    candidates: null,
-    sendRequests: null,
-    receiveRequests: null,
-    status: "CANCELLED",
-    creator: "u1",
-  },
-  {
-    id: "I3",
-    title: "Interview for Teaching",
-    description: "Teaching in University to high level Students",
-    date: new Date().toLocaleString(),
-    isCancelled: false,
-    field: null,
-    candidates: null,
-    sendRequests: null,
-    receiveRequests: null,
-    status: "PENDING",
-    creator: "u1",
-  },
-  {
-    id: "I4",
-    title: "Interview for Teaching",
-    description: "Teaching in University to high level Students",
-    date: new Date().toLocaleString(),
-    isCancelled: false,
-    field: null,
-    candidates: null,
-    sendRequests: null,
-    receiveRequests: null,
-    status: "PENDING",
-    creator: "u1",
-  },
-];
+
 
 const Interview = () => {
   const [interviews, setInterviews] = useState([]);
@@ -133,6 +80,7 @@ const Interview = () => {
 
   }, []);
 
+  
   const [open, setOpen] = useState(false);
 
   const handleOpenDialog = () => {

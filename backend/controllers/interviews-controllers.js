@@ -38,7 +38,7 @@ const getInterviewsByUserId = async (req, res, next) => {
         userWithInterviews = await User.findById(userId).populate('createdInterviews');
     } catch (err) {
         const error = new HttpError(
-            'Fetching places failed, please try again later.',
+            'Fetching interviews failed, please try again later.',
             500
         );
         return next(error);
@@ -139,7 +139,7 @@ const updateInterview = async (req, res, next) => {
         );
     }
 
-    const { title, description, date, fieldTitle } = req.body;
+    const { title, description, date, time , fieldTitle } = req.body;
 
     let field;
     try {
@@ -186,6 +186,7 @@ const updateInterview = async (req, res, next) => {
     interview.title = title;
     interview.description = description;
     interview.date = date;
+    Interview.time = time;
     interview.field = field.id;
 
     try {

@@ -37,7 +37,17 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     width: "100%",
-    
+    marginTop : "5px"
+  },
+   ButtonStyle : {
+    minWidth: "140px",
+    minHeight: "40px",
+    margin: "15px 10px ",
+    [theme.breakpoints.down("xs")]:{
+      minWidth: "100px",
+      minHeight: "20px",
+      margin: "15px 13px ",
+    },
   }
 }));
 
@@ -49,7 +59,7 @@ export default function ForgetPassword(props) {
   const [userEmail, setUserEmail] = useState('');
   const paperStyle = {
     width: "80%",
-    padding: 20,
+   padding: 20,
     margin: "80px auto",
   };
   const avatarStyle = {
@@ -58,11 +68,7 @@ export default function ForgetPassword(props) {
   const initialValues = {
     username: "",
   };
-  const ButtonStyle = {
-    minWidth: "140px",
-    minHeight: "40px",
-    margin: "20px 8px ",
-  };
+ 
 
   const validationSchema = yup.object().shape({
     username: yup.string().email("Please enter valid username"),
@@ -155,7 +161,7 @@ export default function ForgetPassword(props) {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  style={ButtonStyle}
+                  className={classes.ButtonStyle}
                   // onSubmit = {onSubmitHandler}
                   disabled={!(props.isValid || props.isSubmitting)}
                 >
@@ -165,7 +171,7 @@ export default function ForgetPassword(props) {
                   type="submit"
                   variant="outlined"
                   color="primary"
-                  style={ButtonStyle}
+                className={classes.ButtonStyle}
                   component={Link} to="/login"
                 >
                   CANCEL

@@ -179,8 +179,8 @@ const UserItem = (props) => {
           </AccordionSummary>
           <AccordionDetails lg={12} md={6}>
             <Typography style={typoStyle}>
-              {0}{" "}
-              {0 === 1 ? "Interview" : "Interviews"}
+             {props.userInterviews.length + " "} 
+             { props.userInterviews.length === 0 || 1 ? "Interview" : "Interviews"}
             </Typography>
             <Button
               type="submit"

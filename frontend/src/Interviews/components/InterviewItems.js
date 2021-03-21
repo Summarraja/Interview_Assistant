@@ -20,6 +20,7 @@ import BlockIcon from "@material-ui/icons/Block";
 import InterviewMenu from "./InterviewMenu";
 import ViewInterview from "../pages/ViewInterview";
 
+
 const useStyles = makeStyles((theme) => ({
   card: {
     width: "100%",
@@ -99,7 +100,7 @@ const InterviewItems = (props) => {
       {matches && (
         <MenuItem
         component={Link}
-        to="/interview/view"
+        to={`/interviews/${props.id}`}
           style={{ height: 40 }}
         >
           <IconButton color="primary">
@@ -113,6 +114,7 @@ const InterviewItems = (props) => {
       <InterviewMenu
         closeInterviewMenu={closeInterviewMenu}
         status={props.status}
+        intId = {props.id}
       />
     </Menu>
   );
@@ -133,7 +135,6 @@ const InterviewItems = (props) => {
         <Grid item sm={6} lg={5}>
           <Typography
             variant="subtitle2"
-            //  color="#fff"
             className={classes.statusStyle}
           >
             {(props.status === "PENDING" && (
@@ -154,8 +155,8 @@ const InterviewItems = (props) => {
             size="small"
             className={classes.ViewButton}
             startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
-           component={Link}
-           to="/interview/view"
+            component={Link}
+            to={`/interviews/${props.id}`}
           >
             View Details
           </Button>

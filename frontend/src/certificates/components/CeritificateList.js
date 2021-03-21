@@ -1,14 +1,11 @@
 import React from "react";
 import CertificateItems from "./CertificateItems";
 import Container from "@material-ui/core/Container";
-
 import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
 import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
-
   paper: {
     margin: "30px auto",
     padding: "20px 50px",
@@ -24,19 +21,14 @@ const CertificateList = (props) => {
           <Typography variant="h4" color="primary" align="center">
             No certificates found. Maybe create one?
           </Typography>
-          {/* <Grid item xs={12}>
-            <Card className={classes.card}></Card>
-          </Grid> */}
         </Paper>
       </Container>
     );
   }
 
   return (
-  
-      <>
-      {console.log(props.items)}
-      {props.items.map(certificate => (
+    <>
+      {props.items.map((certificate) => (
         <CertificateItems
           key={certificate.id}
           id={certificate.id}
@@ -46,10 +38,11 @@ const CertificateList = (props) => {
           isApproved={certificate.isApproved}
           file={certificate.file}
           field={certificate.field}
+          status={true ? "APPROVED" : "UNAPPROVED"}
           creatorId={certificate.creator}
         />
       ))}
-</>
+    </>
   );
 };
 

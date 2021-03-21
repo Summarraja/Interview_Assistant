@@ -68,7 +68,7 @@ const SignIn = () => {
   const paperStyle = {
     width: "80%",
     padding: 20,
-    margin: "80px auto"
+    margin: "120px auto"
   };
   const avatarStyle = {
     backgroundColor: "primary",

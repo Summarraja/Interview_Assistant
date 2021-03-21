@@ -19,7 +19,7 @@ const ResumeForm = (props) => {
             marginTop: theme.spacing(2),
         },
         submit: {
-            margin: theme.spacing(3, 0, 2),
+            margin: theme.spacing(1, 0, 1),
         },
     }));
     const classes = useStyles();
@@ -40,6 +40,7 @@ const ResumeForm = (props) => {
                                 name="firstName"
                                 variant="outlined"
                                 fullWidth
+                                size="small"
                                 id="firstName"
                                 label="First Name"
                                 autoFocus
@@ -56,6 +57,7 @@ const ResumeForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size="small"
                                 id="lastName"
                                 label="Last Name"
                                 name="lastName"
@@ -75,6 +77,7 @@ const ResumeForm = (props) => {
                              value={props.country}
                                 setValue={props.setCountry}
                                 title={"Select country"}
+                                size="small"
                                 data={countries}
                                 fullWidth />
 
@@ -83,6 +86,7 @@ const ResumeForm = (props) => {
                         <Grid item xs={12} sm={6}>
                             <DatePicker
                                 date={props.dob}
+                                size="small"
                                 setDate={props.setdob}
                                 label="Date of Birth"
                             />
@@ -93,6 +97,7 @@ const ResumeForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size="small"
                                 id="email"
                                 label="Email Address"
                                 name="email"
@@ -111,6 +116,7 @@ const ResumeForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size="small"
                                 name="contact"
                                 label="Contact No"
                                 id="contact"
@@ -129,6 +135,7 @@ const ResumeForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size="small"
                                 name="city"
                                 label="City"
                                 type="city"
@@ -148,6 +155,7 @@ const ResumeForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size="small"
                                 name="maxEducation"
                                 label="MaxEducation"
                                 type="maxEducation"
@@ -166,6 +174,7 @@ const ResumeForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size="small"
                                 multiline
                                 id="experience"
                                 label="Experience"
@@ -185,6 +194,7 @@ const ResumeForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size="small"
                                 multiline
                                 id="field"
                                 label="field"
@@ -199,7 +209,7 @@ const ResumeForm = (props) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} >
                             <RadioButtons
                                 gender={props.gender}
                                 setGender={props.setGender}
@@ -210,6 +220,7 @@ const ResumeForm = (props) => {
                         <Button
                             type="submit"
                             fullWidth
+                            
                             variant="contained"
                             color="primary"
                             className={classes.submit}

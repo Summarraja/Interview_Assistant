@@ -45,24 +45,19 @@ const InterviewList = (props) => {
           <Typography variant="h4" color="primary" align="center">
             No Interviews found. Maybe create one?
           </Typography>
-          {/* <Grid item xs={12}>
-            <Card className={classes.card}></Card>
-          </Grid> */}
         </Paper>
       </Container>
     );
   }
   const today = new Date();
 
-  const CurrentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-  console.log(CurrentDate);
+  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  const CurrentDate = new Date(date);
+
 
   return (
   
       <>
-      
-
-      {console.log("2021-04-14" < CurrentDate)}
       {props.items.map(interview => (
         <InterviewItems
           key={interview.id}
@@ -75,7 +70,9 @@ const InterviewList = (props) => {
           candidates={interview.candidates}
           sendRequests={interview.sendRequests}
           receiveRequests={interview.receiveRequests}
-          status = {interview.date < CurrentDate && !interview.isCancelled  ? "PENDING" : "CANCELLED"}
+           
+          status = {interview.isCancelled? "CANCELLED" : (new Date(interview.date) > CurrentDate  ? "PENDING" : "TAKEN")}
+         
           creatorId={interview.creator}
         />
       ))}

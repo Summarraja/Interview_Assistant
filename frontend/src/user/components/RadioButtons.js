@@ -12,7 +12,9 @@ const useStyles = makeStyles(theme => ({
     },
     FormHelperText: {
         marginLeft: 15
-    }
+    },
+
+
 }));
 
 const RadioButtons = (props) => {
@@ -25,7 +27,7 @@ const RadioButtons = (props) => {
         <FormControl className={classes.formControl}>
         <FormLabel component="legend">Gender</FormLabel>
 
-        <RadioGroup aria-label="gender" name="gender1" value={props.gender} onChange={handleGenderChange}>
+        <RadioGroup row aria-label="gender" name="gender1" value={props.gender} onChange={handleGenderChange} >
           <FormControlLabel value="female" control={<Radio />} label="Female" />
           <FormControlLabel value="male" control={<Radio />} label="Male" />
           <FormControlLabel value="other" control={<Radio />} label="Other" />

@@ -41,7 +41,7 @@ const InterviewMenu = (props) => {
           <MenuItem
             onClick={props.closeInterviewMenu}
             component={Link}
-            to="/signUp"
+            to={`/interviews/${props.intId}`}
             style={{ height: 40 }}
           >
             <IconButton color="primary">
