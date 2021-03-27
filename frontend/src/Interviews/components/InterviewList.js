@@ -70,10 +70,9 @@ const InterviewList = (props) => {
           candidates={interview.candidates}
           sendRequests={interview.sendRequests}
           receiveRequests={interview.receiveRequests}
-           
           status = {interview.isCancelled? "CANCELLED" : (new Date(interview.date) > CurrentDate  ? "PENDING" : "TAKEN")}
-         
           creatorId={interview.creator}
+      //    onDelete = {props.onDeleteInterview}
         />
       ))}
 </>

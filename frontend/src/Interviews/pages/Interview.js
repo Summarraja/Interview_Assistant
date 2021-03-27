@@ -77,10 +77,13 @@ const Interview = () => {
       }
     };
     getData();
-
+    
   }, []);
 
-  
+// const deleteInterviewHandler =(deletedInterviewId)=>{
+//       setInterviews(prevInterviews => prevInterviews.filter(inter => inter.id !== deletedInterviewId))
+//     }
+
   const [open, setOpen] = useState(false);
 
   const handleOpenDialog = () => {
@@ -121,7 +124,7 @@ const Interview = () => {
               />
             )}
             {
-              (!isLoading)? (<InterviewList items={interviews} />) :
+              (!isLoading)? (<InterviewList items={interviews}  />) :
                 <LoadingSpinner open={true} />
             }
 

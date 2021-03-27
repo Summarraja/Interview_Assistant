@@ -11,8 +11,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import CertificateForm from "./CertificateForm";
 
-
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(2),
@@ -26,17 +24,13 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     backgroundColor: theme.palette.primary.main,
   },
-
 }));
 
 const AddCertificate = (props) => {
- 
-
   var curr = new Date();
   curr.setDate(curr.getDate() + 3);
   var date = curr.toISOString().substr(0, 10);
   const [field, setField] = useState("Computer Science");
-
 
   const paperStyle = {
     width: 400,
@@ -50,18 +44,12 @@ const AddCertificate = (props) => {
 
   return (
     <Fragment>
-      <Dialog
-        open={props.open}
-        fullWidth
-        maxWidth="sm"
-      >
-      
-        <DialogTitle
-          disableTypography
-        >
-          <Typography variant="h4" align="center">Add Certificate</Typography>
-           
-            
+      <Dialog open={props.open} fullWidth maxWidth="sm">
+        <DialogTitle disableTypography>
+          <Typography variant="h4" align="center">
+            Add Certificate
+          </Typography>
+
           <CssBaseline />
           <div className={classes.paper}>
             <Avatar className={classes.avatar}>
@@ -71,10 +59,7 @@ const AddCertificate = (props) => {
         </DialogTitle>
         <DialogContent dividers>
           <div className={classes.demo}>
-            <CertificateForm
-            field={field}
-            setField = {setField}
-            />
+            <CertificateForm field={field} setField={setField} setOpen = {props.setOpen}/>
           </div>
         </DialogContent>
         <DialogActions>

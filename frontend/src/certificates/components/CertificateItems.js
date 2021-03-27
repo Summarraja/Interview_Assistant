@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Menu, MenuItem, Divider } from "@material-ui/core";
 import { IoMdEye } from "react-icons/io";
@@ -14,10 +14,11 @@ import IconButton from "@material-ui/core/IconButton";
 import { grey } from "@material-ui/core/colors";
 import Button from "@material-ui/core/Button";
 import { GiShieldDisabled } from "react-icons/gi";
-
 import { Link } from "react-router-dom";
 import BlockIcon from "@material-ui/icons/Block";
 import CertificateMenu from "./CertificateMenu";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -61,12 +62,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+
+
 const CertificateItem = (props) => {
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const auth = useContext(AuthContext);
+  const [loadedField, setLoadedField ] = useState();
   const MoreIconStyle = {
     marginTop: "5px",
   };
-
   const classes = useStyles();
+
+      //for getting field of loaded Certificate from the dababase
+      useEffect(() => {
+        const fetchField = async () => {
+          try {
+            const responseData = await sendRequest(
+              `http://localhost:5000/api/fields/${props.field}`,
+              "GET",
+              null,
+              {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + auth.token,
+              }
+            );
+            setLoadedField(responseData.field);
+          } catch (err) {}
+        };
+        if (!loadedField) 
+        fetchField();
+      }, [loadedField]);
+    
 
   const [CertificateMobAnchorEl, setCertificateMobAnchorEl] = useState(null);
   const isCertificateMenuOpen = Boolean(CertificateMobAnchorEl);
@@ -85,6 +112,8 @@ const CertificateItem = (props) => {
     <Menu
       anchorEl={CertificateMobAnchorEl}
       id="Int-mob-menu"
+      component={Link}
+      to={`/certificates/${props.id}`}
       keepMounted
       open={isCertificateMenuOpen}
       // anchorOrigin={{
@@ -94,24 +123,22 @@ const CertificateItem = (props) => {
       getContentAnchorEl={null}
     >
       {matches && (
-        <>
-        <MenuItem  component={Link} to="/Faq" style={{ height: 40 }}>
+        <MenuItem  style={{ height: 40 }}>
           <IconButton color="primary">
             <IoMdEye />
           </IconButton>
           <Typography variant="subtitle1">View Details</Typography>
         </MenuItem>
-        <Divider variant="middle" />
-        </>
-        
       )}
-    
-
+        <Divider variant="middle" />
+  
       <CertificateMenu
         closeCertificateMenu={closeCertificateMenu}
         status={props.status}
+        certId = {props.id}
       />
     </Menu>
+        
   );
 
   return (
@@ -120,14 +147,14 @@ const CertificateItem = (props) => {
         <Grid item sm={6} lg={7} style={{ flexGrow: 1 }}>
           <div className={classes.header}>
             <Typography variant="h5" align="justify">
-              Certificate
+             {props.title}
             </Typography>
             <Typography variant="subtitle1" style={{ color: grey[900] }}>
-              date
+              {loadedField && loadedField.title}
             </Typography>
           </div>
         </Grid>
-      </Grid>
+     
       <Grid item sm={6} lg={5}>
         <Typography variant="subtitle2" className={classes.statusStyle}>
           {(props.status === "APPROVED" && (
@@ -145,13 +172,13 @@ const CertificateItem = (props) => {
           size="small"
           className={classes.ViewButton}
           startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
-        //  component={Link}
-         // to="/interview/view"
+          component={Link}
+          to={`/certificates/${props.id}`}
         >
           View Details
         </Button>
       </Grid>
-
+</Grid>
       <OutsideClickHandler onOutsideClick={closeCertificateMenu}>
         <IconButton onClick={openCertificateMenu}>
           <MoreVertIcon style={MoreIconStyle} />

@@ -6,12 +6,12 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import ListAltIcon from "@material-ui/icons/ListAlt";
-import UpdateInterview from "../components/UpdateInterview";
 import { useParams } from "react-router-dom";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Button from "@material-ui/core/Button";
+import UpdateCertificate from "../components/UpdateCertificate";
 
 const useStyles = makeStyles((theme) => ({
   GridStyle: {
@@ -35,11 +35,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ViewInterview = (props) => {
+const ViewCertificate = (props) => {
   const auth = useContext(AuthContext);
-  const { interId } = useParams();
+  const { certId } = useParams();
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-  const [loadedInterview, setLoadedInterview] = useState();
+  const [loadedCertificate, setLoadedCertificate] = useState();
   const [loadedField, setLoadedField] = useState();
   const [disableField, setDisableField] = useState(true);
 
@@ -47,12 +47,12 @@ const ViewInterview = (props) => {
     setDisableField(false);
   };
 
-  // Request to get sepcific Interview Details
+  // Request to get sepcific Certificate Details
   useEffect(() => {
-    const fetchInterview = async () => {
+    const fetchCertificate = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/${interId}`,
+          `http://localhost:5000/api/certificates/${certId}`,
           "GET",
           null,
           {
@@ -60,11 +60,12 @@ const ViewInterview = (props) => {
             Authorization: "Bearer " + auth.token,
           }
         );
-        setLoadedInterview(responseData.interview);
+        setLoadedCertificate(responseData.certificate);
       } catch (err) {}
     };
-    if (!loadedInterview) fetchInterview();
-  }, [loadedInterview]);
+    if (!loadedCertificate) 
+        fetchCertificate();
+  }, [loadedCertificate]);
 
   // Request to get field title of fetched Interview
 
@@ -72,7 +73,7 @@ const ViewInterview = (props) => {
     const fetchField = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/fields/${loadedInterview.field}`,
+          `http://localhost:5000/api/fields/${loadedCertificate.field}`,
           "GET",
           null,
           {
@@ -84,9 +85,9 @@ const ViewInterview = (props) => {
       } catch (err) {}
     };
     if (!loadedField) fetchField();
-  }, [loadedField, loadedInterview]);
+  }, [loadedField, loadedCertificate]);
 
-  const hasEditAccess = loadedInterview && loadedInterview.creator == auth.userId
+  const hasEditAccess = loadedCertificate && loadedCertificate.creator == auth.userId
   const paperStyle = {
     width: "100%",
     padding: 20,
@@ -101,7 +102,7 @@ const ViewInterview = (props) => {
     <Container component="main" maxWidth="sm">
       <Paper elevation={10} style={paperStyle}>
         <Typography align="center" variant="h4">
-          Interview Details
+          Certificate Details
         </Typography>
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
@@ -109,11 +110,11 @@ const ViewInterview = (props) => {
           </Avatar>
         </div>
 
-        {!isLoading && loadedInterview && loadedField ? (
-          <UpdateInterview
-            interId={interId}
+        {!isLoading && loadedCertificate && loadedField ? (
+          <UpdateCertificate
+            certId={certId}
             disableField={disableField}
-            loadedInterview={loadedInterview}
+            loadedCertificate={loadedCertificate}
             loadedField={loadedField}
             hasEditAccess={hasEditAccess}
           />
@@ -137,4 +138,4 @@ const ViewInterview = (props) => {
   );
 };
 
-export default ViewInterview;
+export default ViewCertificate;

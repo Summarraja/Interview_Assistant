@@ -38,8 +38,9 @@ const CertificateList = (props) => {
           isApproved={certificate.isApproved}
           file={certificate.file}
           field={certificate.field}
-          status={true ? "APPROVED" : "UNAPPROVED"}
+          status={certificate.isApproved ? "APPROVED" : "UNAPPROVED"}
           creatorId={certificate.creator}
+       
         />
       ))}
     </>

@@ -115,6 +115,7 @@ const InterviewItems = (props) => {
         closeInterviewMenu={closeInterviewMenu}
         status={props.status}
         intId = {props.id}
+      //  onDelete = {props.onDelete}
       />
     </Menu>
   );

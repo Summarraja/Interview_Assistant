@@ -17,12 +17,14 @@ const CertificateMenu = (props) => {
     setOpenDeleteDialog(true);
   };
 
-  return props.status === "APPROVED" ? (
+
+  return (
+   
     <>
       <MenuItem
         onClick={props.closeCertificateMenu}
         component={Link}
-        to="/signUp"
+        to={`/certificates/${props.certId}`}
         style={{ height: 40 }}
       >
         <IconButton color="primary">
@@ -42,38 +44,12 @@ const CertificateMenu = (props) => {
         <DeleteCertificate
           OpenDeleteDialog={OpenDeleteDialog}
           setOpenDeleteDialog={setOpenDeleteDialog}
+          certId = {props.certId}
         />
       )}
     </>
-  ) : (
-    <>
-      <MenuItem onClick={OpenDeleteDialogHandler} style={{ height: 40 }}>
-        <IconButton color="primary">
-          <DeleteIcon />
-        </IconButton>
+); 
 
-        <Typography variant="subtitle1">Remove Certificate</Typography>
-      </MenuItem>
-      {OpenDeleteDialog && (
-        <DeleteCertificate
-          OpenDeleteDialog={OpenDeleteDialog}
-          setOpenDeleteDialog={setOpenDeleteDialog}
-        />
-      )}
-      <Divider variant="middle" />
-      <MenuItem
-        onClick={props.closeInterviewMenu}
-        component={Link}
-        to="/Faq"
-        style={{ height: 40 }}
-      >
-        <IconButton color="primary">
-          <PersonAddIcon />
-        </IconButton>
-        <Typography variant="subtitle1">Candidate Requests</Typography>
-      </MenuItem>
-    </>
-  );
 };
 
 export default CertificateMenu;

@@ -43,6 +43,7 @@ export const useHttpClient = () => {
     },
     []
   );
+  
 
   const clearError = () => {
     setError(null);
@@ -55,5 +56,6 @@ export const useHttpClient = () => {
     };
   }, []);
 
+ 
   return { isLoading, error, status, sendRequest, clearError };
 };

@@ -77,6 +77,7 @@ const createInterview = async (req, res, next) => {
         return next(error);
     }
 
+     console.log("created field: " + field)
     if (!field) {
         const error = new HttpError(
             'Could not find field for the provided title.',
@@ -139,7 +140,7 @@ const updateInterview = async (req, res, next) => {
         );
     }
 
-    const { title, description, date, time , fieldTitle } = req.body;
+    const { title, description, date, time , fieldTitle, isCancelled } = req.body;
 
     let field;
     try {
@@ -165,6 +166,7 @@ const updateInterview = async (req, res, next) => {
     try {
         interview = await Interview.findById(interviewId);
     } catch (err) {
+        
         const error = new HttpError(
             'could not find interview of specified id.',
             500
@@ -188,6 +190,7 @@ const updateInterview = async (req, res, next) => {
     interview.date = date;
     Interview.time = time;
     interview.field = field.id;
+    interview.isCancelled = isCancelled;
 
     try {
         await interview.save();
@@ -208,7 +211,9 @@ const deleteInterview = async (req, res, next) => {
     let interview;
     try {
         interview = await Interview.findById(interviewId).populate('creator');
+       
     } catch (err) {
+        console.log("delete: "+err);
         const error = new HttpError(
             'Something went wrong, could not delete interview.',
             500
@@ -233,10 +238,11 @@ const deleteInterview = async (req, res, next) => {
         const sess = await mongoose.startSession();
         sess.startTransaction();
         await interview.remove({ session: sess });
-        interview.creator.interviews.pull(interview);
+        interview.creator.createdInterviews.pull(interview.id);
         await interview.creator.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
+        console.log("delete: "+ err);
         const error = new HttpError(
             'Something went wrong, could not delete interview.',
             500

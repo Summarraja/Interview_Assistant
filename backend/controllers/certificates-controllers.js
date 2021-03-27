@@ -81,6 +81,7 @@ const createCertificate = async (req, res, next) => {
         );
         return next(error);
     }
+    console.log( "FIED: " +field)
 
     if (!field) {
         const error = new HttpError(
@@ -94,9 +95,10 @@ const createCertificate = async (req, res, next) => {
         title,
         description,
         institute,
+        isApproved: false,
        // image: req.file != undefined ? req.file.path : "/", //change
         field: field.id,
-        image: "https://blockgeeks.com/wp-content/uploads/2019/04/Certificate-2.jpg",
+        file: "https://blockgeeks.com/wp-content/uploads/2019/04/Certificate-2.jpg",
         creator: req.userData.userId
     });
 
@@ -116,6 +118,7 @@ const createCertificate = async (req, res, next) => {
         return next(error);
     }
 
+    console.log(createdCertificate)
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
@@ -124,6 +127,7 @@ const createCertificate = async (req, res, next) => {
         await user.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
+        console.log(err)
         const error = new HttpError(
             'Creating certificate failed, please try again.',
             500
@@ -333,9 +337,9 @@ const deleteCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    fs.unlink(imagePath, err => {
-        console.log(err);
-    });
+    // fs.unlink(imagePath, err => {
+    //     console.log(err);
+    // });
 
     res.status(200).json({ message: 'Deleted certificate.' });
 };

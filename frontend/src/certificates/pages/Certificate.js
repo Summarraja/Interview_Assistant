@@ -12,7 +12,7 @@ import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import AddCertificate from "../components/AddCertificate";
 import CertificateList from "../components/CeritificateList";
-
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,59 +54,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-
-const DUMMY_CERTIFICATES = [
-  {
-  id: "C1", 
-  title: "Certificate for software development",
-  description: "building system and object designs of the system" ,
-  institute: "Institute of Oxford",
-  isApproved: false,
-  file: "https://certificate-template.com/wp-content/uploads/2019/03/certificate-of-participation.png",
-  field: "Software Engineering",
-  creator: "u1",
-  },
-  {
-    id: "C2", 
-    title: "Certificate for software development",
-    description: "building system and object designs of the system" ,
-    institute: "Institute of Oxford",
-    isApproved: false,
-    file: "https://certificate-template.com/wp-content/uploads/2019/03/certificate-of-participation.png",
-    field: "Software Engineering",
-    creator: "u1",
-    },
-    {
-      id: "C3", 
-      title: "Certificate for software development",
-      description: "building system and object designs of the system" ,
-      institute: "Institute of Oxford",
-      isApproved: false,
-      file: "https://certificate-template.com/wp-content/uploads/2019/03/certificate-of-participation.png",
-      field: "Software Engineering",
-      creator: "u1",
-      },
-      {
-        id: "C4", 
-        title: "Certificate for software development",
-        description: "building system and object designs of the system" ,
-        institute: "Institute of Oxford",
-        isApproved: false,
-        file: "https://certificate-template.com/wp-content/uploads/2019/03/certificate-of-participation.png",
-        field: "Software Engineering",
-        creator: "u1",
-        },
-          
-    
-
- 
-];
-
 const Certificate = () => {
+ const [loadedCertificates, setLoadedCertificates ] = useState([]);
  
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
-
+  const classes = useStyles();
   const [open, setOpen] = useState(false);
 
   const handleOpenDialog = () => {
@@ -116,7 +69,27 @@ const Certificate = () => {
     setOpen(false);
   };
 
-  const classes = useStyles();
+  //for getting certificates from the dababase
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/certificates/user/" + auth.userId,
+          'GET',
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setLoadedCertificates(responseData.certificate);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCertificates();
+    
+  }, []);
 
   return (
  
@@ -129,9 +102,9 @@ const Certificate = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => {
-            handleOpenDialog();
-          }}
+          onClick={
+            handleOpenDialog
+          }
           className={classes.button}
           startIcon={<AddIcon />}
         >
@@ -145,7 +118,12 @@ const Certificate = () => {
                 setOpen={setOpen}
               />
             )}
-          <CertificateList items = {DUMMY_CERTIFICATES} />
+              {
+              (!isLoading)? (<CertificateList items={loadedCertificates}  />) :
+                <LoadingSpinner open={true} />
+            }
+
+          
           </Paper>
         </Container>
       </div>

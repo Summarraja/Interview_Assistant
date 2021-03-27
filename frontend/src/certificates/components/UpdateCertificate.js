@@ -1,12 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import SelectBox from "../../shared/components/UIElements/FormElements/SelectBox";
-import DatePicker from "../../shared/components/UIElements/FormElements/DatePicker";
-import TimePicker from "../../shared/components/UIElements/FormElements/TimePicker";
 import TextField from "@material-ui/core/TextField";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
@@ -17,7 +14,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 
 const useStyles = makeStyles((theme) => ({
   GridStyle: {
-    margin: " 0px 45px 0px 23px",
+    marginTop: "15px",
     [theme.breakpoints.down("xs")]: {
       marginLeft: 0,
     },
@@ -41,7 +38,7 @@ const fields = [
 ];
 
 const validationSchema = yup.object().shape({
-  title: yup
+    title: yup
     .string()
     .min(5, "Title must be atleast 5 characters long")
     .required("Title is required"),
@@ -49,15 +46,18 @@ const validationSchema = yup.object().shape({
     .string()
     .min(15, "Description must be atleast 15 characters long")
     .required("Description is required"),
+  institute: yup
+    .string()
+    .min(10, "Institute must be atleast 10 characters long")
+    .required("Institute is required"),
+ // CertificateImage: yup.mixed().required("A Certificate Image is required"),
 });
 
-const UpdateInterview = (props) => {
-  const interviewId = props.interId;
+const UpdateCertificate = (props) => {
+  const certificateId = props.certId;
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const [field, setField] = useState(props.loadedField.title);
-  const [doi, setDoi] = useState(props.loadedInterview.date);
-  const [time, setTime] = useState(props.loadedInterview.time);
   const [success, setSuccess] = useState(false);
 
   const clearSuccess = () => {
@@ -65,38 +65,34 @@ const UpdateInterview = (props) => {
     props.setOpen(false);
   };
   useEffect(() => {
-    setSuccess(status == 201);
+    setSuccess(status == 200);
   }, [status]);
 
   const classes = useStyles();
-  const today = new Date();
-  const CurrentDate = new Date(
-    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate()
-  );
+
 
   const initialValues = {
-    title: props.loadedInterview.title,
-    description: props.loadedInterview.description,
+    title: props.loadedCertificate.title,
+    description: props.loadedCertificate.description,
+    institute: props.loadedCertificate.institute
   };
 
   const onSubmitHandler = async (values) => {
     console.log(values.title);
     console.log(values.description);
+    console.log(values.institute);
     console.log(field);
-    console.log(doi);
-    console.log(time);
+   
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/interviews/${interviewId}`,
+        `http://localhost:5000/api/certificates/${certificateId}`,
         "PATCH",
         JSON.stringify({
-          title: values.title,
-          description: values.description,
-          fieldTitle: field,
-          date: props.doi,
-          time: props.timeOfInter,
-          isCancelled: false
-        }),
+            title: values.title,
+            description: values.description,
+            institute: values.institute,
+            fieldTitle: props.field,
+          }),
         {
           "Content-Type": "application/json",
           Authorization: "Bearer " + auth.token,
@@ -118,15 +114,15 @@ const UpdateInterview = (props) => {
             <Snackbar
               open={success || !!error}
               autoHideDuration={6000}
-              onClose={status == "201" ? clearSuccess : clearError}
+              onClose={status == "200" ? clearSuccess : clearError}
             >
               <MuiAlert
                 elevation={6}
                 variant="filled"
-                severity={status == "201" ? "success" : "error"}
-                onClose={status == "201" ? clearSuccess : clearError}
+                severity={status == "200" ? "success" : "error"}
+                onClose={status == "200" ? clearSuccess : clearError}
               >
-                {status == "201" ? "Interview Updated Successfully!" : error}
+                {status == "200" ? "Certificate Updated Successfully!" : error}
               </MuiAlert>
             </Snackbar>
 
@@ -169,15 +165,30 @@ const UpdateInterview = (props) => {
                     }
                   />
                 </Grid>
-                <Grid
-                  container
-                  item={true}
-                  xs={12}
-                  className={classes.InterviewFields}
-                >
-                  <Grid item={true} xs={12} sm={4}>
-                    <FormControl style={{ paddingLeft: "10px" }}>
-                      <SelectBox
+                <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    as={TextField}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    size="medium"
+                    multiline
+                    name="institute"
+                    label="Institute"
+                    id="institute"
+                    disabled={props.disableField}
+                    helperText={
+                      <ErrorMessage
+                        name="institute"
+                        style={{ color: "red", fontWeight: "bold" }}
+                      />
+                    }
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} className={classes.GridStyle}>
+                <SelectBox
                         value={field}
                         setValue={setField}
                         title={"Select Field "}
@@ -185,28 +196,9 @@ const UpdateInterview = (props) => {
                         fullWidth
                         disabled={props.disableField}
                       />
-                    </FormControl>
-                  </Grid>
-                  <Grid item={true} xs={5} sm={3} className={classes.GridStyle}>
-                    <FormControl>
-                      <DatePicker
-                        date={doi}
-                        setDate={setDoi}
-                        label="Set Interview Date"
-                        disabled={props.disableField}
-                      />
-                    </FormControl>
-                  </Grid>
-
-                  <Grid item={true} xs={5} sm={3}>
-                    <TimePicker
-                      time={time}
-                      setTime={setTime}
-                      disabled={props.disableField}
-                    />
-                  </Grid>
                 </Grid>
-
+              </Grid>
+                 
                 <Grid item={true} xs={12}>
                   <Field
                     as={TextField}
@@ -215,11 +207,9 @@ const UpdateInterview = (props) => {
                     fullWidth
                     name="status"
                     value={
-                      props.loadedInterview.isCancelled
-                        ? "CANCELLED"
-                        : new Date(props.loadedInterview.date) > CurrentDate
-                        ? "PENDING"
-                        : "TAKEN"
+                      props.loadedCertificate.isApproved
+                        ? "APPROVED"
+                        : "UNAPPROVED"
                     }
                     disabled
                     size="small"
@@ -237,7 +227,7 @@ const UpdateInterview = (props) => {
                 variant="contained"
                 color="primary"
                 disabled={
-                  !(fProps.isValid || !field || !doi || fProps.isSubmitting)
+                  !(fProps.isValid || !field || fProps.isSubmitting)
                 }
                 className={classes.submit}
               >
@@ -250,4 +240,4 @@ const UpdateInterview = (props) => {
     </>
   );
 };
-export default UpdateInterview;
+export default UpdateCertificate;

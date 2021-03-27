@@ -29,6 +29,7 @@ import CreateResume from "./Resumes/Components/CreateResume";
 import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 import Certificate from "./certificates/pages/Certificate";
 import InterviewItems from "./Interviews/components/InterviewItems";
+import ViewCertificate from "./certificates/pages/ViewCertificate";
 
 const App = () => {
   const { token, login, logout, userId, resume } = useAuth();
@@ -44,10 +45,12 @@ const App = () => {
         <Route path="/interviews/new" exact component={CreateInterview} />
         <Route path="/interview/candidates" exact component={CandidateList} />
         <Route path="/interviews/:interId" exact component={ViewInterview} />
-
+        <Route path="/certificates" exact component={Certificate} />
+        <Route path="/certificates/:certId" exact component={ViewCertificate} />
+        
         <Route path="/resume" exact component={Resume} />
 
-        <Route path="/certificates" exact component={Certificate} />
+    
         <Redirect to="/" />
       </Switch>
     );

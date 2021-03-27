@@ -50,7 +50,7 @@ const InterviewMenu = (props) => {
             <Typography variant="subtitle1">Edit Details</Typography>
           </MenuItem>
           <Divider variant="middle" />
-          <MenuItem onClick={OpenCancelDialogHandler} style={{ height: 40 }}>
+          <MenuItem onClick={OpenCancelDialogHandler}  style={{ height: 40 }}>
             <IconButton color="primary">
               <BlockIcon />
             </IconButton>
@@ -59,7 +59,8 @@ const InterviewMenu = (props) => {
           {OpenCancelDialog && (
             <CancelInterview
               OpenCancelDialog={OpenCancelDialog}
-              CloseCancelDialogHandler={CloseCancelDialogHandler}
+              CloseCancelDialogHandler = {CloseCancelDialogHandler}
+              selectedInterviewId = {props.intId}
             />
           )}
           <Divider variant="middle" />
@@ -98,6 +99,8 @@ const InterviewMenu = (props) => {
             <DeleteInterview
               OpenDeleteDialog={OpenDeleteDialog}
               setOpenDeleteDialog={setOpenDeleteDialog}
+              selectedInterviewId = {props.intId}
+             // onDelete = {props.onDelete}
             />
           )}
           <Divider variant="middle" />
