@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Menu, MenuItem, Divider } from "@material-ui/core";
+import { Menu, MenuItem, Divider, withStyles } from "@material-ui/core";
 import { IoMdEye } from "react-icons/io";
 import { FaRegCheckCircle, FaRegClock } from "react-icons/fa";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
@@ -13,12 +13,21 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import IconButton from "@material-ui/core/IconButton";
 import { grey } from "@material-ui/core/colors";
 import Button from "@material-ui/core/Button";
+import { ThemeProvider } from "@material-ui/styles";
 
 import {Link} from "react-router-dom";
 import BlockIcon from "@material-ui/icons/Block";
 
 import InterviewMenu from "./InterviewMenu";
 import ViewInterview from "../pages/ViewInterview";
+
+
+// const ButtonStyle= withStyles({
+// label:{
+//   fontFamily:"Serif, Open Sans, Arial",
+//   fontSize: "0.9rem"
+// },
+// })(Button);
 
 
 const useStyles = makeStyles((theme) => ({
@@ -68,6 +77,7 @@ const InterviewItems = (props) => {
     marginTop: "5px",
   };
 
+
   const classes = useStyles();
 
   const [InterviewMobAnchorEl, setInterviewMobAnchorEl] = useState(null);
@@ -115,6 +125,7 @@ const InterviewItems = (props) => {
         closeInterviewMenu={closeInterviewMenu}
         status={props.status}
         intId = {props.id}
+        // users = {props.users}
       //  onDelete = {props.onDelete}
       />
     </Menu>
@@ -150,18 +161,22 @@ const InterviewItems = (props) => {
             {props.status}
           </Typography>
 
+
+          <ThemeProvider theme={theme}>
           <Button
             variant="contained"
             color="primary"
             size="small"
-            className={classes.ViewButton}
+          
+
+           className={classes.ViewButton}
             startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
             component={Link}
             to={`/interviews/${props.id}`}
           >
             View Details
           </Button>
-         
+          </ThemeProvider>
         
     
         </Grid>

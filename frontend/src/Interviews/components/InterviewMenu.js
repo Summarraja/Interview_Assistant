@@ -13,7 +13,9 @@ import CancelInterview from "./CancelInterview";
 import { IoIosPeople } from "react-icons/io";
 
 const InterviewMenu = (props) => {
+ 
   const [OpenCancelDialog, setOpenCancelDialog] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const OpenCancelDialogHandler = () => {
     setOpenCancelDialog(true);
@@ -24,9 +26,14 @@ const InterviewMenu = (props) => {
 
   const [callComp, setCallComp] = useState(false);
 
+
   const CallCompHandler = () => {
     setCallComp(true);
+    setOpen(true);
   };
+
+  
+
 
   const [OpenDeleteDialog, setOpenDeleteDialog] = useState(false);
   const OpenDeleteDialogHandler = () => {
@@ -60,6 +67,7 @@ const InterviewMenu = (props) => {
             <CancelInterview
               OpenCancelDialog={OpenCancelDialog}
               CloseCancelDialogHandler = {CloseCancelDialogHandler}
+              setOpenCancelDialog = {setOpenCancelDialog}
               selectedInterviewId = {props.intId}
             />
           )}
@@ -70,7 +78,7 @@ const InterviewMenu = (props) => {
             </IconButton>
             <Typography variant="subtitle1">Candidates</Typography>
           </MenuItem>
-          {callComp && <CandidateList />}
+          {callComp && <CandidateList open={open} setOpen={setOpen} interId = {props.intId}/>}
 
           <Divider variant="middle" />
 

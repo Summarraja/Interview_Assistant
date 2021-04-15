@@ -67,24 +67,22 @@ const DeleteInterview = (props) => {
   };
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
     setOpen(false);
   };
-  
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
 
   return (
     <>
       {console.log("loading: " + isLoading)}
       {console.log("status: " + status)}
 
-   
-   
       <Dialog
         onClose={CloseDeleteDialogHandler}
         open={props.OpenDeleteDialog}
@@ -93,14 +91,13 @@ function Alert(props) {
         keepMounted
         maxWidth="sm"
       >
-    
         <DialogTitle
           onClose={CloseDeleteDialogHandler}
           className={classes.dialogTitle}
         >
           Delete Interview Confirmation
         </DialogTitle>
-      
+
         <DialogContent dividers>
           <div className={classes.demo}>
             Are you sure you want to delete this interview?
@@ -114,7 +111,21 @@ function Alert(props) {
           >
             Cancel
           </Button>
-          <LoadingSpinner open={isLoading} />
+          {isLoading && <LoadingSpinner open={isLoading} />}
+          <Snackbar
+            open={success || !!error}
+            autoHideDuration={6000}
+            onClose={status == "200" ? clearSuccess : clearError}
+          >
+            <MuiAlert
+              elevation={6}
+              variant="filled"
+              severity={status == "200" ? "success" : "error"}
+              onClose={status == "200" ? clearSuccess : clearError}
+            >
+              {status == "200" ? "Interview Deleted Successfully!" : error}
+            </MuiAlert>
+          </Snackbar>
           <Button
             onClick={confirmDeleteHandler}
             variant="contained"
@@ -122,20 +133,6 @@ function Alert(props) {
           >
             Yes
           </Button>
-          <Snackbar
-        open={success || !!error}
-        autoHideDuration={6000}
-        onClose={status == "200" ? clearSuccess : clearError}
-      >
-        <MuiAlert
-          elevation={6}
-          variant="filled"
-          severity={status == "200" ? "success" : "error"}
-          onClose={status == "200" ? clearSuccess : clearError}
-        >
-          {status == "200" ? "Interview Deleted Successfully!" : error}
-        </MuiAlert>
-      </Snackbar>
         </DialogActions>
       </Dialog>
     </>

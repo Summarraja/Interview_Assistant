@@ -19,10 +19,14 @@ import Hidden from "@material-ui/core/Hidden";
 import { Divider } from "@material-ui/core";
 import { AuthContext } from "../../context/auth-context";
 import { Link } from "react-router-dom";
-import { FaGraduationCap } from "react-icons/fa";
-//import white from '@material-ui/core/colors/white';
+//import { FaGraduationCap } from "react-icons/fa";
+//import { GiTiedScroll } from "react-icons/gi";
+//import { GiCheckedShield } from "react-icons/gi";
+import { IoRibbonOutline } from "react-icons/io5";
+import { ImProfile } from "react-icons/im";
+import { TiMessages } from "react-icons/ti";
 
-//import { AuthContext } from "../   context/auth-context";
+
 
 const drawerWidth = 200;
 const useStyles = makeStyles((theme) => ({
@@ -101,7 +105,7 @@ const MainNavigation = () => {
           to="/chat"
         >
           <ListItemIcon>
-            <EmailIcon className = {classes.Navicon} />
+            <TiMessages className = {classes.Navicon} />
           </ListItemIcon>
           <ListItemText primary="Inbox" />
         </ListItem>
@@ -148,7 +152,7 @@ const MainNavigation = () => {
           to="/certificates"
         >
           <ListItemIcon>
-            <FaGraduationCap className = {classes.Navicon}/>
+            <IoRibbonOutline className = {classes.Navicon}/>
           </ListItemIcon>
           <ListItemText primary="Certificates" />
         </ListItem>
@@ -170,7 +174,7 @@ const MainNavigation = () => {
           to="/resume"
         >
           <ListItemIcon>
-            <AssignmentIndIcon className = {classes.Navicon}/>
+            <ImProfile className = {classes.Navicon}/>
           </ListItemIcon>
           <ListItemText primary="Resume" />
         </ListItem>

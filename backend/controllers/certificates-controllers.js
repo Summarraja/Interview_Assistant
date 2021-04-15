@@ -81,7 +81,6 @@ const createCertificate = async (req, res, next) => {
         );
         return next(error);
     }
-    console.log( "FIED: " +field)
 
     if (!field) {
         const error = new HttpError(
@@ -118,7 +117,6 @@ const createCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    console.log(createdCertificate)
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
@@ -127,7 +125,6 @@ const createCertificate = async (req, res, next) => {
         await user.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
-        console.log(err)
         const error = new HttpError(
             'Creating certificate failed, please try again.',
             500
@@ -146,9 +143,30 @@ const updateCertificate = async (req, res, next) => {
         );
     }
 
-    const { title, description, institute, fieldId } = req.body;
-    const certificateId = req.params.cid;
+    const { title, description, institute, fieldTitle } = req.body;
 
+    let field;
+    try {
+        field = await Field.findOne({title: fieldTitle});
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not find a field.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!field) {
+        const error = new HttpError(
+            'Could not find field for the provided id.',
+            404
+        );
+        return next(error);
+    }
+
+
+    const certificateId = req.params.cid;
+   
     let certificate;
     try {
         certificate = await Certificate.findById(certificateId);
@@ -167,24 +185,7 @@ const updateCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    let field;
-    try {
-        field = await Field.findById(fieldId);
-    } catch (err) {
-        const error = new HttpError(
-            'Something went wrong, could not find a field.',
-            500
-        );
-        return next(error);
-    }
-
-    if (!field) {
-        const error = new HttpError(
-            'Could not find field for the provided id.',
-            404
-        );
-        return next(error);
-    }
+  
 
     if (certificate.creator.toString() !== req.userData.userId) {
         const error = new HttpError('You are not allowed to edit this certificate.', 401);
@@ -320,7 +321,7 @@ const deleteCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    const imagePath = certificate.image;
+    // const imagePath = certificate.image;
 
     try {
         const sess = await mongoose.startSession();

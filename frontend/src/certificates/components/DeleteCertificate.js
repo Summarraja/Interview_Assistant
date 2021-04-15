@@ -53,7 +53,7 @@ const DeleteCertificate = (props) => {
           Authorization: "Bearer " + auth.token,
         }
       );
-
+    //  status == 200 && setSuccess(true);
       props.setOpenDeleteDialog(false);
     } catch (err) {
       console.log(err);
@@ -62,7 +62,23 @@ const DeleteCertificate = (props) => {
 
   return (
     <>
-      {console.log("loading: " + isLoading + " \n status: " + status)}
+      {console.log(status)}
+      {isLoading && <LoadingSpinner open={isLoading} />}
+
+      <Snackbar
+        open={success || !!error}
+        autoHideDuration={6000}
+        onClose={status == "200" ? clearSuccess : clearError}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity={status == "200" ? "success" : "error"}
+          onClose={status == "200" ? clearSuccess : clearError}
+        >
+          {status == "200" ? "Certificate Deleted Successfully!" : error}
+        </MuiAlert>
+      </Snackbar>
       <Dialog
         onClose={CloseDeleteDialogHandler}
         open={props.OpenDeleteDialog}
@@ -84,20 +100,6 @@ const DeleteCertificate = (props) => {
           </div>
         </DialogContent>
         <DialogActions>
-          <Snackbar
-            open={success || !!error}
-            autoHideDuration={6000}
-            onClose={status == "200" ? clearSuccess : clearError}
-          >
-            <MuiAlert
-              elevation={6}
-              variant="filled"
-              severity={status == "200" ? "success" : "error"}
-              onClose={status == "200" ? clearSuccess : clearError}
-            >
-              {status == "200" ? "Certificate Deleted Successfully!" : error}
-            </MuiAlert>
-          </Snackbar>
           <Button
             onClick={CloseDeleteDialogHandler}
             variant="outlined"

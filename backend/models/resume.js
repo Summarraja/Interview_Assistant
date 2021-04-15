@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const resumeSchema = new Schema({
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },
+  fullname: {type:String},
   dob: { type: String, required: true },
   image: { type: String },
   phone: { type: String },

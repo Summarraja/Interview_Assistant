@@ -56,8 +56,10 @@ const useStyles = makeStyles((theme) => ({
 
 const Interview = () => {
   const [interviews, setInterviews] = useState([]);
+ // const [loadedCandidates, setloadedCandidates] = useState([]);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
+
 
   useEffect(() => {
     const getData = async () => {
@@ -79,6 +81,8 @@ const Interview = () => {
     getData();
     
   }, []);
+
+
 
 // const deleteInterviewHandler =(deletedInterviewId)=>{
 //       setInterviews(prevInterviews => prevInterviews.filter(inter => inter.id !== deletedInterviewId))
@@ -124,7 +128,7 @@ const Interview = () => {
               />
             )}
             {
-              (!isLoading)? (<InterviewList items={interviews}  />) :
+              (!isLoading)? (<InterviewList items={interviews} />) :
                 <LoadingSpinner open={true} />
             }
 

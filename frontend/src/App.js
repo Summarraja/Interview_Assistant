@@ -22,14 +22,14 @@ import CreateInterview from "./Interviews/components/CreateInterview";
 import Chat from "./chat/pages/Chat";
 import CandidateList from "./Interviews/components/CandidatesList";
 import ViewInterview from "./Interviews/pages/ViewInterview";
-
 import Resume from "./Resumes/Pages/Resume";
 import CreateResume from "./Resumes/Components/CreateResume";
-
 import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 import Certificate from "./certificates/pages/Certificate";
 import InterviewItems from "./Interviews/components/InterviewItems";
 import ViewCertificate from "./certificates/pages/ViewCertificate";
+
+import theme from './shared/components/UIElements/AppTheme/theme';
 
 const App = () => {
   const { token, login, logout, userId, resume } = useAuth();

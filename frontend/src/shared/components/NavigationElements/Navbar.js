@@ -3,11 +3,12 @@ import {
   AppBar,
   Toolbar,
   Button,
-  makeStyles, 
+  makeStyles,
   Menu,
   MenuItem,
   Divider,
   Avatar,
+  Hidden,
 } from "@material-ui/core";
 import React, { Fragment, useContext, useState, useEffect } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -16,13 +17,17 @@ import IconButton from "@material-ui/core/IconButton";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import { Link } from "react-router-dom";
 import SettingsIcon from "@material-ui/icons/Settings";
-import Badge from '@material-ui/core/Badge';
-import { FaQuestionCircle, FaBell} from "react-icons/fa";
+import Badge from "@material-ui/core/Badge";
+import { FaQuestionCircle, FaBell } from "react-icons/fa";
 import { IoLogOut } from "react-icons/io5";
 import { MdArrowDropDownCircle } from "react-icons/md";
-import { AiFillLock } from "react-icons/ai";
+import { AiFillLock, AiOutlineUserSwitch } from "react-icons/ai";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { AuthContext } from "../../../shared/context/auth-context";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import { IoIosSwitch } from "react-icons/io";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -42,12 +47,13 @@ const useStyles = makeStyles((theme) => ({
   },
   navbar: {
     zIndex: theme.zIndex.drawer + 1,
-    flexGrow: 1
+    flexGrow: 1,
   },
   menuButton: {
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(0),
     [theme.breakpoints.up("sm")]: {
       display: "none",
+      marginRight: theme.spacing(2),
     },
   },
   MoreIconButton: {
@@ -55,22 +61,56 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
-   customBadge: {
-  //  backgroundColor: "#00AFD7",
-    color: "white"
-  }, 
   MainLogo: {
-    flexGrow: 1
-  }
-
+    flexGrow: 1,
+  },
+  switchControl: {
+    marginRight: "0px",
+    marginLeft: "2px",
+    [theme.breakpoints.down("xs")]: {
+      display: "none",
+    },
+  },
+  root: {
+    paddingBottom: "0px",
+  },
+  gutters: {
+    paddingRight: "10px",
+  },
+  switchBase: {
+    color: "#fff",
+    "&$checked": {
+      color: "white",
+    },
+    "_&$checked + $track": {
+      backgroundColor: "white",
+    },
+    get "&$checked + $track"() {
+      return this["_&$checked + $track"];
+    },
+    set "&$checked + $track"(value) {
+      this["_&$checked + $track"] = value;
+    },
+  },
+  checked: {
+    color: "#fff",
+  },
+  track: {
+    backgroundColor: "#fff",
+  },
 }));
 export default function Navbar(props) {
   const [NavSignUp, setNavSignup] = useState(true);
   const auth = useContext(AuthContext);
+  const [isCandidate, setIsCandidate] = useState(true);
 
-  const NavsignUpBtnHandler = () =>{
-    setNavSignup(!NavSignUp)
-  }
+  const switchRole = () => {
+    setIsCandidate(!isCandidate);
+  };
+
+  const NavsignUpBtnHandler = () => {
+    setNavSignup(!NavSignUp);
+  };
 
   const ProfileMenuItem = {
     width: "100%",
@@ -89,7 +129,6 @@ export default function Navbar(props) {
   };
   const closeMobileMenu = () => {
     setMobileMenuAnchorEl(null);
-
   };
 
   function OpenNavbarMenu(event) {
@@ -106,7 +145,7 @@ export default function Navbar(props) {
     if (matches) setMobileMenuAnchorEl(null);
   }, [matches]);
 
-  const mobileMenu = (
+  const mobileMenuBeforeLogin = (
     <Menu
       anchorEl={mobileMenuAnchorEl}
       id="mobile-menu"
@@ -114,12 +153,18 @@ export default function Navbar(props) {
       open={isMobileMenuOpen}
       className={classes.MoreIconButton}
     >
-      <MenuItem    onClick = {NavsignUpBtnHandler} component={Link} to= {NavSignUp? "/signup" : "/auth" }
-                 >
+      <MenuItem
+        onClick={NavsignUpBtnHandler}
+        component={Link}
+        to={NavSignUp ? "/signup" : "/auth"}
+      >
         <IconButton color="primary">
           <AiFillLock />
         </IconButton>
-        <Typography variant="subtitle1"> {NavSignUp ? "Sign Up" : "Sign In"} </Typography>
+        <Typography variant="subtitle1">
+          {" "}
+          {NavSignUp ? "Sign Up" : "Sign In"}{" "}
+        </Typography>
       </MenuItem>
       <MenuItem onClick={closeMobileMenu} component={Link} to="/Faq">
         <IconButton color="primary">
@@ -141,32 +186,62 @@ export default function Navbar(props) {
       }}
       getContentAnchorEl={null}
     >
-      <MenuItem style={ProfileMenuItem} component={Link} to="/profile">
+      <MenuItem
+        classes={{ root: classes.root, gutters: classes.gutters }}
+        style={ProfileMenuItem}
+        component={Link}
+        to="/profile"
+      >
         <Avatar
           src={null}
-          alt = {null}
+          alt={null}
           style={{ height: "70px", width: "70px", marginRight: 10 }}
         />
         <div>
-          <Typography variant="h6">{auth.resume && (auth.resume.firstname+ " " +auth.resume.lastname)}</Typography>
+          <Typography variant="h6">
+            {auth.resume && auth.resume.firstname + " " + auth.resume.lastname}
+          </Typography>
           <Typography variant="body1">See your profile</Typography>
         </div>
       </MenuItem>
-      <MenuItem component={Link} to="/Faq" onClick={CloseNavbarMenu}>
+      <MenuItem
+        className={classes.root}
+        component={Link}
+        to="/Faq"
+        onClick={CloseNavbarMenu}
+      >
         <IconButton color="primary">
           <FaQuestionCircle />
         </IconButton>
         <Typography variant="subtitle1">Help & Support</Typography>
       </MenuItem>
-      <Divider variant="middle"/>
-      <MenuItem component={Link} to="/Faq" onClick={CloseNavbarMenu}>
+
+      <Divider variant="middle" />
+      <Hidden smUp implementation="css">
+        <MenuItem className={classes.root}>
+          <IconButton color="primary">
+            <IoIosSwitch />
+          </IconButton>
+          <Typography variant="subtitle1">
+            Switch to {!isCandidate ? "Candidate" : "Interviewer"}
+          </Typography>
+        </MenuItem>
+        <Divider variant="middle" />
+      </Hidden>
+
+      <MenuItem
+        className={classes.root}
+        component={Link}
+        to="/Faq"
+        onClick={CloseNavbarMenu}
+      >
         <IconButton color="primary">
           <SettingsIcon />
         </IconButton>
         <Typography variant="subtitle1">Settings</Typography>
       </MenuItem>
       <Divider variant="middle" />
-      <MenuItem onClick={auth.logout}>
+      <MenuItem className={classes.root} onClick={auth.logout}>
         <IconButton color="primary">
           <IoLogOut />
         </IconButton>
@@ -177,7 +252,7 @@ export default function Navbar(props) {
 
   return (
     <Fragment>
-      <AppBar position="fixed" className={classes.navbar} >
+      <AppBar position="fixed" className={classes.navbar}>
         <Toolbar>
           {auth.isLoggedIn && (
             <IconButton
@@ -194,19 +269,19 @@ export default function Navbar(props) {
           <Typography variant="h5" className={classes.MainLogo}>
             SmartHire
           </Typography>
-               
+
           <div className={classes.sectionDesktop}>
-            {!auth.isLoggedIn &&(
+            {!auth.isLoggedIn && (
               <>
                 <Button
                   variant="contained"
                   color="secondary"
                   className={classes.button}
                   component={Link}
-                  to= {NavSignUp? "/signup" : "/auth" }
-                  onClick = {NavsignUpBtnHandler}
+                  to={NavSignUp ? "/signup" : "/auth"}
+                  onClick={NavsignUpBtnHandler}
                 >
-                 {NavSignUp ? "Sign Up" : "Sign In"} 
+                  {NavSignUp ? "Sign Up" : "Sign In"}
                 </Button>
                 <IconButton color="secondary" component={Link} to="/Faq">
                   <FaQuestionCircle />
@@ -223,7 +298,7 @@ export default function Navbar(props) {
                     <MoreIcon />
                   </IconButton>
                 </OutsideClickHandler>
-                {mobileMenu}
+                {mobileMenuBeforeLogin}
               </>
             )}
           </div>
@@ -231,10 +306,29 @@ export default function Navbar(props) {
           {auth.isLoggedIn && (
             <>
               <IconButton color="inherit">
-              <Badge badgeContent={4} color="error" >
-                <FaBell />
+                <Badge badgeContent={4} color="error">
+                  <FaBell />
                 </Badge>
               </IconButton>
+              <FormGroup row>
+                <FormControlLabel
+                  className={classes.switchControl}
+                  control={
+                    <Switch
+                      checked={isCandidate}
+                      onChange={switchRole}
+                      name="checked"
+                      classes={{
+                        switchBase: classes.switchBase,
+                        thumb: classes.thumb,
+                        track: classes.track,
+                        checked: classes.checked,
+                      }}
+                    />
+                  }
+                  label={!isCandidate ? "Interviewer" : "Candidate"}
+                />
+              </FormGroup>
               <OutsideClickHandler onOutsideClick={CloseNavbarMenu}>
                 <IconButton color="inherit" onClick={OpenNavbarMenu}>
                   <MdArrowDropDownCircle />

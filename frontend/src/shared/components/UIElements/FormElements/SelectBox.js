@@ -32,6 +32,10 @@ const ProfileForm = (props) => {
     const handleSelect = event => {
         props.setValue(event.target.value);
     };
+
+    const elseHandler = (value) => {
+        props.setValue(value);
+    };
     const names = props.data;
     return (
         <FormControl className={classes.formControl}>
@@ -40,10 +44,10 @@ const ProfileForm = (props) => {
                 id="handle" >{props.title}
             </InputLabel>
             <Select
-                labelId="handle"
+                labelId="handle"    
                 id="handle"
                 value={props.value}
-                onChange={!props.disabled ? handleSelect : props.setValue(props.value)}
+                onChange={!props.disabled ? handleSelect : elseHandler(props.value)}
                 MenuProps={MenuProps}
                 disabled = {props.disabled}
 

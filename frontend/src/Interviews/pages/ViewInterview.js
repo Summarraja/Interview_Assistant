@@ -46,6 +46,12 @@ const ViewInterview = (props) => {
   const EnableFieldsHandler = () => {
     setDisableField(false);
   };
+  const today = new Date();
+
+  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  const CurrentDate = new Date(date);
+
+ 
 
   // Request to get sepcific Interview Details
   useEffect(() => {
@@ -113,6 +119,7 @@ const ViewInterview = (props) => {
           <UpdateInterview
             interId={interId}
             disableField={disableField}
+            setDisableField = {setDisableField}
             loadedInterview={loadedInterview}
             loadedField={loadedField}
             hasEditAccess={hasEditAccess}
@@ -121,7 +128,7 @@ const ViewInterview = (props) => {
           <LoadingSpinner open={isLoading} />
         )}
       
-        {disableField && hasEditAccess && (
+        {disableField && hasEditAccess && !(new Date(loadedInterview.date) < CurrentDate || loadedInterview.isCancelled) && (
           <Button
             onClick={EnableFieldsHandler}
             variant="contained"

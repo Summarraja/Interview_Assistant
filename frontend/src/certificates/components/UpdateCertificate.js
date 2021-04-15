@@ -62,11 +62,13 @@ const UpdateCertificate = (props) => {
 
   const clearSuccess = () => {
     setSuccess(false);
-    props.setOpen(false);
+   
   };
-  useEffect(() => {
-    setSuccess(status == 200);
-  }, [status]);
+
+  useEffect (()=>{
+     setSuccess(status == 200) 
+  }, [status])
+
 
   const classes = useStyles();
 
@@ -79,7 +81,7 @@ const UpdateCertificate = (props) => {
 
   const onSubmitHandler = async (values) => {
     console.log(values.title);
-    console.log(values.description);
+    console.log(values.description);    
     console.log(values.institute);
     console.log(field);
    
@@ -91,29 +93,27 @@ const UpdateCertificate = (props) => {
             title: values.title,
             description: values.description,
             institute: values.institute,
-            fieldTitle: props.field,
+            fieldTitle: field,
           }),
         {
           "Content-Type": "application/json",
           Authorization: "Bearer " + auth.token,
         }
       );
+      status == 200 && props.setDisableField(true);
+      status == 200 ? setSuccess(true) : setSuccess(false)
+     // status == 200 ? setSuccess(true) : setSuccess(false)
+     
     } catch (err) {}
   };
 
   return (
     <>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmitHandler}
-      >
-        {(fProps) => (
-          <Form>
-            {isLoading && <LoadingSpinner open={isLoading} />}
+    {console.log(status)}
+      {isLoading && <LoadingSpinner open={isLoading} />}
             <Snackbar
               open={success || !!error}
-              autoHideDuration={6000}
+              autoHideDuration={3000}
               onClose={status == "200" ? clearSuccess : clearError}
             >
               <MuiAlert
@@ -126,6 +126,14 @@ const UpdateCertificate = (props) => {
               </MuiAlert>
             </Snackbar>
 
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmitHandler}
+      >
+        {(fProps) => (
+          <Form>
+          
             <Grid container>
               <Grid item={true} xs={12} sm={12}>
                 <Grid item={true} xs={12}>

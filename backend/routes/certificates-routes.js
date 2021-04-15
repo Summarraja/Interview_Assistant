@@ -32,10 +32,13 @@ router.post(
 router.patch(
     '/:cid',
     [
+        check('title')
+        .not()
+        .isEmpty(),
         check('title').isLength({ min: 5 }),
-        check('description').isLength({ min: 10 }),
+        check('description').isLength({ min: 15 }),
         check('institute').isLength({ min: 10 }),
-        check('fieldId').notEmpty,
+        check('fieldTitle').not().isEmpty(),
     ],
     certificatesControllers.updateCertificate
 );

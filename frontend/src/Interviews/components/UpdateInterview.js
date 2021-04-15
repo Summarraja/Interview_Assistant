@@ -49,7 +49,7 @@ const validationSchema = yup.object().shape({
     .string()
     .min(15, "Description must be atleast 15 characters long")
     .required("Description is required"),
-});
+}); 
 
 const UpdateInterview = (props) => {
   const interviewId = props.interId;
@@ -62,10 +62,10 @@ const UpdateInterview = (props) => {
 
   const clearSuccess = () => {
     setSuccess(false);
-    props.setOpen(false);
+   
   };
   useEffect(() => {
-    setSuccess(status == 201);
+    setSuccess(status == 200);
   }, [status]);
 
   const classes = useStyles();
@@ -93,20 +93,42 @@ const UpdateInterview = (props) => {
           title: values.title,
           description: values.description,
           fieldTitle: field,
-          date: props.doi,
-          time: props.timeOfInter,
+          date: doi,
+          time: time,
           isCancelled: false
         }),
         {
           "Content-Type": "application/json",
           Authorization: "Bearer " + auth.token,
         }
+
       );
+      status == 200 && props.setDisableField(true) ? setSuccess(true) : setSuccess(false)
+      status == 200 ? setSuccess(true) : setSuccess(false)
     } catch (err) {}
   };
 
   return (
+  
     <>
+     { console.log("status:  "+ status)}
+     {isLoading && <LoadingSpinner open={isLoading} />}
+
+            <Snackbar
+              open={success|| !!error}
+              autoHideDuration={6000}
+              onClose={status == "200" ? clearSuccess : clearError}
+            >
+              <MuiAlert
+                elevation={6}
+                variant="filled"
+                severity={status == "200" ? "success" : "error"}
+                onClose={status == "200" ? clearSuccess : clearError}
+              >
+                {status == "200" ? "Interview Updated Successfully!" : error}
+              </MuiAlert>
+            </Snackbar>
+          
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -114,21 +136,7 @@ const UpdateInterview = (props) => {
       >
         {(fProps) => (
           <Form>
-            {isLoading && <LoadingSpinner open={isLoading} />}
-            <Snackbar
-              open={success || !!error}
-              autoHideDuration={6000}
-              onClose={status == "201" ? clearSuccess : clearError}
-            >
-              <MuiAlert
-                elevation={6}
-                variant="filled"
-                severity={status == "201" ? "success" : "error"}
-                onClose={status == "201" ? clearSuccess : clearError}
-              >
-                {status == "201" ? "Interview Updated Successfully!" : error}
-              </MuiAlert>
-            </Snackbar>
+         
 
             <Grid container>
               <Grid item={true} xs={12} sm={12}>
@@ -231,7 +239,7 @@ const UpdateInterview = (props) => {
               {/* <Grid item xs={6}></Grid> */}
             </Grid>
 
-            {!props.disableField && props.hasEditAccess && (
+            {!props.disableField && props.hasEditAccess &&  (
               <Button
                 type="submit"
                 variant="contained"

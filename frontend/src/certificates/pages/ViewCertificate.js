@@ -114,6 +114,7 @@ const ViewCertificate = (props) => {
           <UpdateCertificate
             certId={certId}
             disableField={disableField}
+            setDisableField = {setDisableField}
             loadedCertificate={loadedCertificate}
             loadedField={loadedField}
             hasEditAccess={hasEditAccess}

@@ -1,5 +1,10 @@
-import React from "react";
+import React, {useState, useEffect, useContext} from "react";
 import InterviewCandidates from "./InterviewCandidates";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+
+
 
 const addedCandidates = [
   {
@@ -20,9 +25,21 @@ const addedCandidates = [
   },
 ];
 
-const CandidateList = () => {
 
-  return <InterviewCandidates items={addedCandidates} />;
+
+
+
+const CandidateList = (props)=>{ 
+  const auth = useContext(AuthContext);
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+
+  
+  return (
+
+      <InterviewCandidates  items={addedCandidates} open={props.open} setOpen={props.setOpen} interId = {props.interId}/>
+    
+  
+  );
+  
 };
-
 export default CandidateList;
