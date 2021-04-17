@@ -114,7 +114,8 @@ export default function CodeVerification(props) {
                 }
             );
             if (responseData.isVerified) {
-                auth.login(responseData.userId, responseData.token,responseData.resume);
+
+                auth.login(responseData.userId, responseData.token, responseData.resume, responseData.setting);
             }
             else {
             }

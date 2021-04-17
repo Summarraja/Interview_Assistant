@@ -8,6 +8,7 @@ const Users = () => {
   const auth = useContext(AuthContext);
   const {isLoading, error, status, sendRequest, clearError} = useHttpClient();
   const [interviews, setInterviews] = useState([]);
+  const [certificates, setCertificates] = useState([]);
 
   useEffect(() => {
     const fetchInterviews = async () => {
@@ -29,13 +30,33 @@ const Users = () => {
     fetchInterviews();
   }, []);
 
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/certificates/user/" + auth.userId,
+          'GET',
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setCertificates(responseData.certificate);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCertificates();
+  }, []);
+
 
   return (
   <> 
- 
+  
 
     {!isLoading ? 
-    <UserItem resume={auth.resume} userInterviews = {interviews} /> :   
+    <UserItem resume={auth.resume} userCertificate = {certificates} setting={auth.setting} userInterviews = {interviews} /> :   
      <LoadingSpinner open={isLoading} />
     }
   </>

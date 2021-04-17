@@ -15,7 +15,7 @@ import OutsideClickHandler from "react-outside-click-handler";
 import MenuIcon from "@material-ui/icons/Menu";
 import IconButton from "@material-ui/core/IconButton";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import { Link } from "react-router-dom";
+import { Link, Redirect, useHistory } from "react-router-dom";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Badge from "@material-ui/core/Badge";
 import { FaQuestionCircle, FaBell } from "react-icons/fa";
@@ -28,6 +28,10 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import { IoIosSwitch } from "react-icons/io";
+import { useHttpClient } from "../../hooks/http-hook";
+import LoadingSpinner from "../UIElements/LoadingSpinner";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -75,7 +79,8 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "0px",
   },
   gutters: {
-    paddingRight: "10px",
+    // paddingRight: "10px",
+    marginRight: "0px",
   },
   switchBase: {
     color: "#fff",
@@ -99,13 +104,51 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff",
   },
 }));
+
 export default function Navbar(props) {
+
   const [NavSignUp, setNavSignup] = useState(true);
   const auth = useContext(AuthContext);
-  const [isCandidate, setIsCandidate] = useState(true);
+  
+  const history = useHistory();
+  const [success, setSuccess] = useState(false);
+  auth.setting && console.log("ROLE IN CONTEXT: "+auth.setting.role)
+  const [currSetting, setCurrSetting] = useState(auth.setting && auth.setting.role);
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const [isCandidate, setIsCandidate] = useState(auth.setting && auth.setting.role == "candidate");
+
+  // console.log("isCandidate USESTATE:  "+isCandidate)
+  // console.log("currSetting: USESTATE:  "+currSetting)
+  auth.setting && console.log("ROLE IN CONTEXT: 2 "+auth.setting.role)
+  const clearSuccess = () => {
+    setSuccess(false);
+  };
+
+  useEffect(() => {
+    setSuccess(status == 200);
+  }, [status, isCandidate]);
 
   const switchRole = () => {
     setIsCandidate(!isCandidate);
+    const SetRole = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/settings/role/${auth.setting._id}`,
+          "PATCH",
+          JSON.stringify({
+            role: currSetting == "interviewer" ? "candidate" : "interviewer",
+          }),
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setCurrSetting(responseData.setting.role);
+        // <Redirect to="/"/>
+        history.go(0);
+      } catch (err) {}
+    };
+    SetRole();
   };
 
   const NavsignUpBtnHandler = () => {
@@ -113,8 +156,8 @@ export default function Navbar(props) {
   };
 
   const ProfileMenuItem = {
-    width: "100%",
-    marginRight: 80,
+    //  width: "100%",
+    marginRight: "10px",
   };
 
   const classes = useStyles();
@@ -223,7 +266,8 @@ export default function Navbar(props) {
             <IoIosSwitch />
           </IconButton>
           <Typography variant="subtitle1">
-            Switch to {!isCandidate ? "Candidate" : "Interviewer"}
+            Switch to{" "}
+            {currSetting === "candidate" ? "Candidate" : "Interviewer"}
           </Typography>
         </MenuItem>
         <Divider variant="middle" />
@@ -252,6 +296,27 @@ export default function Navbar(props) {
 
   return (
     <Fragment>
+      <LoadingSpinner open={isLoading} />
+
+      <Snackbar
+        open={success || !!error}
+        autoHideDuration={1200}
+        onClose={status == "200" ? clearSuccess : clearError}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity={status == "200" ? "success" : "error"}
+          onClose={status == "200" ? clearSuccess : clearError}
+        >
+          {status == "200"
+            ? `Your role has been swtiched to ${
+                currSetting === "interviewer" ? "interviewer" : "candidate"
+              }`
+            : error}
+        </MuiAlert>
+      </Snackbar>
+
       <AppBar position="fixed" className={classes.navbar}>
         <Toolbar>
           {auth.isLoggedIn && (
@@ -310,6 +375,7 @@ export default function Navbar(props) {
                   <FaBell />
                 </Badge>
               </IconButton>
+             
               <FormGroup row>
                 <FormControlLabel
                   className={classes.switchControl}
@@ -326,7 +392,11 @@ export default function Navbar(props) {
                       }}
                     />
                   }
-                  label={!isCandidate ? "Interviewer" : "Candidate"}
+                  label={
+                    currSetting === "candidate"
+                      ? "Candidate"
+                      : "Interviewer"
+                  }
                 />
               </FormGroup>
               <OutsideClickHandler onOutsideClick={CloseNavbarMenu}>

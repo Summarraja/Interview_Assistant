@@ -34,6 +34,7 @@ import theme from './shared/components/UIElements/AppTheme/theme';
 const App = () => {
   const { token, login, logout, userId, resume } = useAuth();
   const socket = useRef();
+
   let routes;
   if (token) {
     routes = (
@@ -104,6 +105,7 @@ const App = () => {
           login: login,
           logout: logout,
           resume: resume,
+          setting: setting
         }}
       >
         <Router>
