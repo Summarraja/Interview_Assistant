@@ -144,8 +144,10 @@ export default function Navbar(props) {
             Authorization: "Bearer " + auth.token,
           }
         );
-        if (responseData.setting)
-          login(userId, token, resume, responseData.setting);
+        if (responseData.setting){
+          const storedData = JSON.parse(localStorage.getItem('userData'));
+          login(storedData.userId, storedData.token, storedData.resume, responseData.setting);
+        }
         // <Redirect to="/"/>
         history.go(0);
       } catch (err) { }
