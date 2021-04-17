@@ -111,11 +111,12 @@ export default function Navbar(props) {
   const auth = useContext(AuthContext);
   
   const history = useHistory();
+  const [success, setSuccess] = useState(false);
   auth.setting && console.log("ROLE IN CONTEXT: "+auth.setting.role)
   const [currSetting, setCurrSetting] = useState(auth.setting && auth.setting.role);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const [isCandidate, setIsCandidate] = useState(auth.setting && auth.setting.role == "candidate");
-  const [success, setSuccess] = useState(false);
+
   // console.log("isCandidate USESTATE:  "+isCandidate)
   // console.log("currSetting: USESTATE:  "+currSetting)
   auth.setting && console.log("ROLE IN CONTEXT: 2 "+auth.setting.role)
