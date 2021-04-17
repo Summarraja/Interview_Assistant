@@ -165,15 +165,17 @@ const CandidatesDialogItems = (props) => {
 
             <Grid item sm={4} xs={6} align="center">
               {typeof interview.sentRequests !== "undefined" ? (
-                Users.map((id) =>
+                Users.map((id) => 
                   findRequestedCandidates(interview.sentRequests, id) ||
                   status == 201 ? (
                     <Typography
                       variant="subtitle2"
                       className={classes.statusStyle}
+                      key={id}
                     >
                       <BsFillPersonCheckFill
                         className={classes.statusIconStyle}
+                        key={id}
                       />
                       REQUESTED
                     </Typography>
@@ -184,6 +186,7 @@ const CandidatesDialogItems = (props) => {
                       className={classes.RemoveButton}
                       onClick={inviteCandidateHandler}
                       startIcon={<PersonAddIcon style={{ marginLeft: 6 }} />}
+                      key = {id}
                     >
                       Invite
                     </Button>

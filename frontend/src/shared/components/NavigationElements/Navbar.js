@@ -263,13 +263,13 @@ export default function Navbar(props) {
 
       <Divider variant="middle" />
       <Hidden smUp implementation="css">
-        <MenuItem className={classes.root}>
+        <MenuItem className={classes.root} onClick={switchRole}>
           <IconButton color="primary">
             <IoIosSwitch />
           </IconButton>
           <Typography variant="subtitle1">
             Switch to{" "}
-            {role}
+            {role == "Candidate"? "Interviewer" : "Candidate"}
           </Typography>
         </MenuItem>
         <Divider variant="middle" />
@@ -312,7 +312,7 @@ export default function Navbar(props) {
           onClose={status == "200" ? clearSuccess : clearError}
         >
           {status == "200"
-            ? `Your role has been swtiched to ${role}`
+            ? `Your role has been swtiched to ${role == "Candidate" ? "Interviewer" : "Candidate"}`
             : error}
         </MuiAlert>
       </Snackbar>
