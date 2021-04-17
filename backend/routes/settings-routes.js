@@ -28,7 +28,7 @@ router.post(
   router.patch(
     '/role/:sid',
     [
-        check('role').isIn(['admin', 'interviewer','candidate']),
+        check('role').isIn(['Admin', 'Interviewer','Candidate']),
     ],
       settingsControllers.SwitchRole
 );

@@ -24,6 +24,7 @@ import { MdArrowDropDownCircle } from "react-icons/md";
 import { AiFillLock, AiOutlineUserSwitch } from "react-icons/ai";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { AuthContext } from "../../../shared/context/auth-context";
+import { useAuth } from "../../../shared/hooks/auth-hook";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
@@ -109,44 +110,45 @@ export default function Navbar(props) {
 
   const [NavSignUp, setNavSignup] = useState(true);
   const auth = useContext(AuthContext);
-  
+  const { token, login, logout, userId, resume, setting } = useAuth();
+
   const history = useHistory();
   const [success, setSuccess] = useState(false);
-  auth.setting && console.log("ROLE IN CONTEXT: "+auth.setting.role)
-  const [currSetting, setCurrSetting] = useState(auth.setting && auth.setting.role);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-  const [isCandidate, setIsCandidate] = useState(auth.setting && auth.setting.role == "candidate");
+  const [role, setRole] = useState("Candidate");
 
-  // console.log("isCandidate USESTATE:  "+isCandidate)
-  // console.log("currSetting: USESTATE:  "+currSetting)
-  auth.setting && console.log("ROLE IN CONTEXT: 2 "+auth.setting.role)
   const clearSuccess = () => {
     setSuccess(false);
   };
 
   useEffect(() => {
     setSuccess(status == 200);
-  }, [status, isCandidate]);
+  }, [status]);
+
+  useEffect(() => {
+    if (auth.setting)
+      setRole(auth.setting.role);
+  }, [auth.setting]);
 
   const switchRole = () => {
-    setIsCandidate(!isCandidate);
     const SetRole = async () => {
       try {
         const responseData = await sendRequest(
           `http://localhost:5000/api/settings/role/${auth.setting._id}`,
           "PATCH",
           JSON.stringify({
-            role: currSetting == "interviewer" ? "candidate" : "interviewer",
+            role: (role == 'Candidate') ? "Interviewer" : "Candidate",
           }),
           {
             "Content-Type": "application/json",
             Authorization: "Bearer " + auth.token,
           }
         );
-        setCurrSetting(responseData.setting.role);
+        if (responseData.setting)
+          login(userId, token, resume, responseData.setting);
         // <Redirect to="/"/>
         history.go(0);
-      } catch (err) {}
+      } catch (err) { }
     };
     SetRole();
   };
@@ -267,7 +269,7 @@ export default function Navbar(props) {
           </IconButton>
           <Typography variant="subtitle1">
             Switch to{" "}
-            {currSetting === "candidate" ? "Candidate" : "Interviewer"}
+            {role}
           </Typography>
         </MenuItem>
         <Divider variant="middle" />
@@ -310,9 +312,7 @@ export default function Navbar(props) {
           onClose={status == "200" ? clearSuccess : clearError}
         >
           {status == "200"
-            ? `Your role has been swtiched to ${
-                currSetting === "interviewer" ? "interviewer" : "candidate"
-              }`
+            ? `Your role has been swtiched to ${role}`
             : error}
         </MuiAlert>
       </Snackbar>
@@ -375,13 +375,13 @@ export default function Navbar(props) {
                   <FaBell />
                 </Badge>
               </IconButton>
-             
+
               <FormGroup row>
                 <FormControlLabel
                   className={classes.switchControl}
                   control={
                     <Switch
-                      checked={isCandidate}
+                      checked={role == 'Candidate'}
                       onChange={switchRole}
                       name="checked"
                       classes={{
@@ -393,9 +393,7 @@ export default function Navbar(props) {
                     />
                   }
                   label={
-                    currSetting === "candidate"
-                      ? "Candidate"
-                      : "Interviewer"
+                    role
                   }
                 />
               </FormGroup>

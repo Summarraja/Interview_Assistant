@@ -28,13 +28,12 @@ import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 import Certificate from "./certificates/pages/Certificate";
 import InterviewItems from "./Interviews/components/InterviewItems";
 import ViewCertificate from "./certificates/pages/ViewCertificate";
-import io from "socket.io-client";
+// import io from "socket.io-client";
 import theme from './shared/components/UIElements/AppTheme/theme';
 
 const App = () => {
-  const { token, login, logout, userId, resume } = useAuth();
+  const { token, login, logout, userId, resume, setting } = useAuth();
   const socket = useRef();
-
   let routes;
   if (token) {
     routes = (
@@ -48,9 +47,7 @@ const App = () => {
         <Route path="/interviews/:interId" exact component={ViewInterview} />
         <Route path="/certificates" exact component={Certificate} />
         <Route path="/certificates/:certId" exact component={ViewCertificate} />
-
         <Route path="/resume" exact component={Resume} />
-
 
         <Redirect to="/" />
       </Switch>
@@ -82,18 +79,16 @@ const App = () => {
       </Switch>
     );
   }
-  useEffect(() => {
-    console.log("app.js")
-    if (userId){
-      socket.current = io.connect("http://localhost:5000", { query: "id="+userId});
-      // socket.current.emit("client", { id: userId })
-      console.log("client")
-      socket.current.on("hey", (data) => {
-        console.log(data);
-      })
-    }
+  // useEffect(() => {
+  //   if (userId) {
+  //     socket.current = io.connect("http://localhost:5000", { query: "id=" + userId });
+  //     // socket.current.emit("client", { id: userId })
+  //     socket.current.on("hey", (data) => {
+  //       console.log(data);
+  //     })
+  //   }
 
-  }, [userId]);
+  // }, [userId]);
 
   return (
     <React.Fragment>

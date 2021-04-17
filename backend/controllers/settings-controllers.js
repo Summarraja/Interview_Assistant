@@ -111,7 +111,6 @@ const createSettings = async (req, res, next) => {
 const SwitchRole = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log(errors)
         return next(
             new HttpError('Invalid inputs passed, please check your data.', 422)
         );
@@ -143,7 +142,6 @@ const SwitchRole = async (req, res, next) => {
     }
 
     setting.role = role;
-    console.log(role)
     try {
         await setting.save();
     } catch (err) {
