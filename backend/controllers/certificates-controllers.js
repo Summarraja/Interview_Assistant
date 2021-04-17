@@ -48,7 +48,7 @@ const getCertificatesByUserId = async (req, res, next) => {
     }
 
     // if (!places || places.length === 0) {
-    if (!userWithCertificate || userWithCertificate.certificates.length == 0) {
+    if (!userWithCertificate ) {
         return next(
             new HttpError('Could not find certificates for the provided user id.', 404)
         );

@@ -45,7 +45,7 @@ const getInterviewsByUserId = async (req, res, next) => {
         return next(error);
     }
 
-    if (!userWithInterviews || userWithInterviews.createdInterviews.length === 0) {
+    if (!userWithInterviews) {
         return next(
             new HttpError('Could not find interviews for the provided user id.', 404)
         );

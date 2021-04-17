@@ -32,7 +32,7 @@ import ViewCertificate from "./certificates/pages/ViewCertificate";
 import theme from './shared/components/UIElements/AppTheme/theme';
 
 const App = () => {
-  const { token, login, logout, userId, resume } = useAuth();
+  const { token, login, logout, userId, resume, setting} = useAuth();
   let routes;
 
   if (token) {
@@ -95,6 +95,7 @@ const App = () => {
           login: login,
           logout: logout,
           resume: resume,
+          setting: setting
         }}
       >
         <Router>

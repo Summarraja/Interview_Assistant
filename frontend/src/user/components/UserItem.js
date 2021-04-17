@@ -209,8 +209,9 @@ const UserItem = (props) => {
           <AccordionDetails lg={12} md={6}>
             <div style={divDetails}>
               <Typography style={typoStyle}>
-                {0}{" "}
-                {0 === 1 ? "Certificate" : "Certificates"}
+              {props.userCertificate.length + " "} 
+             { props.userCertificate.length === 0 || 1 ? "Certificate" : "Certificates"}
+              
               </Typography>
               <Button
                 type="submit"
@@ -234,7 +235,7 @@ const UserItem = (props) => {
             size="small"
             style={resumeButtonStyle}
           >
-            My Resumes
+            My Resume
           </Button>
         </Grid>
       </Paper>
