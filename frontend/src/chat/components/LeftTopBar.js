@@ -6,12 +6,10 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import './LeftTopBar.css';
 
 
-function LeftTopBar() {
-
+function LeftTopBar(props) {
 
   return (
     <>
-
       <div className="avatar-component">
 
         <Avatar>
@@ -20,7 +18,7 @@ function LeftTopBar() {
         </Avatar>
         <div style={{ margin: "10px" }}>
           <Typography variant="h6" >
-            Muqaddas
+            {props.name}
           </Typography>
         </div>
 

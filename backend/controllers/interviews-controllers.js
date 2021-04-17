@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
 const Interview = require('../models/interview');
-const Field  = require('../models/field');
+const Field = require('../models/field');
 const User = require('../models/user');
 
 const getInterviewById = async (req, res, next) => {
@@ -45,16 +45,24 @@ const getInterviewsByUserId = async (req, res, next) => {
         return next(error);
     }
 
-    if (!userWithInterviews || userWithInterviews.createdInterviews.length === 0) {
+    if (!userWithInterviews) {
         return next(
             new HttpError('Could not find interviews for the provided user id.', 404)
         );
     }
+    if (userWithInterviews.createdInterviews.length === 0) {
+        res.json({
+            interviews: []
+        });
+    }
+    else {
     res.json({
         interviews: userWithInterviews.createdInterviews.map(interview =>
             interview.toObject({ getters: true })
         )
     });
+}
+
 };
 
 const createInterview = async (req, res, next) => {
@@ -65,11 +73,11 @@ const createInterview = async (req, res, next) => {
         );
     }
 
-    const { title, description, date, time , fieldTitle } = req.body;
+    const { title, description, date, time, fieldTitle } = req.body;
 
     let field;
     try {
-        field = await Field.findOne({title:fieldTitle});
+        field = await Field.findOne({ title: fieldTitle });
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find a field.',
@@ -78,7 +86,7 @@ const createInterview = async (req, res, next) => {
         return next(error);
     }
 
-     console.log("created field: " + field)
+    console.log("created field: " + field)
     if (!field) {
         const error = new HttpError(
             'Could not find field for the provided title.',
@@ -94,9 +102,9 @@ const createInterview = async (req, res, next) => {
         time,
         field: field.id,
         creator: req.userData.userId,
-        candidates:[],
-        sentRequests:[],
-        receivedRequests:[],
+        candidates: [],
+        sentRequests: [],
+        receivedRequests: [],
     });
 
     let user;
@@ -134,7 +142,7 @@ const createInterview = async (req, res, next) => {
 };
 
 const updateInterview = async (req, res, next) => {
-   
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return next(
@@ -142,11 +150,11 @@ const updateInterview = async (req, res, next) => {
         );
     }
 
-    const { title, description, date, time , fieldTitle, isCancelled } = req.body;
+    const { title, description, date, time, fieldTitle, isCancelled } = req.body;
 
     let field;
     try {
-        field = await Field.findOne({title:fieldTitle});
+        field = await Field.findOne({ title: fieldTitle });
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find a field.',
@@ -167,7 +175,7 @@ const updateInterview = async (req, res, next) => {
     try {
         interview = await Interview.findById(interviewId);
     } catch (err) {
-        
+
         const error = new HttpError(
             'could not find interview of specified id.',
             500
@@ -213,7 +221,7 @@ const deleteInterview = async (req, res, next) => {
     let interview;
     try {
         interview = await Interview.findById(interviewId).populate('creator');
-       
+
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not delete interview.',
@@ -306,7 +314,7 @@ const addCandidate = async (req, res, next) => {
     }
 
     const added = interview.candidates.addToSet(candidate);
-    if (added.length<1) {
+    if (added.length < 1) {
         const error = new HttpError('Candidate is already added to the interview.', 401);
         return next(error);
     }

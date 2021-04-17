@@ -20,28 +20,37 @@ const skillsRoutes = require('./routes/skills-routes');
 const resumesRoutes = require('./routes/resumes-routes');
 const certificatesRoutes = require('./routes/certificates-routes');
 const faqsRoutes = require('./routes/faqs-routes');
+const chatsRoutes = require('./routes/chats-routes');
+const messagesRoutes = require('./routes/messages-routes');
 const HttpError = require('./models/http-error');
 
 const users = {}
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   //generate username against a socket connection and store it
-  const userid = username.generateUsername('-')
+  let userid=socket.request._query['id'];
+  //send back username
+  console.log("connected")
+
   if (!users[userid]) {
-    users[userid] = socket.id
+    users[userid] = [socket.id]
+  }else{
+    users[userid].push(socket.id)
   }
   console.log(users)
-  //send back username
-  socket.emit('yourID', userid)
-  io.sockets.emit('allUsers', users)
 
-  socket.on('sendId', (data) => {
-    // if (!users[userid]) {
-    //   users[userid] = socket.id
-    // }
+  socket.on('client', (data) => {
+    userid=data.id;
+
   })
   socket.on('disconnect', () => {
-    delete users[userid]
+    console.log("disconnected")
+    const index = users[userid].indexOf(socket.id);
+    if (index > -1) {
+      users[userid] = users[userid].filter(item => item!=socket.id)
+    }
+    console.log(users)
+    // delete users[userid].pull(socket.id)
   })
 
   socket.on('callUser', (data) => {
@@ -64,7 +73,7 @@ io.on('connection', socket => {
 
 app.use(bodyParser.json());
 
-// app.use('/uploads/images', express.static(path.join('uploads', 'images')));
+app.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -84,6 +93,8 @@ app.use('/api/skills', skillsRoutes);
 app.use('/api/resumes', resumesRoutes);
 app.use('/api/certificates', certificatesRoutes);
 app.use('/api/faqs', faqsRoutes);
+app.use('/api/chats', chatsRoutes);
+app.use('/api/messages', messagesRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError('Could not find this route.', 404);

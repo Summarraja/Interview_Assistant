@@ -23,6 +23,28 @@ const getUsers = async (req, res, next) => {
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
+const getUserData = async (req, res, next) => {
+  let userid = req.params.uid;
+  let user;
+  try {
+    user = await User.findById(userid).populate("resume");
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching user failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+  if (!user) {
+    const error = new HttpError(
+      "Could not find user with provided id.",
+      401
+    );
+    return next(error);
+  }
+  res.json({ name:user.resume.firstname+" "+ user.resume.lastname });
+};
+
 const sendCode = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -100,7 +122,7 @@ const verifyCode = async (req, res, next) => {
 
   let user;
   try {
-    user = await User.findOne({ email: email });
+    user = await User.findOne({ email: email }).populate("resume");
   } catch (err) {
     const error = new HttpError(
       "Fetching user failed, please try again later.",
@@ -147,7 +169,7 @@ const verifyCode = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ isVerified: true, userId: user.id, token: token });
+  res.status(200).json({ isVerified: true, userId: user.id, token: token , resume: user.resume});
 };
 
 const signup = async (req, res, next) => {
@@ -286,7 +308,6 @@ const signup = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log("Login: ")
 
   let existingUser;
 
@@ -371,3 +392,4 @@ exports.signup = signup;
 exports.login = login;
 exports.sendCode = sendCode;
 exports.verifyCode = verifyCode;
+exports.getUserData = getUserData;
