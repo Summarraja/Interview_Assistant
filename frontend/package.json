@@ -12,6 +12,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.3",
     "@testing-library/user-event": "^12.6.2",
+    "emoji-picker-react": "^3.4.4",
     "formik": "^2.2.6",
     "material-ui-search-bar": "^1.0.0",
     "otp-input-react": "^0.2.4",

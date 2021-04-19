@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 const http = require('http')
 const server = http.createServer(app)
@@ -29,29 +30,52 @@ const users = {}
 
 io.on('connection', (socket) => {
   //generate username against a socket connection and store it
-  let userid=socket.request._query['id'];
+  let userid = socket.request._query['id'];
   //send back username
   console.log("connected")
 
   if (!users[userid]) {
     users[userid] = [socket.id]
-  }else{
+  } else {
     users[userid].push(socket.id)
   }
   console.log(users)
 
   socket.on('client', (data) => {
-    userid=data.id;
+    userid = data.id;
 
   })
   socket.on('disconnect', () => {
     console.log("disconnected")
     const index = users[userid].indexOf(socket.id);
     if (index > -1) {
-      users[userid] = users[userid].filter(item => item!=socket.id)
+      let newArray = users[userid].filter(item => item != socket.id);
+      if (newArray.length == 0)
+        delete users[userid];
+      else
+        users[userid] = newArray;
     }
     console.log(users)
-    // delete users[userid].pull(socket.id)
+  })
+
+  socket.on('message', (msg) => {
+    axios.post('http://localhost:5000/api/messages/',
+      msg, {
+      headers: {
+        'Authorization':msg.token
+      }
+    })
+      .then(function (response) {
+        console.log(response.status);
+        if(users[msg.receiver]){
+          users[msg.receiver].forEach(soc => {
+            io.to(soc).emit('message', msg)
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   })
 
   socket.on('callUser', (data) => {
@@ -122,10 +146,10 @@ mongoose
     `mongodb+srv://Summar:H4NUsZcxzxv0fonF@cluster0.uzdlx.mongodb.net/mern?retryWrites=true&w=majority`
 
     , {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex:true
-  }
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true
+    }
   )
   .then(() => {
     server.listen(port);

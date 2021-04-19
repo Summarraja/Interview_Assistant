@@ -122,7 +122,7 @@ const verifyCode = async (req, res, next) => {
 
   let user;
   try {
-    user = await User.findOne({ email: email }).populate("resume");
+    user = await (await User.findOne({ email: email }).populate("resume")).populated('setting');
   } catch (err) {
     const error = new HttpError(
       "Fetching user failed, please try again later.",
@@ -237,7 +237,7 @@ const signup = async (req, res, next) => {
   const createdSetting = new Setting({
     notiStatus: false,
     status: "available",
-    role: "candidate",
+    role: "Candidate",
     blockedUsers : [],
   });
 

@@ -8,11 +8,9 @@ import LeftTopBar from "../components/LeftTopBar";
 import MessageBox from "../components/MessageBox";
 import RightTopBar from "../components/RightTopBar";
 import { AuthContext } from "../../shared/context/auth-context";
+import { SocketContext } from "../../shared/context/socket-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
-
 import "./Chat.css"
-
-
 const useStyles = makeStyles((theme) => ({
 
   aside: {
@@ -62,159 +60,26 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
 function Chat() {
-  const ChatUsers = [
-    {
-      id: "c1",
-      with: "Summar",
-      messages: [
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Hello",
-          time: "10:00 AM",
-          isRead: true,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "Hi",
-          time: "10:01 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "How Are You?",
-          time: "10:02 AM",
-          isRead: true,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time: "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time: "10:10 AM",
-          isRead: false,
-        },
-
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time: "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time: "10:10 AM",
-          isRead: false,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time: "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time: "10:10 AM",
-          isRead: false,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time: "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time: "10:10 AM",
-          isRead: false,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time: "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time: "10:10 AM",
-          isRead: false,
-        },
-
-      ]
-    },
-    {
-      id: "c2",
-      with: "Urooj",
-      messages: [
-        {
-          sender: "Urooj",
-          receiver: "Muqaddas",
-          content: "Hi",
-          time: "10:00 AM",
-          isRead: true,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Urooj",
-          content: "Hello",
-          time: "10:01 AM",
-          isRead: true,
-        },
-        {
-          sender: "Urooj",
-          receiver: "Muqaddas",
-          content: "what are you doing?",
-          time: "10:02 AM",
-          isRead: true,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Urooj",
-          content: "Nothing",
-          time: "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Urooj",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time: "10:10 AM",
-          isRead: false,
-        },
-      ]
-    },
-  ];
 
   const auth = useContext(AuthContext);
+  const socket = useContext(SocketContext);
+
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const classes = useStyles();
-  const [data, setdata] = useState([])
-  const [selectedChat, setSelectedChat] = useState({})
+  const [data, setdata] = useState()
+  const [selectedChat, setSelectedChat] = useState()
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('')
-
+  socket.on("message", (msg) => {
+    if (selectedChat)
+      setMessages([...messages, msg]);
+  })
+  useEffect(() => {
+    return () => {
+      socket.off("SENDING_NEW_TIME");
+    };
+  }, []);
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -232,26 +97,21 @@ function Chat() {
     };
     fetchChats();
   }, []);
-  // let messagearr =  [
-  //       sender: selectedChat.sender,
-  //       receiver: selectedChat.receiver,
-  //       content: newMessage,
-  //       time : Date.now(),
-  //       isRead: true,
-  // ];
-
 
 
   function pushMessage() {
     let msg = {
       sender: auth.userId,
-      receiver: selectedChat.with,
+      receiver: (selectedChat.with == auth.userId) ? selectedChat.from : selectedChat.with,
       content: newMessage,
-      time: (new Date()).toDateString(),
+      time: (new Date()).toISOString(),
       isRead: true,
+      chat: selectedChat.id,
+      token: "Bearer " + auth.token
     }
-    // console.log(messages)
-    setMessages([...messages,msg])
+    setNewMessage('');
+    setMessages([...messages, msg]);
+    socket.emit("message", msg);
   }
 
 
@@ -261,20 +121,22 @@ function Chat() {
       <div className={classes.aside} >
         <header>
           <LeftTopBar
-            name={auth.resume && auth.resume.firstname + " " + auth.resume.lastname}
+            name={auth.resume && auth.resume.fullname}
           />
         </header>
         <ChatSearch />
         <div className="contact-boxes">
-          <ConversationList data={data} setSelectedChat={setSelectedChat} />
+          <ConversationList data={data} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />
         </div>
       </div>
       <div className={classes.mainChat}>
         <header>
-          <RightTopBar selectedChat={selectedChat} />
+          {selectedChat != null && (<RightTopBar selectedChat={selectedChat} />)}
         </header>
-        <MessageBox selectedChat={selectedChat} messages={messages} setMessages={setMessages} />
-        <BottomBar newMessage={newMessage} setNewMessage={setNewMessage} pushMessage={pushMessage} />
+
+        {selectedChat != null && (<MessageBox selectedChat={selectedChat} messages={messages} setMessages={setMessages} />)}
+        {selectedChat != null && (<BottomBar newMessage={newMessage} setNewMessage={setNewMessage} pushMessage={pushMessage} />)}
+
       </div>
 
     </div>

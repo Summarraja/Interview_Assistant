@@ -22,8 +22,24 @@ function MessageBox(props) {
         props.setMessages(responseData.messages)
       } catch (err) { }
     };
-    if (props.selectedChat.id)
-      fetchMessageData();
+    const markRead = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/chats/`,
+          "POST",
+          JSON.stringify({
+            uid: auth.userId,
+            cid: props.selectedChat.id,
+          }),
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+      } catch (err) { }
+    };
+    fetchMessageData();
+    markRead();
   }, [props.selectedChat])
 
   const endDiv = useRef(null)
@@ -35,7 +51,7 @@ function MessageBox(props) {
     <>
       <div className="chats">
 
-        {props.messages.map((msg,idx) => (
+        {props.messages.map((msg, idx) => (
           <Message
             key={idx}
             message={msg}

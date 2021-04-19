@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
 const Message = require('../models/message');
 const Chat = require('../models/chat');
+const User = require('../models/user');
+const { ObjectID } = require('bson');
 
 const getMessageById = async (req, res, next) => {
     const messageid = req.params.mid;
@@ -34,7 +36,7 @@ const getMessagesByChatId = async (req, res, next) => {
     const chatId = req.params.cid;
     let messages;
     try {
-        messages = await Message.find({chat:chatId});
+        messages = await Message.find({ chat: chatId });
     } catch (err) {
         const error = new HttpError(
             'Fetching messages failed, please try again later.',
@@ -54,16 +56,16 @@ const getMessagesByChatId = async (req, res, next) => {
         });
     }
     else {
-    res.json({
-        messages: messages.map(message =>
-            message.toObject({ getters: true })
-        )
-    });
-}
+        res.json({
+            messages: messages.map(message =>
+                message.toObject({ getters: true })
+            )
+        });
+    }
 
 };
 
-const createInterview = async (req, res, next) => {
+const createMessage = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return next(
@@ -71,75 +73,151 @@ const createInterview = async (req, res, next) => {
         );
     }
 
-    const { title, description, date, time, fieldTitle } = req.body;
+    const { sender, receiver, content } = req.body;
 
-    let field;
+    let senderUser;
     try {
-        field = await Field.findOne({ title: fieldTitle });
+        senderUser = await User.findById(sender).populate('resume');
     } catch (err) {
         const error = new HttpError(
-            'Something went wrong, could not find a field.',
+            'Something went wrong, could not find a sender.',
             500
         );
         return next(error);
     }
 
-    console.log("created field: " + field)
-    if (!field) {
+    if (!senderUser) {
         const error = new HttpError(
-            'Could not find field for the provided title.',
+            'Could not find sender for the provided id.',
             404
         );
         return next(error);
     }
 
-    const createdInterview = new Message({
-        title,
-        description,
-        date,
-        time,
-        field: field.id,
-        creator: req.userData.userId,
-        candidates: [],
-        sentRequests: [],
-        receivedRequests: [],
-    });
-
-    let user;
+    let receiverUser;
     try {
-        user = await User.findById(req.userData.userId);
+        receiverUser = await User.findById(receiver).populate('resume');
     } catch (err) {
         const error = new HttpError(
-            'Finding user failed, please try again.',
+            'Something went wrong, could not find a receiver.',
             500
         );
         return next(error);
     }
 
-    if (!user) {
-        const error = new HttpError('Could not find user for provided id.', 404);
+    if (!receiverUser) {
+        const error = new HttpError(
+            'Could not find receiver for the provided id.',
+            404
+        );
         return next(error);
     }
-
+    let chat;
     try {
-        const sess = await mongoose.startSession();
-        sess.startTransaction();
-        await createdInterview.save({ session: sess });
-        user.createdInterviews.push(createdInterview);
-        await user.save({ session: sess });
-        await sess.commitTransaction();
+        chat = await Chat.findOne({ with: sender, from: receiver });
     } catch (err) {
         const error = new HttpError(
-            'Creating message failed, please try again.',
+            'Something went wrong, could not find a chat.',
             500
         );
         return next(error);
     }
+    if (!chat) {
+        try {
+            chat = await Chat.findOne({ with: receiver, from: sender });
+        } catch (err) {
+            const error = new HttpError(
+                'Something went wrong, could not find a chat 2.',
+                500
+            );
+            return next(error);
+        }
+    }
 
-    res.status(201).json({ Message: createdInterview });
+    let createdMessage;
+
+    if (chat) {
+        createdMessage = new Message({
+            sender,
+            receiver,
+            content,
+            time: Date.now(),
+            chat: chat.id
+        });
+
+        try {
+            const sess = await mongoose.startSession();
+            sess.startTransaction();
+            await createdMessage.save({ session: sess });
+            chat.lastMessage = content;
+            if(sender==chat.with){
+                chat.withUnread=0;
+                chat.fromUnread=chat.fromUnread+1;
+            }else{
+                chat.withUnread=chat.withUnread+1;
+                chat.fromUnread=0;
+            }
+            chat.lastMessageTime=Date.now();
+            await chat.save({ session: sess });
+            await sess.commitTransaction();
+        } catch (err) {
+            const error = new HttpError(
+                'Creating message failed, please try again.',
+                500
+            );
+            return next(error);
+        }
+
+        res.status(201).json({ Message: createdMessage });
+    }
+
+    if (!chat) {
+        const mid = new ObjectID();
+        const cid = new ObjectID();
+
+        createdMessage = new Message({
+            _id: mid,
+            sender,
+            receiver,
+            content,
+            time: Date.now(),
+            chat: cid
+        });
+        const createdChat = new Chat({
+            _id: cid,
+            with: receiver,
+            withUnread:1,
+            withName:receiverUser.resume.fullname,
+            from: sender,
+            fromName:senderUser.resume.fullname,
+            lastMessage:content,
+            lastMessageTime:Date.now()
+            
+        });
+        senderUser.chats.push(createdChat)
+        receiverUser.chats.push(createdChat)
+        try {
+            const sess = await mongoose.startSession();
+            sess.startTransaction();
+            await createdMessage.save({ session: sess });
+            await createdChat.save({ session: sess });
+            await receiverUser.save({ session: sess });
+            await senderUser.save({ session: sess });
+            await sess.commitTransaction();
+        } catch (err) {
+            console.log(err)
+            const error = new HttpError(
+                'Creating message failed, please try again.',
+                500
+            );
+            return next(error);
+        }
+
+        res.status(201).json({ Message: createdMessage });
+    }
 };
 
-const deleteInterview = async (req, res, next) => {
+const deleteMessage = async (req, res, next) => {
     const interviewId = req.params.iid;
 
     let message;
@@ -185,8 +263,6 @@ const deleteInterview = async (req, res, next) => {
     res.status(200).json({ message: 'Deleted message.' });
 };
 
-
-
 exports.getMessageById = getMessageById;
 exports.getMessagesByChatId = getMessagesByChatId;
-
+exports.createMessage = createMessage;

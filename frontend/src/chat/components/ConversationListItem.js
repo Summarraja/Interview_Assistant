@@ -2,72 +2,54 @@ import React, { useContext, useEffect, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import "./ConversationList.css";
-import { Paper } from "@material-ui/core";
-import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 
 function ConversationList(props) {
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
-  const [username, setUsername] = useState();
-  const [message, setMessage] = useState();
-  useEffect(() => {
-    const fetchUserData = async () => {
-        try {
-          const responseData = await sendRequest(
-            `http://localhost:5000/api/users/${props.uid}`,
-            "GET",
-            null,
-            {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + auth.token,
-            }
-          );
-          setUsername(responseData.name)
-        } catch (err) { }
-      };
-      const fetchMessageData = async () => {
-        try {
-          const responseData = await sendRequest(
-            `http://localhost:5000/api/messages/${props.mid}`,
-            "GET",
-            null,
-            {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + auth.token,
-            }
-          );
-          setMessage(responseData.message)
-        } catch (err) { }
-      };
-      fetchUserData();
-      fetchMessageData();
-  }, [])
 
-
-  const getDay = () => {
-    return "yester"
+  const getMessage = (msg) => {
+    if (msg.length > 25) {
+      return msg.substring(0, 25) + "..."
+    } else {
+      return msg
+    }
   }
 
+  const getDate = (datetime) => {
+    let d = new Date(datetime);
+    return d.getDate() + "/" + d.getMonth() + "/" + d.getFullYear()
+  }
+  const getTime = (datetime) => {
+    let d = new Date(datetime);
+    return d.getHours() + ":" + d.getMinutes();
+  }
+  const getClass = () => {
+    if (props.selectedChat && props.selectedChat.id == props.chat.id)
+      return "selected"
+    return "contact-box"
+  }
   return (
-        <React.Fragment >
-          <div className="contact-box" onClick={() => props.setSelectedChat(props.chat)}>
-            <div className="avatar-component">
-              <Avatar src={'http://localhost:5000/uploads/images/image.png'} style={{ height: "50px", width: "50px", marginRight: "10px" }}>
-              </Avatar>
-            </div>
-            <div className="right-section">
-              <div className="contact-box-header">
-                <Typography variant="h6" className="avatar-title">{username}</Typography>
+    <React.Fragment >
+      <div className={getClass()} onClick={() => props.setSelectedChat(props.chat)}>
+        <div className="avatar-component">
+          <Avatar src={'http://localhost:5000/uploads/images/image.png'} style={{ height: "50px", width: "50px", marginRight: "10px" }}>
+          </Avatar>
+        </div>
+        <div className="right-section">
+          <div className="contact-box-header">
+            <Typography variant="h6" className="avatar-title">{(props.chat.from == auth.userId) ? props.chat.withName : props.chat.fromName}</Typography>
 
-                <span className="time-mark">{getDay()}</span>
-              </div>
-              <div className="last-msg">
-                <Typography className="text" variant="body2" >{(message )&& message.content}</Typography >
-              </div>
-            </div>
+            <span className="time-mark">{getDate(props.chat.lastMessageTime)}</span>
+
           </div>
-        </React.Fragment>
+          <div className="last-msg">
+            <Typography className="text" variant="body2" >{getMessage(props.chat.lastMessage)}</Typography >
+            <span className="time-mark">{getTime(props.chat.lastMessageTime)}</span>
+
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
   );
 }
 

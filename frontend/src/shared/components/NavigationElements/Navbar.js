@@ -150,7 +150,8 @@ export default function Navbar(props) {
         }
         // <Redirect to="/"/>
         history.go(0);
-      } catch (err) { }
+      } catch (err) {
+       }
     };
     SetRole();
   };
