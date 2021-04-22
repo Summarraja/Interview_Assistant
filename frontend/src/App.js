@@ -40,13 +40,14 @@ const App = () => {
       <Switch>
         <Route path="/Faq" exact component={Faq} />
         <Route path="/profile" exact component={UserProfile} />
-        <Route path="/interviews" exact component={Interview} />
+        <Route path="/profile/:uid" exact component={UserProfile} />
+        <Route path="/interviews/:uid" exact component={Interview} />
         <Route path="/chat" exact component={Chat} />
         <Route path="/interviews/new" exact component={CreateInterview} />
         <Route path="/interview/candidates" exact component={CandidateList} />
-        <Route path="/interviews/:interId" exact component={ViewInterview} />
-        <Route path="/certificates" exact component={Certificate} />
-        <Route path="/certificates/:certId" exact component={ViewCertificate} />
+        <Route path="/interviews/view/:interId" exact component={ViewInterview} />
+        <Route path="/certificates/:uid" exact component={Certificate} />
+        <Route path="/certificates/edit/:certId" exact component={ViewCertificate} />
         <Route path="/resume" exact component={Resume} />
 
         <Redirect to="/" />

@@ -5,7 +5,7 @@ import bgInterview5 from "../../shared/components/UIElements/Images/bgInterview5
 import Box from "@material-ui/core/Box";
 import { Paper, Typography } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import Button from "@material-ui/core/Button";
@@ -17,6 +17,7 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#fff",
+   
   },
   hero: {
     width: "100%",
@@ -56,8 +57,9 @@ const useStyles = makeStyles((theme) => ({
 
 const Certificate = () => {
  const [loadedCertificates, setLoadedCertificates ] = useState([]);
- 
+  const {uid} = useParams();
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const [approvedCertCount, setApprovedCertCount] =useState (0);
   const auth = useContext(AuthContext);
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -68,13 +70,13 @@ const Certificate = () => {
   const handleCloseDialog = () => {
     setOpen(false);
   };
-
+  console.log("USER ID: " + uid)
   //for getting certificates from the dababase
   useEffect(() => {
-    const fetchCertificates = async () => {
+    const fetchCertificates = async (usID) => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/certificates/user/" + auth.userId,
+          "http://localhost:5000/api/certificates/user/" + usID,
           'GET',
           null,
           {
@@ -87,30 +89,58 @@ const Certificate = () => {
         console.log(err);
       }
     };
-    fetchCertificates();
+    if(uid)
+    fetchCertificates(uid);
+    else
+    fetchCertificates(auth.userId)
     
-  }, []);
+  }, [uid]);
 
+  useEffect (()=>{
+    const countApprovedCert = () =>{
+      if(uid){
+        loadedCertificates.map((cert)=>{
+        cert.isApproved == true && setApprovedCertCount(approvedCertCount+1);
+      })
+    }
+    else{
+      console.log("else")
+      setApprovedCertCount(loadedCertificates.length)
+      
+    }}
+      if (loadedCertificates){
+         countApprovedCert();
+      
+      }
+   }, [uid, loadedCertificates]) 
+
+  const hasDeleteAccess = uid && uid  == auth.userId ;
+  
   return (
  
     <div className={classes.root}>
     <Box className={classes.hero}>
       <Box>Certificates</Box>
     </Box>
-    <Container maxWidth="lg" component="main">
+    
+    <Container maxWidth="lg" component="main" >
       <Paper elevation={5} className={classes.paper}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={
-            handleOpenDialog
-          }
-          className={classes.button}
-          startIcon={<AddIcon />}
-        >
-         Add Cerificates
-        </Button>
-
+     
+       {hasDeleteAccess && (
+            <Button
+            variant="contained"
+            color="primary"
+            onClick={
+              handleOpenDialog
+            }
+            className={classes.button}
+            startIcon={<AddIcon />}
+          >
+           Add Cerificates
+          </Button>
+  
+       ) }
+     
         {open && (
               <AddCertificate
                 open={open}
@@ -119,13 +149,18 @@ const Certificate = () => {
               />
             )}
               {
-              (!isLoading)? (<CertificateList items={loadedCertificates}  />) :
-                <LoadingSpinner open={true} />
+              (!isLoading)? (<CertificateList items={loadedCertificates} hasDeleteAccess={hasDeleteAccess} approvedCertCount={approvedCertCount} />) :
+                <LoadingSpinner open={true}
+                 />
             }
 
           
           </Paper>
         </Container>
+     
+    
+      
+        
       </div>
    
   );

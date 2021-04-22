@@ -13,7 +13,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 const CertificateList = (props) => {
   const classes = useStyles();
-
   if (props.items.length === 0) {
     return (
       <Container maxWidth="md" component="main">
@@ -26,9 +25,24 @@ const CertificateList = (props) => {
     );
   }
 
+  if (props.approvedCertCount == 0) {
+    return (
+      <Container maxWidth="md" component="main">
+        <Paper elevation={5} className={classes.paper}>
+          <Typography variant="h4" color="primary" align="center">
+            No certificate has been added by the user yet
+          </Typography>
+        </Paper>
+      </Container>
+    );
+  }
+
   return (
     <>
-      {props.items.map((certificate) => (
+       { console.log("HAS ACCESS: "+props.hasDeleteAccess)}
+     
+     { props.items.map((certificate) => (
+         ((props.hasDeleteAccess) || (!props.hasDeleteAccess && certificate.isApproved == true ))&& (
         <CertificateItems
           key={certificate.id}
           id={certificate.id}
@@ -40,8 +54,10 @@ const CertificateList = (props) => {
           field={certificate.field}
           status={certificate.isApproved ? "APPROVED" : "UNAPPROVED"}
           creatorId={certificate.creator}
-       
+          hasDeleteAccess={props.hasDeleteAccess}
+          approvedCertCount={props.approvedCertCount}
         />
+       )
       ))}
     </>
   );

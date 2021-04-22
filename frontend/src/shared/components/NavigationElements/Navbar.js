@@ -148,7 +148,6 @@ export default function Navbar(props) {
           const storedData = JSON.parse(localStorage.getItem('userData'));
           login(storedData.userId, storedData.token, storedData.resume, responseData.setting);
         }
-        // <Redirect to="/"/>
         history.go(0);
       } catch (err) { }
     };

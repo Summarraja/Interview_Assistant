@@ -17,14 +17,14 @@ const CertificateMenu = (props) => {
     setOpenDeleteDialog(true);
   };
 
-
   return (
-   
     <>
-      <MenuItem
+    {props.hasDeleteAccess && (
+      <>
+        <MenuItem
         onClick={props.closeCertificateMenu}
         component={Link}
-        to={`/certificates/${props.certId}`}
+        to={`/certificates/edit/${props.certId}`}
         style={{ height: 40 }}
       >
         <IconButton color="primary">
@@ -32,7 +32,9 @@ const CertificateMenu = (props) => {
         </IconButton>
         <Typography variant="subtitle1">Edit Details</Typography>
       </MenuItem>
+
       <Divider variant="middle" />
+
       <MenuItem onClick={OpenDeleteDialogHandler} style={{ height: 40 }}>
         <IconButton color="primary">
           <DeleteIcon />
@@ -40,16 +42,18 @@ const CertificateMenu = (props) => {
 
         <Typography variant="subtitle1">Remove Certificate</Typography>
       </MenuItem>
+      </>
+    )}
+    
       {OpenDeleteDialog && (
         <DeleteCertificate
           OpenDeleteDialog={OpenDeleteDialog}
           setOpenDeleteDialog={setOpenDeleteDialog}
-          certId = {props.certId}
+          certId={props.certId}
         />
       )}
     </>
-); 
-
+  );
 };
 
 export default CertificateMenu;

@@ -59,6 +59,7 @@ const CustomizedDialogs = (props) => {
           }
         );
         setResume(responseData.resumes);
+      
       } catch (err) {
         console.log(err);
       }

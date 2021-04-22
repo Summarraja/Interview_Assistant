@@ -68,7 +68,6 @@ const CandidatesDialogItems = (props) => {
   const [interview, setInterview] = useState("");
   const [success, setSuccess] = useState(false);
 
-
   useEffect(() => {
     const fetchInterview = async () => {
       try {
@@ -138,7 +137,7 @@ const CandidatesDialogItems = (props) => {
         </Snackbar>
       }
 
-      {props.userId != auth.userId && (
+      {props.userId != auth.userId &&  (
         <List className={classes.list}>
           <Grid container>
             <Grid item xs={6} sm={8} className={classes.responsive}>
@@ -146,7 +145,7 @@ const CandidatesDialogItems = (props) => {
                 className={classes.listItem}
                 button
                 component={Link}
-                to="/profile"
+                to={`/profile/${props.userId}`}
               >
                 <ListItemAvatar>
                   <Avatar
@@ -162,9 +161,9 @@ const CandidatesDialogItems = (props) => {
               </ListItem>
             </Grid>
             {isLoading && <LoadingSpinner open={isLoading} />}
-
+           
             <Grid item sm={4} xs={6} align="center">
-              {typeof interview.sentRequests !== "undefined" ? (
+              {typeof interview.sentRequests !== "undefined"? (
                 Users.map((id) => 
                   findRequestedCandidates(interview.sentRequests, id) ||
                   status == 201 ? (

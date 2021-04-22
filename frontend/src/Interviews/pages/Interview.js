@@ -6,7 +6,7 @@ import bgInterview5 from "../../shared/components/UIElements/Images/bgInterview5
 import Box from "@material-ui/core/Box";
 import { Paper } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import { Link } from "react-router-dom";
+import {  useParams} from "react-router-dom";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import Button from "@material-ui/core/Button";
@@ -17,8 +17,9 @@ import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#fff",
+   backgroundColor: "#fff"
   },
+ 
   hero: {
     width: "100%",
     height: 400,
@@ -59,13 +60,14 @@ const Interview = () => {
  // const [loadedCandidates, setloadedCandidates] = useState([]);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
+  const {uid} = useParams();
 
 
   useEffect(() => {
-    const getData = async () => {
+    const getData = async (usID) => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/interviews/user/" + auth.userId,
+          "http://localhost:5000/api/interviews/user/" + usID,
           'GET',
           null,
           {
@@ -78,9 +80,14 @@ const Interview = () => {
         console.log(err);
       }
     };
-    getData();
+    if (uid)
+        getData(uid);
+    else 
+        getData(auth.userId);
     
-  }, []);
+  }, [uid]);
+
+
 
 
 
@@ -101,8 +108,9 @@ const Interview = () => {
 
   return (
     <React.Fragment>
-
+ 
       <div className={classes.root}>
+      
         <Box className={classes.hero}>
           <Box>Interviews</Box>
         </Box>
@@ -134,7 +142,10 @@ const Interview = () => {
 
           </Paper>
         </Container>
+        
+       
       </div>
+
     </React.Fragment>
   );
 };
