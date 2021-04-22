@@ -149,7 +149,8 @@ export default function Navbar(props) {
           login(storedData.userId, storedData.token, storedData.resume, responseData.setting);
         }
         history.go(0);
-      } catch (err) { }
+      } catch (err) {
+       }
     };
     SetRole();
   };

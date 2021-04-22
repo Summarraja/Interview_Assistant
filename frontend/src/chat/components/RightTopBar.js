@@ -5,32 +5,10 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import CallIcon from '@material-ui/icons/Call';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import './RightTopBar.css';
-import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 
 function RightTopBar(props) {
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
-  const [username, setUsername] = useState();
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/api/users/${props.selectedChat.with}`,
-          "GET",
-          null,
-          {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + auth.token,
-          }
-        );
-        setUsername(responseData.name)
-      } catch (err) { }
-    };
-    if (props.selectedChat.with)
-      fetchUserData();
-  }, [props.selectedChat])
 
   return (
     <>
@@ -40,7 +18,7 @@ function RightTopBar(props) {
         </Avatar>
         <div style={{ margin: "10px" }}>
           <Typography variant="h6" >
-            {username}
+            { (props.selectedChat.from==auth.userId)? props.selectedChat.withName:props.selectedChat.fromName}
           </Typography>
         </div>
 
