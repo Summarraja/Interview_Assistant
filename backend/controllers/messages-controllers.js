@@ -218,15 +218,15 @@ const createMessage = async (req, res, next) => {
 };
 
 const deleteMessage = async (req, res, next) => {
-    const interviewId = req.params.iid;
+    const mid = req.params.mid;
 
     let message;
     try {
-        message = await Message.findById(interviewId).populate('creator');
+        message = await Message.findById(mid).populate('chat');
 
     } catch (err) {
         const error = new HttpError(
-            'Something went wrong, could not delete message.',
+            'Something went wrong, could not find message.',
             500
         );
         return next(error);
@@ -236,8 +236,7 @@ const deleteMessage = async (req, res, next) => {
         const error = new HttpError('Could not find message for this id.', 404);
         return next(error);
     }
-
-    if (message.creator.id !== req.userData.userId) {
+    if (message.sender != req.userData.userId) {
         const error = new HttpError(
             'You are not allowed to delete this message.',
             401
@@ -245,12 +244,33 @@ const deleteMessage = async (req, res, next) => {
         return next(error);
     }
 
+    let lastMessage;
+    try {
+        lastMessage = await Message.find({chat:message.chat}).sort({ $natural: -1 }).limit(2);
+
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not find lastmessage.',
+            500
+        );
+        return next(error);
+    }
+    if (!lastMessage) {
+        const error = new HttpError('Could not find lastmessage.', 404);
+        return next(error);
+    }
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
+        if(message.id==lastMessage[0].id){
+            message.chat.lastMessage=lastMessage[1].content;
+            message.chat.lastMessageTime=lastMessage[1].time;
+        }else{
+            message.chat.lastMessage=lastMessage[0].content;
+            message.chat.lastMessageTime=lastMessage[0].time;
+        }
+        await message.chat.save({ session: sess });
         await message.remove({ session: sess });
-        message.creator.createdInterviews.pull(message.id);
-        await message.creator.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
         const error = new HttpError(
@@ -260,9 +280,10 @@ const deleteMessage = async (req, res, next) => {
         return next(error);
     }
 
-    res.status(200).json({ message: 'Deleted message.' });
+    res.status(200).json({ message:"message deleted" });
 };
 
 exports.getMessageById = getMessageById;
 exports.getMessagesByChatId = getMessagesByChatId;
 exports.createMessage = createMessage;
+exports.deleteMessage=deleteMessage;

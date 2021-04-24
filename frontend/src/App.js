@@ -88,7 +88,6 @@ const App = () => {
       //   console.log(data);
       // })
     }
-
   }, [userId]);
 
   return (

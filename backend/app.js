@@ -58,18 +58,18 @@ io.on('connection', (socket) => {
     console.log(users)
   })
 
-  socket.on('message', (msg) => {
+  socket.on('message', (data) => {
     axios.post('http://localhost:5000/api/messages/',
-      msg, {
+      data.msg, {
       headers: {
-        'Authorization':msg.token
+        'Authorization':data.token
       }
     })
       .then(function (response) {
         console.log(response.status);
-        if(users[msg.receiver]){
-          users[msg.receiver].forEach(soc => {
-            io.to(soc).emit('message', msg)
+        if(users[data.msg.receiver]){
+          users[data.msg.receiver].forEach(soc => {
+            io.to(soc).emit('message', data.msg)
           });
         }
       })
@@ -77,7 +77,26 @@ io.on('connection', (socket) => {
         console.log(error);
       });
   })
-
+  socket.on('deleteMessage',(data)=>{
+    axios.patch('http://localhost:5000/api/messages/'+data.msg.id,
+    null, {
+    headers: {
+      'Authorization':data.token
+    }
+  })
+    .then(function (response) {
+      console.log(response.status);
+      if(users[data.msg.receiver]){
+        users[data.msg.receiver].forEach(soc => {
+          io.to(soc).emit('deleteMessage', data.msg)
+          console.log("emitted")
+        });
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  })
   socket.on('callUser', (data) => {
     io.to(users[data.userToCall]).emit('hey', { signal: data.signalData, from: data.from })
   })

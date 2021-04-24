@@ -92,9 +92,7 @@ const InterviewForm = (props) => {
   };
 
   return (
-    <>
-      {console.log(status)}
-    
+    <>    
       <LoadingSpinner open={isLoading} />
       <Snackbar
         open={success || !!error}

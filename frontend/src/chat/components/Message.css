@@ -33,6 +33,11 @@
     float: right;
   }
   
+  .message.received:hover  .button-delete {
+    /* background: #abdaf8; */
+    display: inline-block;
+  }
+
   .metadata {
     float: right;
     padding: 0 0 0 7px;
@@ -45,4 +50,16 @@
     font-size: 11px;
     display: inline-block;
   }
-  
+  .image{
+    display: block;
+    margin: 0;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .button-delete{
+    position: absolute;
+    display: none;
+    left: 80%;
+    bottom:  120%;
+    max-height: 1px;
+  }

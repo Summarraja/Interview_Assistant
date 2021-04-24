@@ -18,5 +18,6 @@ router.post('/',
     ],
     messagesControllers.createMessage
 );
+router.patch('/:mid',messagesControllers.deleteMessage);
 
 module.exports = router;

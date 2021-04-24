@@ -1,4 +1,4 @@
-import React,{useContext} from "react";
+import React, { useState, useContext } from "react";
 import { IconButton, makeStyles } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -8,6 +8,7 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Grid } from "@material-ui/core";
+import { Fab } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import CallIcon from "@material-ui/icons/Call";
 import VideocamIcon from "@material-ui/icons/Videocam";
@@ -15,12 +16,11 @@ import Button from "@material-ui/core/Button";
 import "./UserItem.css";
 import WorkIcon from "@material-ui/icons/Work";
 import Paper from "@material-ui/core/Paper";
-
 import EditIcon from '@material-ui/icons/Edit';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
-
-import {Link} from "react-router-dom";
-
+import { Link } from "react-router-dom";
+import UploadPhoto from "./UploadPhoto";
+import { AuthContext } from '../../shared/context/auth-context';
 
 const useStyles = makeStyles((theme) => ({
   Avatar: {
@@ -31,13 +31,13 @@ const useStyles = makeStyles((theme) => ({
     height: 150,
     transform: "translate(0px, 65px)",
   },
-  cameraIcon:{
+  cameraIcon: {
     display: "flex",
     width: 40,
     height: 30,
-    color:"#004777",
+    color: "#004777",
     transform: "translate(19rem, 2rem)",
-    [theme.breakpoints.down("xs")]:{
+    [theme.breakpoints.down("xs")]: {
       transform: "translate(16rem, 2rem)",
     }
   },
@@ -54,6 +54,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UserItem = (props) => {
+  const auth = useContext(AuthContext);
+  const [open, setOpen] = useState(false);
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
   const classes = useStyles();
 
   const RTCiconStyle = {
@@ -106,29 +114,36 @@ const UserItem = (props) => {
             className={classes.Avatar}
 
             alt={props.name}
-            // src={props.image}
+            src={"http://localhost:5000/" + auth.resume.image}
 
             alt={null}
-            src={null}
 
           />
-          
-            <Button style={{float : "right", marginTop:"10px", marginRight: "10px"}}
-                type="submit"
-                variant="contained"
-                color="primary"
-                startIcon = {<EditIcon/>}
-                size="small"
-              >
-               Edit Profile
+
+          <Button style={{ float: "right", marginTop: "10px", marginRight: "10px" }}
+            type="submit"
+            variant="contained"
+            color="primary"
+            startIcon={<EditIcon />}
+            size="small"
+          >
+            Edit Profile
               </Button>
-              <IconButton className={classes.cameraIcon} >
-              <PhotoCameraIcon style={{width:"30px", height:"40px"}}/>
-            </IconButton>
-             
+
+          <IconButton className={classes.cameraIcon} onClick={handleOpenDialog} >
+
+            <PhotoCameraIcon style={{ width: "30px", height: "40px" }} />
+          </IconButton>
+          {open && (
+            <UploadPhoto
+              open={open}
+              handleCloseDialog={handleCloseDialog}
+              setOpen={setOpen}
+            />
+          )}
         </div>
-       
-      
+
+
         <div style={{ textAlign: "center", marginTop: 70 }}>
 
           <Typography variant="h4">{props.name}</Typography>
@@ -162,7 +177,7 @@ const UserItem = (props) => {
             {props.resume.address}
           </Typography>
 
-    
+
         </div>
 
 
@@ -179,16 +194,16 @@ const UserItem = (props) => {
           </AccordionSummary>
           <AccordionDetails lg={12} md={6}>
             <Typography style={typoStyle}>
-             {props.userInterviews.length + " "} 
-             { props.userInterviews.length === 0 || 1 ? "Interview" : "Interviews"}
+              {props.userInterviews.length + " "}
+              {props.userInterviews.length === 0 || 1 ? "Interview" : "Interviews"}
             </Typography>
             <Button
               type="submit"
               variant="contained"
               color="primary"
               size="small"
-              component = {Link}
-              to ="/interviews"
+              component={Link}
+              to="/interviews"
             >
               View Interviews
             </Button>
@@ -209,17 +224,17 @@ const UserItem = (props) => {
           <AccordionDetails lg={12} md={6}>
             <div style={divDetails}>
               <Typography style={typoStyle}>
-              {props.userCertificate.length + " "} 
-             { props.userCertificate.length === 0 || 1 ? "Certificate" : "Certificates"}
-              
+                {props.userCertificate.length + " "}
+                {props.userCertificate.length === 0 || 1 ? "Certificate" : "Certificates"}
+
               </Typography>
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
                 size="small"
-                component= {Link}
-                to = "/certificates"
+                component={Link}
+                to="/certificates"
               >
                 View Certificates
               </Button>
