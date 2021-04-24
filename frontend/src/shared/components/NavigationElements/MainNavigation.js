@@ -127,7 +127,7 @@ const MainNavigation = () => {
             SetOpenDrawer(false);
           }}
           component={Link}
-          to="/interviews"
+          to={`/interviews/${auth.userId}`}
         >
           <ListItemIcon>
             <DvrIcon className = {classes.Navicon} />
@@ -149,7 +149,7 @@ const MainNavigation = () => {
             SetOpenDrawer(false);
           }}
           component={Link}
-          to="/certificates"
+          to={`/certificates/${auth.userId}`}
         >
           <ListItemIcon>
             <IoRibbonOutline className = {classes.Navicon}/>

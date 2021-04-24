@@ -1,5 +1,3 @@
-//const fs = require('fs');
-
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
@@ -125,6 +123,7 @@ const createCertificate = async (req, res, next) => {
         await user.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
+        console.log("Certificate:  "+err)
         const error = new HttpError(
             'Creating certificate failed, please try again.',
             500

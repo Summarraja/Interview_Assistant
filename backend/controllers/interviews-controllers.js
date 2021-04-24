@@ -394,6 +394,7 @@ const inviteCandidate = async (req, res, next) => {
         await candidate.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
+        console.log("Interview: " + err)
         const error = new HttpError(
             'Something went wrong, could not send request to the Candidate for interview.',
             500

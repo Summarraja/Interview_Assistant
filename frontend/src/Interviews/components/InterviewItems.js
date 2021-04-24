@@ -109,9 +109,10 @@ const InterviewItems = (props) => {
     >
       {matches && (
         <MenuItem
+        style={{ height: 40 }}
         component={Link}
-        to={`/interviews/${props.id}`}
-          style={{ height: 40 }}
+        to={`/interviews/view/${props.id}`}
+      
         >
           <IconButton color="primary">
             <IoMdEye />
@@ -172,7 +173,7 @@ const InterviewItems = (props) => {
            className={classes.ViewButton}
             startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
             component={Link}
-            to={`/interviews/${props.id}`}
+            to={`/interviews/view/${props.id}`}
           >
             View Details
           </Button>
