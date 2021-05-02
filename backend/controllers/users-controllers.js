@@ -1,4 +1,5 @@
 const { validationResult } = require("express-validator");
+const fs = require('fs');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
@@ -181,7 +182,6 @@ const uploadImage = async (req, res, next) => {
     );
   }
   const { userId } = req.body;
-  console.log("yes")
   let existingUser;
   try {
     existingUser = await User.findById(userId).populate('resume');
@@ -201,8 +201,14 @@ const uploadImage = async (req, res, next) => {
     return next(error);
   }
   try {
-    existingUser.resume.image=req.file.path;
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    fs.unlink(existingUser.resume.image, err => {
+      console.log(err);
+    });
+    existingUser.resume.image = req.file.path;
     await existingUser.resume.save();
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
       "Image Upload failed, please try again later.",

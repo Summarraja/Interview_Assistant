@@ -35,6 +35,7 @@ import theme from './shared/components/UIElements/AppTheme/theme';
 const App = () => {
   const { token, login, logout, userId, resume, setting } = useAuth();
   const [socket,setSocket] = useState();
+
   let routes;
   if (token) {
     routes = (
@@ -84,12 +85,9 @@ const App = () => {
   useEffect(() => {
     if (userId) {
       setSocket(io.connect("http://localhost:5000", { query: "id=" + userId }));
-      // socket.current.emit("client", { id: userId })
-      // socket.current.on("hey", (data) => {
-      //   console.log(data);
-      // })
     }
   }, [userId]);
+
 
   return (
     <React.Fragment>

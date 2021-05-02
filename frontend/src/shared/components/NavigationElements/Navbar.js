@@ -1,3 +1,4 @@
+import React, { Fragment, useContext, useState, useEffect } from "react";
 import {
   Typography,
   AppBar,
@@ -10,7 +11,6 @@ import {
   Avatar,
   Hidden,
 } from "@material-ui/core";
-import React, { Fragment, useContext, useState, useEffect } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import MenuIcon from "@material-ui/icons/Menu";
 import IconButton from "@material-ui/core/IconButton";
@@ -33,6 +33,7 @@ import { useHttpClient } from "../../hooks/http-hook";
 import LoadingSpinner from "../UIElements/LoadingSpinner";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import { SocketContext } from "../../../shared/context/socket-context";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -110,7 +111,9 @@ export default function Navbar(props) {
 
   const [NavSignUp, setNavSignup] = useState(true);
   const auth = useContext(AuthContext);
-  const { token, login, logout, userId, resume, setting } = useAuth();
+  const socket = useContext(SocketContext);
+
+  const { login} = useAuth();
 
   const history = useHistory();
   const [success, setSuccess] = useState(false);
@@ -120,7 +123,10 @@ export default function Navbar(props) {
   const clearSuccess = () => {
     setSuccess(false);
   };
-
+  const logout=()=>{
+    auth.logout();
+    socket.disconnect();
+  }
   useEffect(() => {
     setSuccess(status == 200);
   }, [status]);
@@ -239,14 +245,14 @@ export default function Navbar(props) {
         component={Link}
         to="/profile"
       >
-        <Avatar
-          src={null}
+        {auth.resume &&(<Avatar
+          src={"http://localhost:5000/" + auth.resume.image}
           alt={null}
           style={{ height: "70px", width: "70px", marginRight: 10 }}
-        />
+        />)}
         <div>
           <Typography variant="h6">
-            {auth.resume && auth.resume.firstname + " " + auth.resume.lastname}
+            {auth.resume && auth.resume.fullname}
           </Typography>
           <Typography variant="body1">See your profile</Typography>
         </div>
@@ -289,7 +295,7 @@ export default function Navbar(props) {
         <Typography variant="subtitle1">Settings</Typography>
       </MenuItem>
       <Divider variant="middle" />
-      <MenuItem className={classes.root} onClick={auth.logout}>
+      <MenuItem className={classes.root} onClick={logout}>
         <IconButton color="primary">
           <IoLogOut />
         </IconButton>

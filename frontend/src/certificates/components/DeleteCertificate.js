@@ -42,7 +42,6 @@ const DeleteCertificate = (props) => {
   };
 
   const CertificateDeleteHandler = async () => {
-    console.log("yes");
     try {
       await sendRequest(
         `http://localhost:5000/api/certificates/${props.certId}`,
@@ -62,7 +61,6 @@ const DeleteCertificate = (props) => {
 
   return (
     <>
-      {console.log(status)}
       {isLoading && <LoadingSpinner open={isLoading} />}
 
       <Snackbar

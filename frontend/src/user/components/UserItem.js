@@ -63,11 +63,10 @@ const UserItem = (props) => {
     setOpen(true);
   };
   const handleCloseDialog = () => {
+    console.log("close")
     setOpen(false);
   };
   const classes = useStyles();
-  const auth = useContext(AuthContext);
-
 
   const RTCiconStyle = {
     margin: "20px",
@@ -82,10 +81,10 @@ const UserItem = (props) => {
 
   const divstyle = {
     textAlign: "center",
-   // margin: "0px",
+    // margin: "0px",
   };
   const divIconStyle = {
-      paddingRight: "5px",
+    paddingRight: "5px",
     transform: "translate(2px, 7px)",
     color: "#696969",
   };
@@ -128,18 +127,28 @@ const UserItem = (props) => {
             type="submit"
             variant="contained"
             color="primary"
-            startIcon={props.otherUser ? <RiUserUnfollowFill/> : <EditIcon />}
+            startIcon={props.otherUser ? <RiUserUnfollowFill /> : <EditIcon />}
             size="small"
           >
             {props.otherUser ? "Block User" : "Edit Profile"}
           </Button>
           {!props.otherUser && (
-          <IconButton className={classes.cameraIcon} onClick={handleOpenDialog} >
+            <>
+            <IconButton className={classes.cameraIcon} onClick={handleOpenDialog} >
 
-          <PhotoCameraIcon style={{ width: "30px", height: "40px" }} />
-        </IconButton>
+              <PhotoCameraIcon style={{ width: "30px", height: "40px" }} />
+
+            </IconButton>
+            {open && (
+                <UploadPhoto
+                  open={open}
+                  handleCloseDialog={handleCloseDialog}
+                  setOpen={setOpen}
+                />
+              )}
+            </>
           )}
-        
+
         </div>
 
         <div style={{ textAlign: "center", marginTop: 70, width: "100%" }}>
@@ -171,13 +180,13 @@ const UserItem = (props) => {
           </Typography>
 
           <Typography variant="subtitle1">
-          < HomeIcon style={divIconStyle} />
+            < HomeIcon style={divIconStyle} />
             Lives at {props.resume.address}
           </Typography>
 
         </div>
 
-        { props.userSett.role !== "Candidate" && (
+        {props.userSett.role !== "Candidate" && (
           <Accordion style={accordStyle} expanded={true}>
             <AccordionSummary
               //expandIcon={<ExpandMoreIcon />} 
@@ -208,7 +217,7 @@ const UserItem = (props) => {
         )}
         <Accordion style={accordStyle} expanded={true}>
           <AccordionSummary
-         //   expandIcon={<ExpandMoreIcon />}
+            //   expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
@@ -248,7 +257,7 @@ const UserItem = (props) => {
             style={resumeButtonStyle}
             startIcon={<FaRegAddressCard />}
           >
-            {props.otherUser? `${props.resume.firstname} Resume`  : "My Resume"}
+            {props.otherUser ? `${props.resume.firstname} Resume` : "My Resume"}
           </Button>
         </Grid>
       </Paper>

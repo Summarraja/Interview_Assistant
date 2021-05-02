@@ -43,7 +43,6 @@ const CancelInterview = (props) => {
 
   // Request to get sepcific Interview Details
   useEffect(() => {
-    console.log(interviewId)
     const fetchInterview = async () => {
       try {
         const responseData = await sendRequest(
@@ -81,19 +80,8 @@ const CancelInterview = (props) => {
       if (!loadedField) fetchField();
     }, [loadedField, loadedInterview]);
 
-  //  console.log(loadedInterview)
-    loadedInterview && console.log("field: " +loadedInterview)
-   // console.log(loadedField)
-
-
   const CancelInterviewHandler = async() => {
    
-    console.log(loadedInterview.title)
-    console.log(loadedInterview.description)
-    console.log(loadedField.title)
-    console.log(loadedInterview.date)
-    console.log(loadedInterview.time)
-    console.log(interviewId)
      try {
       const responseData = await sendRequest(
         `http://localhost:5000/api/interviews/${interviewId}`,
@@ -113,12 +101,6 @@ const CancelInterview = (props) => {
 
       );
        props.setOpenCancelDialog(false);
-      // console.log(responseData)
-      // status == 200 && props.setDisableField(true) ? setSuccess(true) : setSuccess(false)
-      // status == 200 ? setSuccess(true) : setSuccess(false)
-      console.log(status)
-      // status == 200 && alert(loadedInterview.isCancelled)
-      // console.log(loadedInterview.isCancelled)
     } catch (err) {}
   }
 

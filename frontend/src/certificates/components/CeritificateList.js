@@ -39,7 +39,6 @@ const CertificateList = (props) => {
 
   return (
     <>
-       { console.log("HAS ACCESS: "+props.hasDeleteAccess)}
      
      { props.items.map((certificate) => (
          ((props.hasDeleteAccess) || (!props.hasDeleteAccess && certificate.isApproved == true ))&& (

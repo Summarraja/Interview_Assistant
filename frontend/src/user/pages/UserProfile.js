@@ -122,7 +122,6 @@ export default function UserProfile() {
     })
   }
   else{
-    console.log("else")
     setApprovedCertCount(certificates.length)
     
   }}
@@ -138,10 +137,9 @@ export default function UserProfile() {
     <Container maxWidth="sm">
       <CssBaseline />
 
-     {console.log("PLEASE SAHIH HO JAO: "+ approvedCertCount)}
       <LoadingSpinner open={isLoading}/>
       {!isLoading && 
-       <Users approvedCertCount = {approvedCertCount} otherUser = {uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>
+       <User approvedCertCount = {approvedCertCount} otherUser = {uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>
       
       }
          </Container>

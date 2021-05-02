@@ -1,4 +1,3 @@
-
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useEffect, useState, useContext } from "react";
 import BottomBar from "../components/BottomBar";
@@ -72,16 +71,20 @@ function Chat() {
   const [selectedChat, setSelectedChat] = useState()
   const [messages, setMessages] = useState([]);
   const [flag, setFlag] = useState(false);
-  const [newMessage, setNewMessage] = useState('')
+  const [newMessage, setNewMessage] = useState('');
+  const [file, setFile] = useState('');
+  const[previewUrl,setPreviewUrl]=useState('');
 
   useEffect(() => {
     socket.on("message", (msg) => {
       if (selectedChat) {
-        setMessages([...messages, msg]);
+        if (selectedChat.with == msg.sender || selectedChat.with == msg.receiver)
+          setMessages([...messages, msg]);
       }
       if (data) {
         fetchChats();
       }
+      openChat()
     })
     return () => {
       socket.off("message");
@@ -90,17 +93,16 @@ function Chat() {
   useEffect(() => {
 
     socket.on("deleteMessage", (msg) => {
-      console.log("deleted")
       if (selectedChat) {
         if (messages[messages.length - 1].id == msg.id) {
           let chat = selectedChat;
-          chat.lastMessage = messages[messages.length - 2].content;
+          chat.lastMessage = messages[messages.length - 2].content?messages[messages.length - 2].content:'image';
           chat.lastMessageTime = messages[messages.length - 2].time;
           setSelectedChat(chat);
         }
         setMessages(messages.filter(m => m.id != msg.id));
-      }else{
-       fetchChats();
+      } else {
+        fetchChats();
       }
     })
     return () => {
@@ -108,10 +110,22 @@ function Chat() {
     };
   }, [messages, selectedChat]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchChats();
-  },[])
-
+  }, [])
+  const openChat = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/settings/openChat/${auth.userId}`,
+        "PATCH",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+    } catch (err) { }
+  }
   const fetchChats = async () => {
     try {
       const responseData = await sendRequest(
@@ -127,9 +141,8 @@ function Chat() {
     } catch (err) { }
   };
   function pushMessage() {
-    if (!(/^ *$/.test(newMessage))) {
-
-      let msg = {
+    if (!(/^ *$/.test(newMessage)) || file) {
+      let message = {
         sender: auth.userId,
         receiver: (selectedChat.with == auth.userId) ? selectedChat.from : selectedChat.with,
         content: newMessage,
@@ -138,11 +151,20 @@ function Chat() {
         chat: selectedChat.id,
       }
       let d = {
-        msg,
+        message,
+        file:file,
+        fileName:file.name,
+        previewUrl:previewUrl,
         token: "Bearer " + auth.token
       }
       socket.emit("message", d);
       setNewMessage('');
+      setPreviewUrl('');
+      setFile('');
+      let msg={
+        ...message,
+        previewUrl
+      };
       setMessages([...messages, msg]);
       if (data) {
         let index;
@@ -152,7 +174,7 @@ function Chat() {
           }
         });
         if (index > -1) {
-          data[index].lastMessage = msg.content;
+          data[index].lastMessage = msg.content?msg.content:'image';
           data[index].lastMessageTime = msg.time;
           if (data[index].from != auth.userId)
             data[index].withUnread = 0;
@@ -173,9 +195,9 @@ function Chat() {
             name={auth.resume && auth.resume.fullname}
           />
         </header>
-        <ChatSearch data={data} setSearchedData={setSearchedData}/>
+        <ChatSearch data={data} setSearchedData={setSearchedData} />
         <div className="contact-boxes">
-          {data != null && (<ConversationList data={data} setData={setData} searchedData={searchedData}  selectedChat={selectedChat} setSelectedChat={setSelectedChat} />)}
+          {data != null && (<ConversationList data={data} setData={setData} searchedData={searchedData} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />)}
         </div>
       </div>
       <div className={classes.mainChat}>
@@ -184,7 +206,7 @@ function Chat() {
         </header>
 
         {selectedChat != null && (<MessageBox selectedChat={selectedChat} setSelectedChat={setSelectedChat} messages={messages} setMessages={setMessages} />)}
-        {selectedChat != null && (<BottomBar newMessage={newMessage} setNewMessage={setNewMessage} pushMessage={pushMessage} />)}
+        {selectedChat != null && (<BottomBar newMessage={newMessage} setNewMessage={setNewMessage} pushMessage={pushMessage} previewUrl={previewUrl} setPreviewUrl={setPreviewUrl} file={file} setFile={setFile}/>)}
 
       </div>
 

@@ -70,7 +70,6 @@ const Certificate = () => {
   const handleCloseDialog = () => {
     setOpen(false);
   };
-  console.log("USER ID: " + uid)
   //for getting certificates from the dababase
   useEffect(() => {
     const fetchCertificates = async (usID) => {
@@ -104,7 +103,6 @@ const Certificate = () => {
       })
     }
     else{
-      console.log("else")
       setApprovedCertCount(loadedCertificates.length)
       
     }}

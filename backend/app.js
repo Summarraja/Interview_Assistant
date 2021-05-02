@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+var FormData = require('form-data');
 
 const express = require('express');
 const app = express();
@@ -59,17 +60,26 @@ io.on('connection', (socket) => {
   })
 
   socket.on('message', (data) => {
+    let msgdata = new FormData();
+    msgdata.append('sender', data.message.sender);
+    msgdata.append('receiver', data.message.receiver);
+    msgdata.append('content', data.message.content);
+    msgdata.append('time', data.message.time);
+    msgdata.append('isRead', 'true');
+    msgdata.append('chat', data.message.chat);
+    msgdata.append('image', data.file,{ filename : data.fileName });
     axios.post('http://localhost:5000/api/messages/',
-      data.msg, {
+      msgdata, {
       headers: {
-        'Authorization':data.token
+        ...msgdata.getHeaders(),
+          'Authorization':data.token
       }
     })
       .then(function (response) {
         console.log(response.status);
-        if(users[data.msg.receiver]){
-          users[data.msg.receiver].forEach(soc => {
-            io.to(soc).emit('message', data.msg)
+        if (users[data.message.receiver]) {
+          users[data.message.receiver].forEach(soc => {
+            io.to(soc).emit('message', response.data.Message)
           });
         }
       })
@@ -77,25 +87,25 @@ io.on('connection', (socket) => {
         console.log(error);
       });
   })
-  socket.on('deleteMessage',(data)=>{
-    axios.patch('http://localhost:5000/api/messages/'+data.msg.id,
-    null, {
-    headers: {
-      'Authorization':data.token
-    }
-  })
-    .then(function (response) {
-      console.log(response.status);
-      if(users[data.msg.receiver]){
-        users[data.msg.receiver].forEach(soc => {
-          io.to(soc).emit('deleteMessage', data.msg)
-          console.log("emitted")
-        });
+  socket.on('deleteMessage', (data) => {
+    axios.patch('http://localhost:5000/api/messages/' + data.msg.id,
+      null, {
+      headers: {
+        'Authorization': data.token
       }
     })
-    .catch(function (error) {
-      console.log(error);
-    });
+      .then(function (response) {
+        console.log(response.status);
+        if (users[data.msg.receiver]) {
+          users[data.msg.receiver].forEach(soc => {
+            io.to(soc).emit('deleteMessage', data.msg)
+            console.log("emitted")
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   })
   socket.on('callUser', (data) => {
     io.to(users[data.userToCall]).emit('hey', { signal: data.signalData, from: data.from })

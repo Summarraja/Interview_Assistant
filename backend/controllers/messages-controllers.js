@@ -68,16 +68,21 @@ const getMessagesByChatId = async (req, res, next) => {
 const createMessage = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log(errors)
         return next(
             new HttpError('Invalid inputs passed, please check your data.', 422)
         );
     }
 
     const { sender, receiver, content } = req.body;
-
+    if (content.length == 0 &&!req.file ) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
     let senderUser;
     try {
-        senderUser = await User.findById(sender).populate('resume');
+        senderUser = await User.findById(sender).populate('resume').populate('setting');
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find a sender.',
@@ -96,7 +101,7 @@ const createMessage = async (req, res, next) => {
 
     let receiverUser;
     try {
-        receiverUser = await User.findById(receiver).populate('resume');
+        receiverUser = await User.findById(receiver).populate('resume').populate('setting');
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find a receiver.',
@@ -140,7 +145,8 @@ const createMessage = async (req, res, next) => {
         createdMessage = new Message({
             sender,
             receiver,
-            content,
+            content:content?content:'',
+            file:req.file?req.file.path:'',
             time: Date.now(),
             chat: chat.id
         });
@@ -149,18 +155,21 @@ const createMessage = async (req, res, next) => {
             const sess = await mongoose.startSession();
             sess.startTransaction();
             await createdMessage.save({ session: sess });
-            chat.lastMessage = content;
-            if(sender==chat.with){
-                chat.withUnread=0;
-                chat.fromUnread=chat.fromUnread+1;
-            }else{
-                chat.withUnread=chat.withUnread+1;
-                chat.fromUnread=0;
+            chat.lastMessage = content?content:'image';
+            if (sender == chat.with) {
+                chat.withUnread = 0;
+                chat.fromUnread = chat.fromUnread + 1;
+            } else {
+                chat.withUnread = chat.withUnread + 1;
+                chat.fromUnread = 0;
             }
-            chat.lastMessageTime=Date.now();
+            chat.lastMessageTime = Date.now();
+            receiverUser.setting.unreadChats = receiverUser.setting.unreadChats + 1;
+            await receiverUser.setting.save({ session: sess });
             await chat.save({ session: sess });
             await sess.commitTransaction();
         } catch (err) {
+            console.log(err)
             const error = new HttpError(
                 'Creating message failed, please try again.',
                 500
@@ -179,28 +188,31 @@ const createMessage = async (req, res, next) => {
             _id: mid,
             sender,
             receiver,
-            content,
+            content:content?content:'',
+            file:req.file?req.file.path:'',
             time: Date.now(),
             chat: cid
         });
         const createdChat = new Chat({
             _id: cid,
             with: receiver,
-            withUnread:1,
-            withName:receiverUser.resume.fullname,
+            withUnread: 1,
+            withName: receiverUser.resume.fullname,
             from: sender,
-            fromName:senderUser.resume.fullname,
-            lastMessage:content,
-            lastMessageTime:Date.now()
-            
+            fromName: senderUser.resume.fullname,
+            lastMessage: content?content:'image',
+            lastMessageTime: Date.now()
+
         });
         senderUser.chats.push(createdChat)
         receiverUser.chats.push(createdChat)
+        receiverUser.setting.unreadChats = 1;
         try {
             const sess = await mongoose.startSession();
             sess.startTransaction();
             await createdMessage.save({ session: sess });
             await createdChat.save({ session: sess });
+            await receiverUser.setting.save({ session: sess });
             await receiverUser.save({ session: sess });
             await senderUser.save({ session: sess });
             await sess.commitTransaction();
@@ -246,7 +258,7 @@ const deleteMessage = async (req, res, next) => {
 
     let lastMessage;
     try {
-        lastMessage = await Message.find({chat:message.chat}).sort({ $natural: -1 }).limit(2);
+        lastMessage = await Message.find({ chat: message.chat }).sort({ $natural: -1 }).limit(2);
 
     } catch (err) {
         const error = new HttpError(
@@ -262,12 +274,12 @@ const deleteMessage = async (req, res, next) => {
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
-        if(message.id==lastMessage[0].id){
-            message.chat.lastMessage=lastMessage[1].content;
-            message.chat.lastMessageTime=lastMessage[1].time;
-        }else{
-            message.chat.lastMessage=lastMessage[0].content;
-            message.chat.lastMessageTime=lastMessage[0].time;
+        if (message.id == lastMessage[0].id) {
+            message.chat.lastMessage = lastMessage[1].content;
+            message.chat.lastMessageTime = lastMessage[1].time;
+        } else {
+            message.chat.lastMessage = lastMessage[0].content;
+            message.chat.lastMessageTime = lastMessage[0].time;
         }
         await message.chat.save({ session: sess });
         await message.remove({ session: sess });
@@ -280,10 +292,10 @@ const deleteMessage = async (req, res, next) => {
         return next(error);
     }
 
-    res.status(200).json({ message:"message deleted" });
+    res.status(200).json({ message: "message deleted" });
 };
 
 exports.getMessageById = getMessageById;
 exports.getMessagesByChatId = getMessagesByChatId;
 exports.createMessage = createMessage;
-exports.deleteMessage=deleteMessage;
+exports.deleteMessage = deleteMessage;

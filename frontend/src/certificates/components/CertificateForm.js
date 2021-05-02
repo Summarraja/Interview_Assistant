@@ -107,11 +107,6 @@ const CertificateForm = (props) => {
   });
 
   const onSubmitHandler = async (values) => {
-    console.log("imag " + values.CertificateImage.name);
-    console.log("imag " + values.title);
-    console.log("imag " + values.description);
-    console.log("imag " + values.institute);
-
     try {
       const responseData = await sendRequest(
         "http://localhost:5000/api/certificates/",
@@ -132,7 +127,6 @@ const CertificateForm = (props) => {
 
   return (
     <>
-      {console.log(status)}
 
       <LoadingSpinner open={isLoading} />
       <Snackbar

@@ -12,25 +12,31 @@ router.get('/:iid', settingsControllers.getSettingById);
 
 router.get('/user/:uid', settingsControllers.getSettingByUserId);
 
+router.get('/notifications/:uid', settingsControllers.getNotifications);
 
 router.post(
-    '/',
-    [
-      check('notiStatus')
-        .not()
-        .isEmpty(),
-      check('status').isIn( ['busy', 'available','away']),
-      check('role').isIn(['admin', 'interviewer','candidate']),
-    ],
-    settingsControllers.createSettings
-  );
+  '/',
+  [
+    check('notiStatus')
+      .not()
+      .isEmpty(),
+    check('status').isIn(['busy', 'available', 'away']),
+    check('role').isIn(['admin', 'interviewer', 'candidate']),
+  ],
+  settingsControllers.createSettings
+);
 
-  router.patch(
-    '/role/:sid',
-    [
-        check('role').isIn(['Admin', 'Interviewer','Candidate']),
-    ],
-      settingsControllers.SwitchRole
+router.patch(
+  '/role/:sid',
+  [
+    check('role').isIn(['Admin', 'Interviewer', 'Candidate']),
+  ],
+  settingsControllers.SwitchRole
+);
+router.patch(
+  '/openChat/:uid',
+
+  settingsControllers.openChat
 );
 
 // router.patch(
@@ -42,8 +48,8 @@ router.post(
 // );
 
 
-router.delete('/:sid',  settingsControllers.deleteSettings);
+router.delete('/:sid', settingsControllers.deleteSettings);
 
-  
+
 
 module.exports = router;

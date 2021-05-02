@@ -23,12 +23,7 @@ function ConversationList({ data,setData, searchedData,selectedChat, setSelected
       }
     }
   }, [selectedChat,data])
-  // if (!data) {
-  //   return (
-  //     <>
-  //     </>
-  //   );
-  // }
+
   if (searchedData) {
     return (
       <>

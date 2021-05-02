@@ -32,7 +32,7 @@ function ConversationList(props) {
   }
   const getDate = (datetime) => {
     let d = new Date(datetime);
-    return d.getDate() + "/" + d.getMonth() + "/" + d.getFullYear()
+    return d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear()
   }
   const getTime = (datetime) => {
     let d = new Date(datetime);
