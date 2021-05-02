@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 const HttpError = require('../models/http-error');
 const Message = require('../models/message');
@@ -274,11 +275,14 @@ const deleteMessage = async (req, res, next) => {
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
+        fs.unlink(message.image, err => {
+            console.log(err);
+          });
         if (message.id == lastMessage[0].id) {
-            message.chat.lastMessage = lastMessage[1].content;
+            message.chat.lastMessage = lastMessage[1].content?lastMessage[1].content:'image';
             message.chat.lastMessageTime = lastMessage[1].time;
         } else {
-            message.chat.lastMessage = lastMessage[0].content;
+            message.chat.lastMessage =lastMessage[0].content?lastMessage[0].content:'image';
             message.chat.lastMessageTime = lastMessage[0].time;
         }
         await message.chat.save({ session: sess });
