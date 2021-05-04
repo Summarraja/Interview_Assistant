@@ -1,0 +1,72 @@
+.app {
+    display: flex;
+    min-height: 100vh;
+    
+  }
+  
+  .left {
+    background-color: #fff;
+    width: 25vw;
+    /* box-shadow: 0 0 0.5cm #7b7d7d; */
+    margin-left: 100px;
+    margin-top: 50px;
+    height: fit-content;
+  }
+  
+  .right {
+    width: 75vw;
+    min-height: 100vh;
+    font-family: "Lora", serif;
+  }
+  
+  .right p {
+    margin: 0;
+  }
+  
+  .right .page {
+    background: white;
+    display: block;
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 0.5cm;
+    box-shadow: 0 0 0.5cm #7b7d7d;
+    width: 21cm;
+    height: 29.7cm;
+  }
+  
+  @media print {
+    @page {
+      margin: 0;
+    }
+    body * {
+      visibility: hidden;
+    }
+    .page * {
+      visibility: visible;
+    }
+    .page {
+      position: fixed;
+      left: 10px;
+      top: -50px;
+    }
+  }
+  
+  /* Smartphones (portrait and landscape) ----------- */
+  @media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+  
+    .left {
+      background-color: #fff;
+      width: 100vw;
+      box-shadow: 0 0 0.5cm #7b7d7d;
+    }
+  
+    .right {
+      height: 10vh;
+      font-family: "Lora", serif;
+    }
+  }

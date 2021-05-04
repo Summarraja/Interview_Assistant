@@ -144,7 +144,7 @@ const UserItem = (props) => {
               <CallIcon style={RTCiconStyle} />
             </IconButton>
             <IconButton>
-              <VideocamIcon style={RTCiconStyle} />
+              <VideocamIcon style={RTCiconStyle}/>
             </IconButton>
           </Grid>
         </div>
