@@ -1,51 +1,50 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import "./ConversationList.css";
+import ConversationListItem from './ConversationListItem';
 import { Paper } from "@material-ui/core";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
 
+function ConversationList({ data,setData, searchedData,selectedChat, setSelectedChat }) {
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const auth = useContext(AuthContext);
 
+  useEffect(() => {
+    if (selectedChat) {
+      let index = data.indexOf(selectedChat);
+      if (index > -1) {
+        if (data[index].from != auth.userId)
+          data[index].withUnread = 0;
+        else
+          data[index].fromUnread = 0;
+          setData(data)
+      }
+    }
+  }, [selectedChat,data])
 
-function ConversationList({data, setcontactSelected}) {
-
-
-  if (data.length === 0) {
-    return(
-       
-          <Typography variant="h5" color="primary" align="center" style={{marginTop:"200px"}}>
-            No Chats Available
-          </Typography>
+  if (searchedData) {
+    return (
+      <>
+      {searchedData.map(chat => (
+        <ConversationListItem key={chat.id} selectedChat={selectedChat} setSelectedChat={setSelectedChat} chat={chat} />
+      ))}
+    </>
     );
   }
-
+  if (data.length === 0) {
+    return (
+      <Typography variant="h5" color="primary" align="center" style={{ marginTop: "200px" }}>
+        No Chats Available
+      </Typography>
+    );
+  }
   return (
     <>
-     {data.map(chat=>(
-
-           <div className="contact-box" onClick={()=>setcontactSelected(chat)}>
-           <div className="avatar-component">
-             <Avatar style={{ height: "50px", width: "50px", marginRight: "10px" }}>        
-             </Avatar>
-           </div>
-       
-           <div className="right-section">
-              <div className="contact-box-header">
-        
-               <Typography variant="h6" className="avatar-title">{chat.with}</Typography>
-           
-                <span className="time-mark">yesterday</span>
-              </div>
-              <div className="last-msg">
-                <Typography className="text" variant="body2" >Hello ! How are you!!</Typography >
-              </div>
-            </div>
-          </div> 
-     
-        
-        ))}         
-
-     
-
+      {data.map(chat => (
+        <ConversationListItem key={chat.id} selectedChat={selectedChat} setSelectedChat={setSelectedChat} chat={chat} />
+      ))}
     </>
   );
 }

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
 const Interview = require('../models/interview');
-const Field  = require('../models/field');
+const Field = require('../models/field');
 const User = require('../models/user');
 
 const getInterviewById = async (req, res, next) => {
@@ -13,6 +13,7 @@ const getInterviewById = async (req, res, next) => {
     try {
         interview = await Interview.findById(interviewId);
     } catch (err) {
+        console.log(err)
         const error = new HttpError(
             'Something went wrong, could not find a interview.',
             500
@@ -38,22 +39,30 @@ const getInterviewsByUserId = async (req, res, next) => {
         userWithInterviews = await User.findById(userId).populate('createdInterviews');
     } catch (err) {
         const error = new HttpError(
-            'Fetching places failed, please try again later.',
+            'Fetching interviews failed, please try again later.',
             500
         );
         return next(error);
     }
 
-    if (!userWithInterviews || userWithInterviews.createdInterviews.length === 0) {
+    if (!userWithInterviews) {
         return next(
             new HttpError('Could not find interviews for the provided user id.', 404)
         );
     }
+    if (userWithInterviews.createdInterviews.length === 0) {
+        res.json({
+            interviews: []
+        });
+    }
+    else {
     res.json({
         interviews: userWithInterviews.createdInterviews.map(interview =>
             interview.toObject({ getters: true })
         )
     });
+}
+
 };
 
 const createInterview = async (req, res, next) => {
@@ -64,11 +73,11 @@ const createInterview = async (req, res, next) => {
         );
     }
 
-    const { title, description, date, time , fieldTitle } = req.body;
+    const { title, description, date, time, fieldTitle } = req.body;
 
     let field;
     try {
-        field = await Field.findOne({title:fieldTitle});
+        field = await Field.findOne({ title: fieldTitle });
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find a field.',
@@ -77,6 +86,7 @@ const createInterview = async (req, res, next) => {
         return next(error);
     }
 
+    console.log("created field: " + field)
     if (!field) {
         const error = new HttpError(
             'Could not find field for the provided title.',
@@ -92,9 +102,9 @@ const createInterview = async (req, res, next) => {
         time,
         field: field.id,
         creator: req.userData.userId,
-        candidates:[],
-        sentRequests:[],
-        receivedRequests:[],
+        candidates: [],
+        sentRequests: [],
+        receivedRequests: [],
     });
 
     let user;
@@ -132,6 +142,7 @@ const createInterview = async (req, res, next) => {
 };
 
 const updateInterview = async (req, res, next) => {
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return next(
@@ -139,11 +150,11 @@ const updateInterview = async (req, res, next) => {
         );
     }
 
-    const { title, description, date, fieldTitle } = req.body;
+    const { title, description, date, time, fieldTitle, isCancelled } = req.body;
 
     let field;
     try {
-        field = await Field.findOne({title:fieldTitle});
+        field = await Field.findOne({ title: fieldTitle });
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find a field.',
@@ -151,7 +162,6 @@ const updateInterview = async (req, res, next) => {
         );
         return next(error);
     }
-
     if (!field) {
         const error = new HttpError(
             'Could not find field for the provided title.',
@@ -165,6 +175,7 @@ const updateInterview = async (req, res, next) => {
     try {
         interview = await Interview.findById(interviewId);
     } catch (err) {
+
         const error = new HttpError(
             'could not find interview of specified id.',
             500
@@ -186,11 +197,14 @@ const updateInterview = async (req, res, next) => {
     interview.title = title;
     interview.description = description;
     interview.date = date;
+    Interview.time = time;
     interview.field = field.id;
+    interview.isCancelled = isCancelled;
 
     try {
         await interview.save();
     } catch (err) {
+        console.log(err);
         const error = new HttpError(
             'Something went wrong, could not update interview.',
             500
@@ -207,6 +221,7 @@ const deleteInterview = async (req, res, next) => {
     let interview;
     try {
         interview = await Interview.findById(interviewId).populate('creator');
+
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not delete interview.',
@@ -232,7 +247,7 @@ const deleteInterview = async (req, res, next) => {
         const sess = await mongoose.startSession();
         sess.startTransaction();
         await interview.remove({ session: sess });
-        interview.creator.interviews.pull(interview);
+        interview.creator.createdInterviews.pull(interview.id);
         await interview.creator.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
@@ -299,7 +314,7 @@ const addCandidate = async (req, res, next) => {
     }
 
     const added = interview.candidates.addToSet(candidate);
-    if (added.length<1) {
+    if (added.length < 1) {
         const error = new HttpError('Candidate is already added to the interview.', 401);
         return next(error);
     }
@@ -315,6 +330,90 @@ const addCandidate = async (req, res, next) => {
     }
 
     res.status(200).json({ interview: interview.toObject({ getters: true }) });
+};
+
+const inviteCandidate = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
+
+    const { uid } = req.body;
+
+    let candidate;
+    try {
+        candidate = await User.findById(uid);
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not find a User.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!candidate) {
+        const error = new HttpError(
+            'Could not find candidate for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    const interviewId = req.params.iid;
+
+    let interview;
+    try {
+        interview = await Interview.findById(interviewId);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not find interview of specified id.',
+            500
+        );
+        return next(error);
+    }
+    if (!interview) {
+        const error = new HttpError(
+            'Could not find interview for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    if (interview.creator.toString() !== req.userData.userId) {
+        const error = new HttpError('You are not allowed to edit this interview.', 401);
+        return next(error);
+    }
+
+    interview.sentRequests.addToSet(candidate.id);
+    candidate.receivedRequests.addToSet(interview.id);
+
+    try {
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await interview.save({ session: sess });
+        await candidate.save({ session: sess });
+        await sess.commitTransaction();
+    } catch (err) {
+        console.log("Interview: " + err)
+        const error = new HttpError(
+            'Something went wrong, could not send request to the Candidate for interview.',
+            500
+        );
+        return next(error);
+    }
+
+
+    // try {
+    //     await interview.save();
+    // } catch (err) {
+    //     const error = new HttpError(
+    //         'Something went wrong, could not send request to the Candidate for interview.',
+    //         500
+    //     );
+    //     return next(error);
+    // }
+
+    res.status(201).json({ interview: interview.toObject({ getters: true }) });
 };
 
 const removeCandidate = async (req, res, next) => {
@@ -394,3 +493,4 @@ exports.updateInterview = updateInterview;
 exports.deleteInterview = deleteInterview;
 exports.addCandidate = addCandidate;
 exports.removeCandidate = removeCandidate;
+exports.inviteCandidate = inviteCandidate;

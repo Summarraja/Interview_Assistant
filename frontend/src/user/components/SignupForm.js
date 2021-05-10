@@ -18,7 +18,7 @@ const SignupForm = (props) => {
             marginTop: theme.spacing(2),
         },
         submit: {
-            margin: theme.spacing(3, 0, 2),
+            margin: theme.spacing(0, 0, 2),
         },
     }));
     const classes = useStyles();
@@ -39,6 +39,7 @@ const SignupForm = (props) => {
                                 name="firstName"
                                 variant="outlined"
                                 fullWidth
+                                size = "small"
                                 id="firstName"
                                 label="First Name"
                                 autoFocus
@@ -55,6 +56,7 @@ const SignupForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size = "small"
                                 id="lastName"
                                 label="Last Name"
                                 name="lastName"
@@ -74,6 +76,7 @@ const SignupForm = (props) => {
                                 setValue={props.setCountry}
                                 title={"Select country"}
                                 data={countries}
+                                size = "small"
                                 fullWidth />
 
                         </Grid>
@@ -83,6 +86,7 @@ const SignupForm = (props) => {
                                 date={props.dob}
                                 setDate={props.setdob}
                                 label="Date of Birth"
+                                size = "small"
                             />
                         </Grid>
 
@@ -91,6 +95,7 @@ const SignupForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size = "small"
                                 id="email"
                                 label="Email Address"
                                 name="email"
@@ -109,6 +114,7 @@ const SignupForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size = "small"
                                 name="contact"
                                 label="Contact No"
                                 id="contact"
@@ -127,6 +133,7 @@ const SignupForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size = "small"
                                 name="password"
                                 label="Password"
                                 type="password"
@@ -146,6 +153,7 @@ const SignupForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size = "small"
                                 name="confirmPassword"
                                 label="Confirm Password"
                                 type="password"
@@ -164,6 +172,7 @@ const SignupForm = (props) => {
                                 as={TextField}
                                 variant="outlined"
                                 fullWidth
+                                size = "small"
                                 multiline
                                 id="Address"
                                 label="Address"
@@ -178,17 +187,18 @@ const SignupForm = (props) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} >
                             <RadioButtons
                                 gender={props.gender}
                                 setGender={props.setGender}
+
                             />
 
                         </Grid>
                         
                         <Button
                             type="submit"
-                            fullWidth
+                            fullWidth  
                             variant="contained"
                             color="primary"
                             className={classes.submit}

@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: theme.typography.fontFamily,
     },
     submit: {
-        margin: theme.spacing(3, 0, 2),
+        margin: theme.spacing(1, 0, 2),
     },
 }));
 
@@ -56,6 +56,7 @@ const AuthForm = props => {
                             margin="normal"
                             required
                             fullWidth
+                            size="medium"
                             id="email"
                             label="Email Address"
                             name="username"
@@ -74,6 +75,7 @@ const AuthForm = props => {
                             margin="normal"
                             required
                             fullWidth
+                            size="medium"
                             name="password"
                             label="Password"
                             type="password"

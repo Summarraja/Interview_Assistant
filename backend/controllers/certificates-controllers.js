@@ -1,5 +1,3 @@
-//const fs = require('fs');
-
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
@@ -48,7 +46,7 @@ const getCertificatesByUserId = async (req, res, next) => {
     }
 
     // if (!places || places.length === 0) {
-    if (!userWithCertificate || userWithCertificate.certificates.length == 0) {
+    if (!userWithCertificate ) {
         return next(
             new HttpError('Could not find certificates for the provided user id.', 404)
         );
@@ -69,11 +67,11 @@ const createCertificate = async (req, res, next) => {
         );
     }
 
-    const { title, description, institute, fieldId } = req.body;
+    const { title, description, institute, fieldTitle } = req.body;
 
     let field;
     try {
-        field = await Field.findById(fieldId);
+        field = await Field.findOne({title: fieldTitle});
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find a field.',
@@ -84,7 +82,7 @@ const createCertificate = async (req, res, next) => {
 
     if (!field) {
         const error = new HttpError(
-            'Could not find field for the provided id.',
+            'Could not find field for the provided title.',
             404
         );
         return next(error);
@@ -94,8 +92,10 @@ const createCertificate = async (req, res, next) => {
         title,
         description,
         institute,
-        image: req.file != undefined ? req.file.path : "/", //change
+        isApproved: false,
+       // image: req.file != undefined ? req.file.path : "/", //change
         field: field.id,
+        file: "https://blockgeeks.com/wp-content/uploads/2019/04/Certificate-2.jpg",
         creator: req.userData.userId
     });
 
@@ -104,7 +104,7 @@ const createCertificate = async (req, res, next) => {
         user = await User.findById(req.userData.userId);
     } catch (err) {
         const error = new HttpError(
-            'Creating place failed, please try again.',
+            'Finding user failed, please try again.',
             500
         );
         return next(error);
@@ -123,6 +123,7 @@ const createCertificate = async (req, res, next) => {
         await user.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
+        console.log("Certificate:  "+err)
         const error = new HttpError(
             'Creating certificate failed, please try again.',
             500
@@ -141,9 +142,30 @@ const updateCertificate = async (req, res, next) => {
         );
     }
 
-    const { title, description, institute, fieldId } = req.body;
-    const certificateId = req.params.cid;
+    const { title, description, institute, fieldTitle } = req.body;
 
+    let field;
+    try {
+        field = await Field.findOne({title: fieldTitle});
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not find a field.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!field) {
+        const error = new HttpError(
+            'Could not find field for the provided id.',
+            404
+        );
+        return next(error);
+    }
+
+
+    const certificateId = req.params.cid;
+   
     let certificate;
     try {
         certificate = await Certificate.findById(certificateId);
@@ -162,24 +184,7 @@ const updateCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    let field;
-    try {
-        field = await Field.findById(fieldId);
-    } catch (err) {
-        const error = new HttpError(
-            'Something went wrong, could not find a field.',
-            500
-        );
-        return next(error);
-    }
-
-    if (!field) {
-        const error = new HttpError(
-            'Could not find field for the provided id.',
-            404
-        );
-        return next(error);
-    }
+  
 
     if (certificate.creator.toString() !== req.userData.userId) {
         const error = new HttpError('You are not allowed to edit this certificate.', 401);
@@ -315,7 +320,7 @@ const deleteCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    const imagePath = certificate.image;
+    // const imagePath = certificate.image;
 
     try {
         const sess = await mongoose.startSession();
@@ -332,9 +337,9 @@ const deleteCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    fs.unlink(imagePath, err => {
-        console.log(err);
-    });
+    // fs.unlink(imagePath, err => {
+    //     console.log(err);
+    // });
 
     res.status(200).json({ message: 'Deleted certificate.' });
 };

@@ -1,34 +1,28 @@
-import React, {useContext}from "react";
+import React, { useContext, useEffect, useState } from "react";
 import UserItem from "./UserItem";
-import { AuthContext } from '../../shared/context/auth-context';
+import { AuthContext } from "../../shared/context/auth-context";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
-const Users = () => {
+const Users = (props) => {
   const auth = useContext(AuthContext);
-  // const USERS = [
-  //   {
-  //     id: "u1",
-  //     name: "Muqaddas Pervez",
-  //     city: "Islamabad",
-  //     interviews: 4,
-  //     certificates: 2,
-  //     country: "Pakistan",
-  //     profession: "Front-end Developer",
-  //     image:
-  //       "https://data.whicdn.com/images/295658437/original.jpg",
-  //   },
-  //   {
-  //     id: "u1",
-  //     name: "Muqaddas Pervez",
-  //     city: "Islamabad",
-  //     interviews: 4,
-  //     certificates: 2,
-  //     country: "Pakistan",
-  //     profession: "Front-end Developer",
-  //     image:
-  //       "https://data.whicdn.com/images/295658437/original.jpg",
-  //   },
-  // ];
-  return <UserItem resume={auth.resume} />;
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+
+  return (
+    <>
+      {!isLoading ? (
+        <UserItem
+          resume={ props.userResume.user ? props.userResume : auth.resume }
+          approvedCertCount={props.approvedCertCount}
+          userInter={props.userInterviews}
+          userSett = {props.userSetting}
+          otherUser = {props.otherUser}
+        />
+      ) : (
+        <LoadingSpinner open={isLoading} />
+      )}
+    </>
+  );
 };
 
 export default Users;

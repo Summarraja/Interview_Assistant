@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.use(checkAuth);
 
-router.get('/id/:fid', fieldsControllers.getFieldById);
+router.get('/:fid', fieldsControllers.getFieldById);
 router.get('/title/:ft', fieldsControllers.getFieldByTitle);
 
 

@@ -11,7 +11,7 @@ const TimePicker = (props) => {
         id="time"
         label="Set time"
         type="time"
-        onChange = {!props.disabled?handleTimeChange : props.setTime(props.time)}
+        onChange = {!props.disabled? handleTimeChange : props.setTime(props.time)}
         defaultValue={props.time}
         fullWidth
         InputLabelProps={{

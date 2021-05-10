@@ -68,7 +68,7 @@ const SignIn = () => {
   const paperStyle = {
     width: "80%",
     padding: 20,
-    margin: "80px auto"
+    margin: "120px auto"
   };
   const avatarStyle = {
     backgroundColor: "primary",
@@ -96,7 +96,7 @@ const SignIn = () => {
           'Content-Type': 'application/json'
         }
       );
-      auth.login(responseData.userId, responseData.token,responseData.resume);
+      auth.login(responseData.userId, responseData.token,responseData.resume, responseData.setting);
     } catch (err) {
     }
 

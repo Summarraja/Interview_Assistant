@@ -45,12 +45,9 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     backgroundColor: theme.palette.primary.main,
   },
-
 }));
 
 const CreateInterview = (props) => {
- 
-
   var curr = new Date();
   curr.setDate(curr.getDate() + 3);
   var date = curr.toISOString().substr(0, 10);
@@ -70,20 +67,12 @@ const CreateInterview = (props) => {
 
   return (
     <Fragment>
-      <Dialog
-        open={props.open }
-        onClose={props.handleCloseDialog}
-        fullWidth
-        maxWidth="sm"
-      >
-      
-        <DialogTitle
-          onClose={props.handleCloseDialog}
-          disableTypography
-        >
-          <Typography variant="h4" align="center">Schedule Interview</Typography>
-           
-            
+      <Dialog open={props.open} fullWidth maxWidth="sm">
+        <DialogTitle disableTypography>
+          <Typography variant="h4" align="center">
+            Schedule Interview
+          </Typography>
+
           <CssBaseline />
           <div className={classes.paper}>
             <Avatar className={classes.avatar}>
@@ -93,14 +82,14 @@ const CreateInterview = (props) => {
         </DialogTitle>
         <DialogContent dividers>
           <div className={classes.demo}>
-            <InterviewForm 
-             field={field}
-             setField={setField}
-             doi={doi}
-             setDoi={setDoi}
-             timeOfInter = {timeOfInter}
-             setTimeOfInter = {setTimeOfInter}
-             setOpen = {props.setOpen}
+            <InterviewForm
+              field={field}
+              setField={setField}
+              doi={doi}
+              setDoi={setDoi}
+              timeOfInter={timeOfInter}
+              setTimeOfInter={setTimeOfInter}
+              setOpen={props.setOpen}
             />
           </div>
         </DialogContent>

@@ -11,8 +11,20 @@ const theme = createMuiTheme({
     },
   
   },
+  // overrides:{
+  //   MuiButton:{
+  //     label: {
+  //       fontFamily:'"Serif"', 
+  //     }
+  //   }
+  // },
+
+
   typography: {
     fontFamily: "Serif, Open Sans, Arial",
+    //  button: {
+    //   fontFamily: "Serif, Open Sans, Arial",
+    // },
     h3: {
       fontSize: "3rem",
     },
@@ -25,7 +37,6 @@ const theme = createMuiTheme({
     },
     body1:{
       fontSize: "1rem",
-
     }
   },
   overrides: {

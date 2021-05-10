@@ -56,6 +56,29 @@ const getResumeByUserId = async (req, res, next) => {
     });
 };
 
+const getResumeByUserName = async (req, res, next) => {
+   
+    const userName = req.params.name;
+    
+    let userWithResume;
+    try {
+        userWithResume =  await Resume.find({ $or: [ { fullname: new RegExp(userName, 'i') }]  }).exec();
+        
+    } catch (err) {
+        const error = new HttpError(
+            'Fetching resume failed, please try again later.',
+            500
+        );
+        return next(error);
+    }
+
+    res.json({
+        resumes: userWithResume.map(resume =>
+            resume.toObject({ getters: true })
+     )
+     });
+};
+
 const createResume = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -88,6 +111,7 @@ const createResume = async (req, res, next) => {
     const createdResume = new Resume({
         firstName,
         lastName,
+        fullName: firstName +" "+ lastName,
         dob,
         phone,
         email,
@@ -186,6 +210,7 @@ const updateResume = async (req, res, next) => {
 
     resume.firstName = firstName;
     resume.lastName = lastName;
+    resume.fullName = firstName + " " + lastName;
     resume.dob = dob;
     resume.phone = phone;
     resume.email = email;
@@ -254,6 +279,7 @@ const deleteResume = async (req, res, next) => {
 
 exports.getResumeById = getResumeById;
 exports.getResumeByUserId = getResumeByUserId;
+exports.getResumeByUserName = getResumeByUserName;
 exports.createResume = createResume;
 exports.updateResume = updateResume;
 exports.deleteResume = deleteResume;

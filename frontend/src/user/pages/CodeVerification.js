@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
         textAlign: "center",
         margin: "10px",
         border: "solid",
-        borderColor: "#004777"
+        borderColor: "#d3d3d3"
 
     },
     typo: {
@@ -73,14 +73,14 @@ export default function CodeVerification(props) {
         username: "",
     };
     const ButtonStyle = {
-        minWidth: "160px",
-        minHeight: "40px",
+        // minWidth: "160px",
+        // minHeight: "40px",
         margin: "10px 8px ",
 
     };
 
     const typostyle = {
-        color: "black",
+        color: "#004777",
         fontWeight: "bold"
 
     };
@@ -114,7 +114,8 @@ export default function CodeVerification(props) {
                 }
             );
             if (responseData.isVerified) {
-                auth.login(responseData.userId, responseData.token);
+
+                auth.login(responseData.userId, responseData.token, responseData.resume, responseData.setting);
             }
             else {
             }
@@ -167,7 +168,7 @@ export default function CodeVerification(props) {
         setDisableBtn(true);
     }
     return (
-        <Container component="main" maxWidth="sm" >
+        <Container component="main" maxWidth="xs" >
             <LoadingSpinner open={isLoading} />
             <Snackbar open={!!error} autoHideDuration={6000}>
                 <MuiAlert elevation={6} variant="filled" severity="error" onClose={clearError}>
@@ -224,15 +225,17 @@ export default function CodeVerification(props) {
                                         type="submit"
                                         variant="contained"
                                         color="primary"
+                                        size="large"
                                         style={ButtonStyle}
                                         onSubmit={onSubmitHandler}
                                     >
-                                        Verify Account
+                                        Verify
                                     </Button>
                                     <Button
                                         variant="outlined"
                                         color="primary"
                                         style={ButtonStyle}
+                                        size="large"
                                         onClick={onCancelHandler}
                                     >
                                         Clear
@@ -258,6 +261,7 @@ export default function CodeVerification(props) {
                                     <Button
                                         variant="contained"
                                         color="primary"
+                                        size="large"
                                         style={ButtonStyle}
                                         onClick={onResendHandler}
                                         disabled={DisableBtn}

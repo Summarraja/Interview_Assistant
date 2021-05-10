@@ -3,10 +3,19 @@
     padding: 0 2rem;
     overflow-y: auto;
   }
-
-
+  .message.received::before {
+    position: absolute;
+    left: -10px;
+    top: 0;
+    content: '';
+    display: block;
+    border: solid;
+    border-width: 0px 16px 16px 0px;
+    border-color: transparent;
+    border-right-color: #c7e5f7;
+  }
   .message.received {
-    background: #4E78A0;
+    background: #c7e5f7;
     border-radius: 0px 5px 5px 5px;
     float: left;
   }
@@ -24,6 +33,11 @@
     float: right;
   }
   
+  .message.received:hover  .button-delete {
+    /* background: #abdaf8; */
+    display: inline-block;
+  }
+
   .metadata {
     float: right;
     padding: 0 0 0 7px;
@@ -36,4 +50,16 @@
     font-size: 11px;
     display: inline-block;
   }
-  
+  .image{
+    display: block;
+    margin: 0;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .button-delete{
+    position: absolute;
+    display: none;
+    left: 80%;
+    bottom:  120%;
+    max-height: 1px;
+  }

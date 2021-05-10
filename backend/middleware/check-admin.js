@@ -2,6 +2,10 @@ const User = require('.././models/user');
 const HttpError = require('../models/http-error');
 
 module.exports = async (req, res, next) => {
+    if(req.method === 'OPTIONS'){
+        return next();
+    }
+  
     let user;
     try {
         user = await User.findById(req.userData.userId);

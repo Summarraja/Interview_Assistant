@@ -72,7 +72,6 @@ const InterviewForm = (props) => {
   });
 
   const onSubmitHandler = async (values) => {
-    {console.log(props.handleCloseDialog)}
     try {
       const responseData = await sendRequest(
         "http://localhost:5000/api/interviews/",
@@ -93,9 +92,7 @@ const InterviewForm = (props) => {
   };
 
   return (
-    <>
-      {console.log(status)}
-    
+    <>    
       <LoadingSpinner open={isLoading} />
       <Snackbar
         open={success || !!error}

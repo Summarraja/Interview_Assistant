@@ -34,14 +34,26 @@ router.patch(
       .not()
       .isEmpty(),
     check('title').isLength({ min: 5 }),
-    check('description').isLength({ min: 10 }),
-    check('date').isDate()
+    check('description').isLength({ min: 15 }),
+    check('fieldTitle').not().isEmpty(),
+    check('date').not().isEmpty(),
+    check('time').not().isEmpty(),
   ],
   interviewsControllers.updateInterview
 );
 
 router.patch(
-  '/:iid/addcandidate',
+  '/invitecandidate/:iid',
+  [
+    check('uid')
+      .not()
+      .isEmpty()
+  ],
+  interviewsControllers.inviteCandidate
+);
+
+router.patch(
+  '/addcandidate/:iid',
   [
     check('uid')
       .not()
@@ -50,7 +62,7 @@ router.patch(
   interviewsControllers.addCandidate
 );
 router.patch(
-  '/:iid/removecandidate',
+  '/removecandidate/:iid',
   [
     check('uid')
       .not()
@@ -58,6 +70,8 @@ router.patch(
   ],
   interviewsControllers.removeCandidate
 );
+
+
 
 router.delete('/:iid', interviewsControllers.deleteInterview);
 

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -18,11 +18,13 @@ import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import Hidden from "@material-ui/core/Hidden";
 import { Divider } from "@material-ui/core";
 import { AuthContext } from "../../context/auth-context";
+import { SocketContext } from "../../context/socket-context";
 import { Link } from "react-router-dom";
-import { FaGraduationCap } from "react-icons/fa";
-//import white from '@material-ui/core/colors/white';
-
-//import { AuthContext } from "../   context/auth-context";
+import { IoRibbonOutline } from "react-icons/io5";
+import { ImProfile } from "react-icons/im";
+import { TiMessages } from "react-icons/ti";
+import Badge from "@material-ui/core/Badge";
+import { useHttpClient } from "../../hooks/http-hook";
 
 const drawerWidth = 200;
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   drawer: {
     width: drawerWidth,
     flexShrink: 0
-   
+
   },
   drawerPaper: {
     width: drawerWidth
@@ -59,14 +61,14 @@ const useStyles = makeStyles((theme) => ({
     },
     width: drawerWidth,
   },
-   Navicon : {
+  Navicon: {
     fontSize: "2rem",
     color: "#fff",
     [theme.breakpoints.down("xs")]: {
       color: "#004777"
     },
   },
-  divider:{
+  divider: {
     backgroundColor: "#fff"
   }
 
@@ -75,10 +77,64 @@ const useStyles = makeStyles((theme) => ({
 
 const MainNavigation = () => {
   const auth = useContext(AuthContext);
+  const socket = useContext(SocketContext);
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+
   const classes = useStyles();
   const [OpenDrawer, SetOpenDrawer] = useState(false);
+  const [unreadChats, setUnreadChats] = useState(0);
 
-  
+  useEffect(() => {
+    if (!socket)
+      return;
+    socket.on("message", (data) => {
+      console.log("msg  noti")
+      setUnreadChats(unreadChats + 1);
+    })
+    socket.on("notification", (data) => {
+      console.log("noti")
+    })
+
+    return () => {
+      socket.off("message");
+      socket.off("notification");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!auth.userId)
+      return;
+    getBadges();
+  }, [auth.userId]);
+  const getBadges = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/settings/notifications/${auth.userId}`,
+        "GET",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setUnreadChats(responseData.unreadChats);
+    } catch (err) { }
+
+  }
+  const openChat = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/settings/openChat/${auth.userId}`,
+        "PATCH",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setUnreadChats(responseData.unreadChats);
+    } catch (err) { }
+  }
   const HandleDrawer = () => {
     SetOpenDrawer(!OpenDrawer);
   };
@@ -95,21 +151,25 @@ const MainNavigation = () => {
           button
           key="Inbox"
           onClick={() => {
+            openChat();
             SetOpenDrawer(false);
           }}
           component={Link}
           to="/chat"
         >
           <ListItemIcon>
-            <EmailIcon className = {classes.Navicon} />
+            <Badge badgeContent={unreadChats} color="error">
+              <TiMessages className={classes.Navicon} />
+            </Badge>
           </ListItemIcon>
+
           <ListItemText primary="Inbox" />
         </ListItem>
       </Tooltip>
-     
-<Divider variant="middle" className={classes.divider}/>
-     
-     
+
+      <Divider variant="middle" className={classes.divider} />
+
+
       <Tooltip
         title={OpenDrawer ? "" : "Interviews"}
         placement="right"
@@ -123,15 +183,17 @@ const MainNavigation = () => {
             SetOpenDrawer(false);
           }}
           component={Link}
-          to="/interviews"
+          to={`/interviews/${auth.userId}`}
         >
           <ListItemIcon>
-            <DvrIcon className = {classes.Navicon} />
+            <Badge badgeContent={4} color="error">
+              <DvrIcon className={classes.Navicon} />
+            </Badge>
           </ListItemIcon>
           <ListItemText primary="Interviews" />
         </ListItem>
       </Tooltip>
-      <Divider variant="middle" className={classes.divider}/>
+      <Divider variant="middle" className={classes.divider} />
       <Tooltip
         title={OpenDrawer ? "" : "Certificates"}
         placement="right"
@@ -145,15 +207,15 @@ const MainNavigation = () => {
             SetOpenDrawer(false);
           }}
           component={Link}
-          to="/certificates"
+          to={`/certificates/${auth.userId}`}
         >
           <ListItemIcon>
-            <FaGraduationCap className = {classes.Navicon}/>
+            <IoRibbonOutline className={classes.Navicon} />
           </ListItemIcon>
           <ListItemText primary="Certificates" />
         </ListItem>
       </Tooltip>
-      <Divider variant="middle" className={classes.divider}/>
+      <Divider variant="middle" className={classes.divider} />
       <Tooltip
         title={OpenDrawer ? "" : "Resume"}
         placement="right"
@@ -170,12 +232,12 @@ const MainNavigation = () => {
           to="/resume"
         >
           <ListItemIcon>
-            <AssignmentIndIcon className = {classes.Navicon}/>
+            <ImProfile className={classes.Navicon} />
           </ListItemIcon>
           <ListItemText primary="Resume" />
         </ListItem>
       </Tooltip>
-      <Divider variant="middle" className={classes.divider}/>
+      <Divider variant="middle" className={classes.divider} />
 
       <Tooltip
         title={OpenDrawer ? "" : "Charts"}
@@ -191,15 +253,15 @@ const MainNavigation = () => {
           }}
         >
           <ListItemIcon>
-            <InsertChartIcon className = {classes.Navicon} />
+            <InsertChartIcon className={classes.Navicon} />
           </ListItemIcon>
           <ListItemText primary="Charts" />
         </ListItem>
       </Tooltip>
     </List>
   );
-  
-  
+
+
 
   return (
     <div className={classes.root}>

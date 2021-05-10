@@ -145,7 +145,7 @@ export default function SignUp() {
   const paperStyle = {
     width: "100%",
     padding: 20,
-    margin: "80px auto",
+    margin: "80px 0px 20px 0px",
   };
   const avatarStyle = {
     backgroundColor: "primary",

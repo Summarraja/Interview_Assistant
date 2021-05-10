@@ -1,26 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import { Grid, IconButton, Typography } from "@material-ui/core";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SettingsIcon from '@material-ui/icons/Settings';
 import './LeftTopBar.css';
+import {AuthContext} from '../../shared/context/auth-context';
 
-
-function LeftTopBar() {
-
-
+function LeftTopBar(props) {
+  const auth = useContext(AuthContext);
   return (
     <>
-
       <div className="avatar-component">
 
-        <Avatar>
-          {/* // src="https://st3.depositphotos.com/6697918/15699/v/380/depositphotos_156996594-stock-illustration-beautiful-muslim-arab-woman-in.jpg "
-        // alt=""  */}
+        <Avatar
+          src={"http://localhost:5000/" + auth.resume.image}
+          >
         </Avatar>
         <div style={{ margin: "10px" }}>
           <Typography variant="h6" >
-            Muqaddas
+            {props.name}
           </Typography>
         </div>
 

@@ -75,18 +75,6 @@
     word-wrap: break-word;
   }
   
-  .message::before {
-    position: absolute;
-    left: -10px;
-    top: 0;
-    content: '';
-    display: block;
-    border: solid;
-    border-width: 0px 16px 16px 0px;
-    border-color: transparent;
-    border-right-color: #4E78A0;
-  }
-  
   .welcome {
     background: #f8f9fa;
     flex: 1;

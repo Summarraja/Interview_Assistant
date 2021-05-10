@@ -1,44 +1,42 @@
-
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import BottomBar from "../components/BottomBar";
 import ChatSearch from "../components/ChatSearch";
 import ConversationList from "../components/ConversationList";
 import LeftTopBar from "../components/LeftTopBar";
 import MessageBox from "../components/MessageBox";
 import RightTopBar from "../components/RightTopBar";
-
-
+import { AuthContext } from "../../shared/context/auth-context";
+import { SocketContext } from "../../shared/context/socket-context";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 import "./Chat.css"
-
-
 const useStyles = makeStyles((theme) => ({
 
-  aside : {
-  //  width: "25%",
+  aside: {
+    //  width: "25%",
     display: "flex",
     flexDirection: "column",
     marginLeft: "60px",
     background: "#fff",
     [theme.breakpoints.up("xs")]: {
-     width: "50%",
-     marginLeft: 0,
+      width: "50%",
+      marginLeft: 0,
       marginTop: 65
     },
     [theme.breakpoints.up("sm")]: {
       width: "40%",
       marginLeft: 60
-     
+
     },
     [theme.breakpoints.up("md")]: {
       width: "25%",
       marginLeft: 60
-     
+
     },
   },
-  
+
   mainChat: {
-   // width: "75%",
+    // width: "75%",
     background: "#d3d3d3",
     display: "flex",
     flexDirection: "column",
@@ -46,249 +44,173 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("xs")]: {
       width: "50%",
       marginTop: 65
-    
+
     },
     [theme.breakpoints.up("sm")]: {
       width: "60%",
-    
+
     },
     [theme.breakpoints.up("md")]: {
       width: "75%",
-      
-    
+
+
     },
-  
+
   }
 }));
 
-
 function Chat() {
 
+  const auth = useContext(AuthContext);
+  const socket = useContext(SocketContext);
 
-  const ChatUsers = [
-    {
-      id:"c1",
-      with: "Summar",
-      messages: [
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Hello",
-          time : "10:00 AM",
-          isRead: true,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "Hi",
-          time : "10:01 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "How Are You?",
-          time : "10:02 AM",
-          isRead: true,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time : "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time : "10:10 AM",
-          isRead: false,
-        },
-  
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time : "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time : "10:10 AM",
-          isRead: false,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time : "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time : "10:10 AM",
-          isRead: false,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time : "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time : "10:10 AM",
-          isRead: false,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Summar",
-          content: "I am Fine",
-          time : "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Summar",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time : "10:10 AM",
-          isRead: false,
-        },
-    
-      ]
-    },
-    {
-      id:"c2",
-      with: "Urooj",
-      messages: [
-        {
-          sender: "Urooj",
-          receiver: "Muqaddas",
-          content: "Hi",
-          time : "10:00 AM",
-          isRead: true,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Urooj",
-          content: "Hello",
-          time : "10:01 AM",
-          isRead: true,
-        },
-        {
-          sender: "Urooj",
-          receiver: "Muqaddas",
-          content: "what are you doing?",
-          time : "10:02 AM",
-          isRead: true,
-        },
-        {
-          sender: "Muqaddas",
-          receiver: "Urooj",
-          content: "Nothing",
-          time : "10:05 AM",
-          isRead: true,
-        },
-        {
-          sender: "Urooj",
-          receiver: "Muqaddas",
-          content: "Okay.",
-          time : "10:10 AM",
-          isRead: false,
-        },
-      ]
-    },
-  ];
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const classes = useStyles();
+  const [data, setData] = useState();
+  const [searchedData, setSearchedData] = useState();
+  const [selectedChat, setSelectedChat] = useState()
+  const [messages, setMessages] = useState([]);
+  const [flag, setFlag] = useState(false);
+  const [newMessage, setNewMessage] = useState('');
+  const [file, setFile] = useState('');
+  const[previewUrl,setPreviewUrl]=useState('');
 
+  useEffect(() => {
+    socket.on("message", (msg) => {
+      if (selectedChat) {
+        if (selectedChat.with == msg.sender || selectedChat.with == msg.receiver)
+          setMessages([...messages, msg]);
+      }
+      if (data) {
+        fetchChats();
+      }
+      openChat()
+    })
+    return () => {
+      socket.off("message");
+    };
+  }, [data, selectedChat, messages]);
+  useEffect(() => {
 
-const classes = useStyles();
-const [data, setdata]=useState(ChatUsers)
-const [contactSelected, setcontactSelected]=useState({})
-const [currentMessages, setCurrentMessages] = useState([])
-const [Newmessage, setNewmessage]= useState('')
+    socket.on("deleteMessage", (msg) => {
+      if (selectedChat) {
+        if (messages[messages.length - 1].id == msg.id) {
+          let chat = selectedChat;
+          chat.lastMessage = messages[messages.length - 2].content?messages[messages.length - 2].content:'image';
+          chat.lastMessageTime = messages[messages.length - 2].time;
+          setSelectedChat(chat);
+        }
+        setMessages(messages.filter(m => m.id != msg.id));
+      } else {
+        fetchChats();
+      }
+    })
+    return () => {
+      socket.off("deleteMessage");
+    };
+  }, [messages, selectedChat]);
 
-// console.log(contactSelected)
-useEffect(()=>{
-  const currentContact= data.find(d=>d.id===contactSelected.id)
-  setCurrentMessages((currentContact && currentContact.messages)|| [])
-},[contactSelected, data])
+  useEffect(() => {
+    fetchChats();
+  }, [])
+  const openChat = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/settings/openChat/${auth.userId}`,
+        "PATCH",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+    } catch (err) { }
+  }
+  const fetchChats = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/chats/${auth.userId}`,
+        "GET",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setData(responseData.chats);
+    } catch (err) { }
+  };
+  function pushMessage() {
+    if (!(/^ *$/.test(newMessage)) || file) {
+      let message = {
+        sender: auth.userId,
+        receiver: (selectedChat.with == auth.userId) ? selectedChat.from : selectedChat.with,
+        content: newMessage,
+        time: (new Date()).toISOString(),
+        isRead: true,
+        chat: selectedChat.id,
+      }
+      let d = {
+        message,
+        file:file,
+        fileName:file.name,
+        previewUrl:previewUrl,
+        token: "Bearer " + auth.token
+      }
+      socket.emit("message", d);
+      setNewMessage('');
+      setPreviewUrl('');
+      setFile('');
+      let msg={
+        ...message,
+        previewUrl
+      };
+      setMessages([...messages, msg]);
+      if (data) {
+        let index;
+        data.forEach(chat => {
+          if (chat.id == msg.chat) {
+            index = data.indexOf(chat);
+          }
+        });
+        if (index > -1) {
+          data[index].lastMessage = msg.content?msg.content:'image';
+          data[index].lastMessageTime = msg.time;
+          if (data[index].from != auth.userId)
+            data[index].withUnread = 0;
+          else
+            data[index].fromUnread = 0;
+          setData(data)
 
-// let messagearr =  [
-//       sender: contactSelected.sender,
-//       receiver: contactSelected.receiver,
-//       content: Newmessage,
-//       time : Date.now(),
-//       isRead: true,
-// ];
-
-let messagesObject = [
-  {
-    sender: contactSelected.sender,
-          receiver: contactSelected.receiver,
-          content: Newmessage,
-          time : Date.now(),
-          isRead: true,
-  },
-];
-
-console.log("sendERRRR  "+contactSelected);
-// function pushMessages(){
-// const index = data.find(d=>d.id===contactSelected.id)
-// console.log(index)
-// // const newdata= Object.assign([], data, {
-// //   [index]:{
-// // ChatUsers: contactSelected,
-// // messages: [...data[index].messages, messagearr]
-
-//   // },
-// }
-// setdata(newdata)
-// }
-
-console.log(currentMessages)
-
-
-
-
-
+        }
+      }
+    }
+  }
 
   return (
-    
-   <div className="app">
-     <div className={classes.aside} >
-           <header>
-         <LeftTopBar/>
-           </header>
-           <ChatSearch/>
-           <div className="contact-boxes">
+    <div className="app">
+      <div className={classes.aside} >
+        <header>
+          <LeftTopBar
+            name={auth.resume && auth.resume.fullname}
+          />
+        </header>
+        <ChatSearch data={data} setSearchedData={setSearchedData} />
+        <div className="contact-boxes">
+          {data != null && (<ConversationList data={data} setData={setData} searchedData={searchedData} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />)}
+        </div>
+      </div>
+      <div className={classes.mainChat}>
+        <header>
+          {selectedChat != null && (<RightTopBar selectedChat={selectedChat} />)}
+        </header>
 
-        
-            <ConversationList data ={data} setcontactSelected={setcontactSelected}              
-            />   
-           </div>
-           </div>
-             <div className={classes.mainChat}>
-           <header>
-         <RightTopBar user={contactSelected}         
-         />
-           </header>
-        
-          <MessageBox
-            chatMessage = {currentMessages}
-               />
-          <BottomBar Newmessage={Newmessage} setNewmessage={setNewmessage}  />
-             </div>
-             
+        {selectedChat != null && (<MessageBox selectedChat={selectedChat} setSelectedChat={setSelectedChat} messages={messages} setMessages={setMessages} />)}
+        {selectedChat != null && (<BottomBar newMessage={newMessage} setNewMessage={setNewMessage} pushMessage={pushMessage} previewUrl={previewUrl} setPreviewUrl={setPreviewUrl} file={file} setFile={setFile}/>)}
+
+      </div>
+
     </div>
-  
   );
 }
 export default Chat;
