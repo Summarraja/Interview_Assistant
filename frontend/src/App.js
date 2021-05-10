@@ -16,6 +16,7 @@ import ResetPassword from "./user/pages/ResetPassword";
 import Faq from "./faq/pages/Faq";
 import MainNavigation from "./shared/components/NavigationElements/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
+import { SocketContext } from "./shared/context/socket-context";
 
 import { useAuth } from "./shared/hooks/auth-hook";
 import UserProfile from "./user/pages/UserProfile";
@@ -25,14 +26,11 @@ import Chat from "./chat/pages/Chat";
 import CandidateList from "./Interviews/components/CandidatesList";
 import ViewInterview from "./Interviews/pages/ViewInterview";
 
-import Resume from "./Resumes/Pages/Resume";
-import CreateResume from "./Resumes/Components/CreateResume";
 import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 import Certificate from "./certificates/pages/Certificate";
 import InterviewItems from "./Interviews/components/InterviewItems";
 import ViewCertificate from "./certificates/pages/ViewCertificate";
 import io from "socket.io-client";
-import theme from './shared/components/UIElements/AppTheme/theme';
 
 import AdminHome from "./Admin/pages/AdminHome";
 import Resume from './Resumes/Pages/Resume';
@@ -105,7 +103,6 @@ const App = () => {
         />
         <Route path="/Reset" exact component={ResetPassword} />
         <Route path="/Faq" exact component={Faq} />
-        <Route path="/resume" exact component={Resume} />
         <Redirect to="/auth"/>
       </Switch>
     );
