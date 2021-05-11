@@ -50,6 +50,7 @@ const CertificateList = (props) => {
     <AppBar position="static" >
       <Typography className = {classes.heading}>ADDED CERTIFICATES</Typography>
      </AppBar>
+
      { props.items.map((certificate) => (
          ((props.hasDeleteAccess) || (!props.hasDeleteAccess && certificate.isApproved == true ))&& (
         <CertificateItems

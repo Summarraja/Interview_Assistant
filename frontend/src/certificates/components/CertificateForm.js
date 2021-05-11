@@ -107,7 +107,6 @@ const CertificateForm = (props) => {
   });
 
   const onSubmitHandler = async (values) => {
-
     try {
       const responseData = await sendRequest(
         "http://localhost:5000/api/certificates/",

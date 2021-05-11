@@ -17,6 +17,16 @@
     align-items: center;
     cursor: pointer;
   }
+  .unread{
+    background: #e6e6e6;
+    padding: 0.75rem 0.75rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  .unread:hover{
+    background: #ebebeb;
+  }
   .time-mark {
     color: rgba(0, 0, 0, 0.45);
     font-size: 12px;

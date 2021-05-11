@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { IconButton, makeStyles } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -8,6 +8,7 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Grid } from "@material-ui/core";
+import { Fab } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import CallIcon from "@material-ui/icons/Call";
 import VideocamIcon from "@material-ui/icons/Videocam";
@@ -16,13 +17,13 @@ import HomeIcon from '@material-ui/icons/Home';
 import "./UserItem.css";
 import WorkIcon from "@material-ui/icons/Work";
 import Paper from "@material-ui/core/Paper";
+import EditIcon from '@material-ui/icons/Edit';
+import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+import { Link } from "react-router-dom";
+import UploadPhoto from "./UploadPhoto";
+import { AuthContext } from '../../shared/context/auth-context';
 import { RiUserUnfollowFill } from "react-icons/ri";
 import { FaRegAddressCard } from "react-icons/fa";
-import EditIcon from "@material-ui/icons/Edit";
-import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
-
-import { Link } from "react-router-dom";
-import { AuthContext } from "../../shared/context/auth-context";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -57,9 +58,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UserItem = (props) => {
-  const classes = useStyles();
   const auth = useContext(AuthContext);
-
+  const [open, setOpen] = useState(false);
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseDialog = () => {
+    console.log("close")
+    setOpen(false);
+  };
+  const classes = useStyles();
 
   const RTCiconStyle = {
     margin: "20px",
@@ -74,10 +82,10 @@ const UserItem = (props) => {
 
   const divstyle = {
     textAlign: "center",
-   // margin: "0px",
+    // margin: "0px",
   };
   const divIconStyle = {
-      paddingRight: "5px",
+    paddingRight: "5px",
     transform: "translate(2px, 7px)",
     color: "#696969",
   };
@@ -108,11 +116,11 @@ const UserItem = (props) => {
         <div style={topBorder}>
           <Avatar
             className={classes.Avatar}
+
             alt={props.resume.fullname}
-            // src={props.image}
+            src={"http://localhost:5000/" + auth.resume.image}
 
             alt={null}
-            src={null}
           />
 
           <Button
@@ -120,17 +128,28 @@ const UserItem = (props) => {
             type="submit"
             variant="contained"
             color="primary"
-            startIcon={props.otherUser ? <RiUserUnfollowFill/> : <EditIcon />}
+            startIcon={props.otherUser ? <RiUserUnfollowFill /> : <EditIcon />}
             size="small"
           >
             {props.otherUser ? "Block User" : "Edit Profile"}
           </Button>
           {!props.otherUser && (
-              <IconButton className={classes.cameraIcon}>
+            <>
+            <IconButton className={classes.cameraIcon} onClick={handleOpenDialog} >
+
               <PhotoCameraIcon style={{ width: "30px", height: "40px" }} />
+
             </IconButton>
+            {open && (
+                <UploadPhoto
+                  open={open}
+                  handleCloseDialog={handleCloseDialog}
+                  setOpen={setOpen}
+                />
+              )}
+            </>
           )}
-        
+
         </div>
 
         <div style={{ textAlign: "center", marginTop: 70, width: "100%" }}>
@@ -162,13 +181,13 @@ const UserItem = (props) => {
           </Typography>
 
           <Typography variant="subtitle1">
-          < HomeIcon style={divIconStyle} />
+            < HomeIcon style={divIconStyle} />
             Lives at {props.resume.address}
           </Typography>
 
         </div>
 
-        {/* { props.userSett.role !== "Candidate" && ( */}
+        {props.userSett.role !== "Candidate" && (
           <Accordion style={accordStyle} expanded={true}>
             <AccordionSummary
               //expandIcon={<ExpandMoreIcon />} 
@@ -196,10 +215,10 @@ const UserItem = (props) => {
               </Button>
             </AccordionDetails>
           </Accordion>
-        {/* )} */}
+         )}
         <Accordion style={accordStyle} expanded={true}>
           <AccordionSummary
-         //   expandIcon={<ExpandMoreIcon />}
+            //   expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
@@ -210,6 +229,7 @@ const UserItem = (props) => {
           <AccordionDetails lg={12} md={6}>
             <div style={divDetails}>
               <Typography style={typoStyle}>
+
                 {props.approvedCertCount + " "}
                 {props.approvedCertCount === 0 || 1
                   ? "Certificate"
@@ -238,7 +258,7 @@ const UserItem = (props) => {
             style={resumeButtonStyle}
             startIcon={<FaRegAddressCard />}
           >
-            {props.otherUser? `${props.resume.firstname} Resume`  : "My Resume"}
+            {props.otherUser ? `${props.resume.firstname} Resume` : "My Resume"}
           </Button>
         </Grid>
       </Paper>

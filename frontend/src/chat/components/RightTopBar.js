@@ -5,7 +5,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import CallIcon from '@material-ui/icons/Call';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import './RightTopBar.css';
-import { AuthContext } from "../../shared/context/auth-context";
+import {AuthContext} from '../../shared/context/auth-context';
 
 function RightTopBar(props) {
   const auth = useContext(AuthContext);

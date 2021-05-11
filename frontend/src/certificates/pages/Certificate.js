@@ -72,7 +72,6 @@ const Certificate = () => {
   const handleCloseDialog = () => {
     setOpen(false);
   };
-
   //for getting certificates from the dababase
   useEffect(() => {
     const fetchCertificates = async (usID) => {
@@ -95,21 +94,35 @@ const Certificate = () => {
     else fetchCertificates(auth.userId);
   }, [uid]);
 
-  useEffect(() => {
-    const countApprovedCert = () => {
-      if (uid) {
-        loadedCertificates.map((cert) => {
-          cert.isApproved == true &&
-            setApprovedCertCount(approvedCertCount + 1);
-        });
-      } else {
+
+  // useEffect(() => {
+  //   const countApprovedCert = () => {
+  //     if (uid) {
+  //       loadedCertificates.map((cert) => {
+  //         cert.isApproved == true &&
+  //           setApprovedCertCount(approvedCertCount + 1);
+  //       });
+  //     } else {
        
-        setApprovedCertCount(loadedCertificates.length);
-      }
-    };
-    if (loadedCertificates) {
-      countApprovedCert();
+  //       setApprovedCertCount(loadedCertificates.length);
+
+  useEffect (()=>{
+    const countApprovedCert = () =>{
+      if(uid){
+        loadedCertificates.map((cert)=>{
+        cert.isApproved == true && setApprovedCertCount(approvedCertCount+1);
+      })
     }
+    else{
+      setApprovedCertCount(loadedCertificates.length)
+      
+    }
+  }
+      if (loadedCertificates){
+         countApprovedCert();
+      
+      }
+  
   }, [uid, loadedCertificates]);
 
   const hasDeleteAccess = uid && uid == auth.userId;

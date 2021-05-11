@@ -1,4 +1,5 @@
 const { validationResult } = require("express-validator");
+const fs = require('fs');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
@@ -44,9 +45,13 @@ const getUserData = async (req, res, next) => {
     );
     return next(error);
   }
+
   res.json({ sentRequests: userRequests.sentRequests.map(inter=> inter.toObject({getters: true})),
      receivedRequests: userRequests.receivedRequests.map(inter=> inter.toObject({getters:true})),
      addedInterviews: userRequests.addedInterviews.map(inter=> inter.toObject({getters:true}))});
+
+  res.json({ name: user.resume.firstname + " " + user.resume.lastname });
+
 };
 
 const sendCode = async (req, res, next) => {
@@ -173,8 +178,56 @@ const verifyCode = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ isVerified: true, userId: user.id, token: token , resume: user.resume});
+  res.status(200).json({ isVerified: true, userId: user.id, token: token, resume: user.resume });
 };
+
+const uploadImage = async (req, res, next) => {
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+  const { userId } = req.body;
+  let existingUser;
+  try {
+    existingUser = await User.findById(userId).populate('resume');
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!existingUser) {
+    const error = new HttpError(
+      "Could not find a user for provided id.",
+      404
+    );
+    return next(error);
+  }
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    fs.unlink(existingUser.resume.image, err => {
+      console.log(err);
+    });
+    existingUser.resume.image = req.file.path;
+    await existingUser.resume.save();
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      "Image Upload failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(201).json({ image: req.file.path });
+};
+
 
 const signup = async (req, res, next) => {
 
@@ -242,7 +295,7 @@ const signup = async (req, res, next) => {
     notiStatus: false,
     status: "available",
     role: "Candidate",
-    blockedUsers : [],
+    blockedUsers: [],
   });
 
   const code = random4Digit();
@@ -294,8 +347,8 @@ const signup = async (req, res, next) => {
     text:
       "You are receiving this because you (or someone else) have created new account. \n\n" +
       `Your Email Verification Code is ${code}\n\n`,
-   
-    };
+
+  };
 
   transporter.sendMail(mailOptions, (err, response) => {
     if (err) {
@@ -317,7 +370,7 @@ const login = async (req, res, next) => {
 
   try {
     existingUser = await User.findOne({ email: email }).populate('resume')
-    .populate('setting');
+      .populate('setting');
   } catch (err) {
     const error = new HttpError(
       "Logging in failed, please try again later.",
@@ -400,3 +453,4 @@ exports.login = login;
 exports.sendCode = sendCode;
 exports.verifyCode = verifyCode;
 exports.getUserData = getUserData;
+exports.uploadImage = uploadImage;

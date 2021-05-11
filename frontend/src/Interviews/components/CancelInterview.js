@@ -59,27 +59,29 @@ const CancelInterview = (props) => {
     if (!loadedInterview) fetchInterview();
   }, []);
 
-  // Request to get FieldTitle against FieldId from loadedInterviews
-  useEffect(() => {
-    const fetchField = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/api/fields/${loadedInterview.field}`,
-          "GET",
-          null,
-          {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + auth.token,
-          }
-        );
-        setLoadedField(responseData.field);
-      } catch (err) {}
-    };
-    if (!loadedField) fetchField();
-  }, [loadedField, loadedInterview]);
 
-  const CancelInterviewHandler = async () => {
-    try {
+
+    // Request to get FieldTitle against FieldId from loadedInterviews
+    useEffect(() => {
+      const fetchField = async () => {
+        try {
+          const responseData = await sendRequest(
+            `http://localhost:5000/api/fields/${loadedInterview.field}`,
+            "GET",
+            null,
+            {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + auth.token,
+            }
+          );
+          setLoadedField(responseData.field);
+        } catch (err) {}
+      };
+      if (!loadedField) fetchField();
+    }, [loadedField, loadedInterview]);
+
+  const CancelInterviewHandler = async() => {
+     try {
       const responseData = await sendRequest(
         `http://localhost:5000/api/interviews/${interviewId}`,
         "PATCH",

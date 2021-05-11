@@ -15,7 +15,8 @@ import ResetPassword from "./user/pages/ResetPassword";
 import Faq from "./faq/pages/Faq";
 import MainNavigation from "./shared/components/NavigationElements/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
-import {SocketContext} from "./shared/context/socket-context";
+import { SocketContext } from "./shared/context/socket-context";
+
 import { useAuth } from "./shared/hooks/auth-hook";
 import UserProfile from "./user/pages/UserProfile";
 import Interview from "./Interviews/pages/Interview";
@@ -23,43 +24,62 @@ import CreateInterview from "./Interviews/components/CreateInterview";
 import Chat from "./chat/pages/Chat";
 import CandidateList from "./Interviews/components/CandidatesList";
 import ViewInterview from "./Interviews/pages/ViewInterview";
-import Resume from "./Resumes/Pages/Resume";
-import CreateResume from "./Resumes/Components/CreateResume";
+
 import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 import Certificate from "./certificates/pages/Certificate";
 import InterviewItems from "./Interviews/components/InterviewItems";
 import ViewCertificate from "./certificates/pages/ViewCertificate";
 import io from "socket.io-client";
-import theme from './shared/components/UIElements/AppTheme/theme';
-import Home from './user/pages/Home';
 
+import AdminHome from "./Admin/pages/AdminHome";
+import Resume from './Resumes/Pages/Resume';
+import VideoCall from './Video Call/VideoCall';
 
 
 const App = () => {
   let location = useLocation();
   const { token, login, logout, userId, resume, setting } = useAuth();
   const [socket,setSocket] = useState();
+ 
   let routes;
   if (token) {
-    routes = (
-      <Switch>
-        <Route path="/Faq" exact component={Faq} />
-        <Route path="/profile" exact component={UserProfile} />
-        <Route path="/profile/:uid" exact component={UserProfile} />
-        <Route path="/interviews/:uid" exact component={Interview} />
-        <Route path="/chat" exact component={Chat} />
-        <Route path="/interviews/new" exact component={CreateInterview} />
-        <Route path="/interview/candidates" exact component={CandidateList} />
-        <Route path="/interviews/view/:interId" exact component={ViewInterview} />
-        <Route path="/certificates/:uid" exact component={Certificate} />
-        <Route path="/certificates/edit/:certId" exact component={ViewCertificate} />
-        <Route path="/resume" exact component={Resume} />
-        <Route path="/" exact component={Home} />
+    if (setting && setting.role == "Admin") {
+      routes = (
+       
+        <Switch>
+           {console.log("Role2" + setting.role)}
+          <Route path="/admin" exact component={AdminHome} />
+          <Route path="/admin/certificates" exact component={AdminHome} />
+          <Route path="/admin/faq" exact component={AdminHome} />
+          <Route path="/admin/respondProblem" exact component={AdminHome} />
+          <Redirect to="/admin"/>
+        </Switch>
 
-        <Redirect to="/" />
-      </Switch>
-    );
-  } else {
+      );
+
+    }
+    else {
+      routes = (
+        <Switch>
+          <Route path="/Faq" exact component={Faq} />
+          <Route path="/profile" exact component={UserProfile} />
+          <Route path="/profile/:uid" exact component={UserProfile} />
+          <Route path="/interviews/:uid" exact component={Interview} />
+          <Route path="/chat" exact component={Chat} />
+          <Route path="/interviews/new" exact component={CreateInterview} />
+          <Route path="/interview/candidates" exact component={CandidateList} />
+          <Route path="/interviews/view/:interId" exact component={ViewInterview} />
+          <Route path="/certificates/:uid" exact component={Certificate} />
+          <Route path="/certificates/edit/:certId" exact component={ViewCertificate} />
+          <Route path="/resume" exact component={Resume} />
+          <Route path="/videocall" exact component={VideoCall} />
+
+          <Redirect to="/" />
+        </Switch>
+      );
+    }
+  }
+  else {
     routes = (
       <Switch>
         <Route path="/signup" exact component={signUp} />
@@ -81,43 +101,38 @@ const App = () => {
         />
         <Route path="/Reset" exact component={ResetPassword} />
         <Route path="/Faq" exact component={Faq} />
-        <Route path="/resume" exact component={Resume} />
-        <Redirect to="/auth" />
+        <Redirect to="/auth"/>
       </Switch>
     );
   }
   useEffect(() => {
     if (userId) {
-      setSocket(io.connect("http://localhost:5000", { query: "id=" + userId }));
-      // socket.current.emit("client", { id: userId })
-      // socket.current.on("hey", (data) => {
-      //   console.log(data);
-      // })
-    }
 
-  }, [userId]);
+setSocket(io.connect("http://localhost:5000", { query: "id=" + userId }));
+}
+}, [userId]);
 
   return (
     <React.Fragment>
       <SocketContext.Provider value={socket}>
-      <AuthContext.Provider
-        value={{
-          isLoggedIn: !!token,
-          token: token,
-          userId: userId,
-          login: login,
-          logout: logout,
-          resume: resume,
-          setting: setting
-        }}
-      >
-      {/* {location.pathname !== "/auth" && <MainNavigation />} */}
-      {/* {(location.pathname == "/admin/home" || location.pathname == "/admin/certificates")? <Sidebar/> : <MainNavigation/>} */}
-          <MainNavigation/>
-          <main>{routes}</main>
-      
-      </AuthContext.Provider>
+        <AuthContext.Provider
+          value={{
+            isLoggedIn: !!token,
+            token: token,
+            userId: userId,
+            login: login,
+            logout: logout,
+            resume: resume,
+            setting: setting
+          }}
+        >
+   
+            {location.pathname !== "/admin" && <MainNavigation />}
+            <main>{routes}</main>
+        
+        </AuthContext.Provider>
       </SocketContext.Provider>
+
     </React.Fragment>
   );
 };

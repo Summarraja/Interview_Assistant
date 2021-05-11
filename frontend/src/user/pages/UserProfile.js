@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 import Container from "@material-ui/core/Container";
-import Users from "../components/User";
+import User from "../components/User";
 import { CssBaseline } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { AuthContext } from '../../shared/context/auth-context';
@@ -138,11 +138,9 @@ export default function UserProfile() {
       <CssBaseline />
       <LoadingSpinner open={isLoading}/>
       {!isLoading && 
-       <Users approvedCertCount = {approvedCertCount} otherUser = {uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>
+       <User approvedCertCount = {approvedCertCount} otherUser = {uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>
       
       }
-     
-
-    </Container>
+         </Container>
   );
 }

@@ -1,0 +1,85 @@
+h2 {
+  font-family: "Roboto", serif;
+  color: #2e4053;
+}
+
+h4 {
+  font-family: "Roboto", serif;
+  color: #2e4053;
+}
+
+hr {
+  width: 95%;
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+img {
+  width: 120px;
+  margin-top: 15px;
+  margin-left: 20px;
+}
+
+.topLeft {
+  display: flex;
+  padding: 15px;
+  text-align: center;
+  justify-content: space-evenly;
+}
+
+/* .headerLeft {
+  display: flex;
+  justify-content: space-between;
+  margin:"50px";
+}
+
+.templatesH2 {
+  margin-left: 15px;
+  margin:"50px";
+} */
+
+.hr2 {
+  width: 90%;
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding-top: 20px;
+}
+
+.formsSection {
+  margin: 25px;
+}
+
+.formStyle {
+  display: flex;
+  flex-direction: column;
+}
+
+.img2 {
+  width: 120px;
+  margin-top: 15px;
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.imgThumb {
+  width: 170px;
+  margin-left: 20px;
+}
+
+/* .templateCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cards {
+  display: flex;
+  width: 80%;
+  margin: 25px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+} */
