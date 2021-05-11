@@ -1,22 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useContext , useEffect} from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { TiEdit } from "react-icons/ti";
-import BlockIcon from "@material-ui/icons/Block";
 import { MenuItem, Divider } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
-import { IoIosPeople } from "react-icons/io";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
 import DeleteCertificate from "./DeleteCertificate";
 
 const CertificateMenu = (props) => {
   const [OpenDeleteDialog, setOpenDeleteDialog] = useState(false);
-
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const auth = useContext(AuthContext);
   const OpenDeleteDialogHandler = () => {
     setOpenDeleteDialog(true);
   };
 
+
+
+    const fetchCertificates = async () => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/certificates/user/" + auth.userId,
+          "GET",
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        props.setLoadedCertificates(responseData.certificate);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+ 
   return (
     <>
     {props.hasDeleteAccess && (
@@ -50,6 +70,7 @@ const CertificateMenu = (props) => {
           OpenDeleteDialog={OpenDeleteDialog}
           setOpenDeleteDialog={setOpenDeleteDialog}
           certId={props.certId}
+          fetchCertificates = {fetchCertificates}
         />
       )}
     </>

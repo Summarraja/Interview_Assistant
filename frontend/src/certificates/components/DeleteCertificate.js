@@ -42,7 +42,6 @@ const DeleteCertificate = (props) => {
   };
 
   const CertificateDeleteHandler = async () => {
-    console.log("yes");
     try {
       await sendRequest(
         `http://localhost:5000/api/certificates/${props.certId}`,
@@ -53,7 +52,7 @@ const DeleteCertificate = (props) => {
           Authorization: "Bearer " + auth.token,
         }
       );
-    //  status == 200 && setSuccess(true);
+      props.fetchCertificates();
       props.setOpenDeleteDialog(false);
     } catch (err) {
       console.log(err);

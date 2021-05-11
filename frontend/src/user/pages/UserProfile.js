@@ -137,7 +137,6 @@ export default function UserProfile() {
   return (
     <Container maxWidth="sm">
       <CssBaseline />
-     {console.log("PLEASE SAHIH HO JAO: "+ approvedCertCount)}
       <LoadingSpinner open={isLoading}/>
       {!isLoading && 
        <Users approvedCertCount = {approvedCertCount} otherUser = {uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>

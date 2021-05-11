@@ -24,6 +24,7 @@ import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../shared/context/auth-context";
 
+
 const useStyles = makeStyles((theme) => ({
   Avatar: {
     display: "flex",
@@ -167,7 +168,7 @@ const UserItem = (props) => {
 
         </div>
 
-        { props.userSett.role !== "Candidate" && (
+        {/* { props.userSett.role !== "Candidate" && ( */}
           <Accordion style={accordStyle} expanded={true}>
             <AccordionSummary
               //expandIcon={<ExpandMoreIcon />} 
@@ -189,13 +190,13 @@ const UserItem = (props) => {
                 color="primary"
                 size="small"
                 component={Link}
-                to="/interviews"
+                to={`/interviews/${props.resume.user}`}
               >
                 View Interviews
               </Button>
             </AccordionDetails>
           </Accordion>
-        )}
+        {/* )} */}
         <Accordion style={accordStyle} expanded={true}>
           <AccordionSummary
          //   expandIcon={<ExpandMoreIcon />}

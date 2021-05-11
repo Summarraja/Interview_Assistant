@@ -9,8 +9,9 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-import Button from "@material-ui/core/Button";
 import { AuthContext } from "../../shared/context/auth-context";
+import Button from "@material-ui/core/Button"
+import { BiSave } from "react-icons/bi";
 
 const useStyles = makeStyles((theme) => ({
   GridStyle: {
@@ -23,8 +24,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 7,
   },
   submit: {
-    float: "right",
-  },
+    textAlign: "center", 
+    marginTop: 8
+   },
 }));
 
 const fields = [
@@ -228,20 +230,24 @@ const UpdateCertificate = (props) => {
               </Grid>
               {/* <Grid item xs={6}></Grid> */}
             </Grid>
-
+          <Grid className = {classes.submit}>
             {!props.disableField && props.hasEditAccess && (
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
+                size="small"
                 disabled={
                   !(fProps.isValid || !field || fProps.isSubmitting)
                 }
-                className={classes.submit}
+                startIcon={
+                  <BiSave style={{ marginLeft: 6 }} />
+                }
               >
                 Save Changes
               </Button>
             )}
+            </Grid>
           </Form>
         )}
       </Formik>

@@ -25,24 +25,28 @@ const getUsers = async (req, res, next) => {
 
 const getUserData = async (req, res, next) => {
   let userid = req.params.uid;
-  let user;
+  
+  let userRequests;
   try {
-    user = await User.findById(userid).populate("resume");
+    userRequests = await User.findById(userid).populate('sentRequests').populate('receivedRequests').populate('addedInterviews')
+    
   } catch (err) {
     const error = new HttpError(
-      "Fetching user failed, please try again later.",
+      "Fetching user sent and received requests failed, please try again later.",
       500
     );
     return next(error);
   }
-  if (!user) {
+  if (!userRequests) {
     const error = new HttpError(
       "Could not find user with provided id.",
       401
     );
     return next(error);
   }
-  res.json({ name:user.resume.firstname+" "+ user.resume.lastname });
+  res.json({ sentRequests: userRequests.sentRequests.map(inter=> inter.toObject({getters: true})),
+     receivedRequests: userRequests.receivedRequests.map(inter=> inter.toObject({getters:true})),
+     addedInterviews: userRequests.addedInterviews.map(inter=> inter.toObject({getters:true}))});
 };
 
 const sendCode = async (req, res, next) => {

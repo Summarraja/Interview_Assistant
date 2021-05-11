@@ -12,6 +12,8 @@ router.get('/:iid', interviewsControllers.getInterviewById);
 
 router.get('/user/:uid', interviewsControllers.getInterviewsByUserId);
 
+router.get('/interviewreq/:iid', interviewsControllers.getInterviewerRequests);
+
 router.post(
   '/',
   [
@@ -53,14 +55,61 @@ router.patch(
 );
 
 router.patch(
+  '/sendinterrequest/:iid',
+  [
+    check('uid')
+      .not()
+      .isEmpty()
+  ],
+  interviewsControllers.RequestForInterview
+);
+
+
+router.patch(
+  '/cancelinterreq/:iid',
+  [
+    check('uid')
+      .not()
+      .isEmpty()
+  ],
+  interviewsControllers.cancelRequestForInterview
+);
+
+router.patch(
+  '/:iid',
+  [
+    check('title')
+      .not()
+      .isEmpty(),
+    check('title').isLength({ min: 5 }),
+    check('description').isLength({ min: 15 }),
+    check('fieldTitle').not().isEmpty(),
+    check('date').not().isEmpty(),
+    check('time').not().isEmpty(),
+  ],
+  interviewsControllers.updateInterview
+);
+
+router.patch(
   '/addcandidate/:iid',
   [
     check('uid')
       .not()
       .isEmpty()
   ],
-  interviewsControllers.addCandidate
+  interviewsControllers.AcceptInviteReq
 );
+
+router.patch(
+  '/rejectcandidate/:iid',
+  [
+    check('uid')
+      .not()
+      .isEmpty()
+  ],
+  interviewsControllers.rejectInviteReq
+);
+
 router.patch(
   '/removecandidate/:iid',
   [
@@ -71,7 +120,25 @@ router.patch(
   interviewsControllers.removeCandidate
 );
 
+router.patch(
+  '/acceptcandidatereq/:iid',
+  [
+    check('uid')
+      .not()
+      .isEmpty()
+  ],
+  interviewsControllers.AcceptCandidateReq
+);
 
+router.patch(
+  '/rejectcandidatereq/:iid',
+  [
+    check('uid')
+      .not()
+      .isEmpty()
+  ],
+  interviewsControllers.RejectCandidateReq
+);
 
 router.delete('/:iid', interviewsControllers.deleteInterview);
 

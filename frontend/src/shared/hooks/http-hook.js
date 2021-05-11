@@ -6,11 +6,11 @@ export const useHttpClient = () => {
   const [status, setStatus] = useState();
 
   const activeHttpRequests = useRef([]);
-
+  const httpAbortCtrl = new AbortController();
   const sendRequest = useCallback(
     async (url, method = 'GET', body = null, headers = {}) => {
       setIsLoading(true);
-      const httpAbortCtrl = new AbortController();
+    
       activeHttpRequests.current.push(httpAbortCtrl);
       let response;
       try {
@@ -39,7 +39,10 @@ export const useHttpClient = () => {
           setStatus(400);
         setIsLoading(false);
         throw err;
+      
       }
+    
+   
     },
     []
   );
@@ -52,7 +55,9 @@ export const useHttpClient = () => {
   useEffect(() => {
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      activeHttpRequests.current.forEach(abortCtrl => abortCtrl.abort());
+      activeHttpRequests.current.forEach(abortCtrl => abortCtrl.abort()); 
+      httpAbortCtrl.abort();
+       
     };
   }, []);
 

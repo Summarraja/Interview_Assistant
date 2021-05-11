@@ -51,9 +51,14 @@ const InterviewForm = (props) => {
     setSuccess(false);
     props.setOpen(false)
   };
+
+
   useEffect(() => {
     setSuccess(status==201);
   }, [status]);
+
+ 
+
 
   const initialValues = {
     title: "",
@@ -88,13 +93,13 @@ const InterviewForm = (props) => {
           Authorization: "Bearer " + auth.token,
         }
       );
+      props.getData(auth.userId)
+     
     } catch (err) {}
   };
 
   return (
     <>
-      {console.log(status)}
-    
       <LoadingSpinner open={isLoading} />
       <Snackbar
         open={success || !!error}

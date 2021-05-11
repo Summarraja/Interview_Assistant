@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import {
-  BrowserRouter as Router,
   Redirect,
   Route,
   Switch,
+  useLocation
 } from "react-router-dom";
 
 import Auth from "./user/pages/Auth";
@@ -31,8 +31,12 @@ import InterviewItems from "./Interviews/components/InterviewItems";
 import ViewCertificate from "./certificates/pages/ViewCertificate";
 import io from "socket.io-client";
 import theme from './shared/components/UIElements/AppTheme/theme';
+import Home from './user/pages/Home';
+
+
 
 const App = () => {
+  let location = useLocation();
   const { token, login, logout, userId, resume, setting } = useAuth();
   const [socket,setSocket] = useState();
   let routes;
@@ -50,6 +54,7 @@ const App = () => {
         <Route path="/certificates/:uid" exact component={Certificate} />
         <Route path="/certificates/edit/:certId" exact component={ViewCertificate} />
         <Route path="/resume" exact component={Resume} />
+        <Route path="/" exact component={Home} />
 
         <Redirect to="/" />
       </Switch>
@@ -106,10 +111,11 @@ const App = () => {
           setting: setting
         }}
       >
-        <Router>
-          <MainNavigation />
+      {/* {location.pathname !== "/auth" && <MainNavigation />} */}
+      {/* {(location.pathname == "/admin/home" || location.pathname == "/admin/certificates")? <Sidebar/> : <MainNavigation/>} */}
+          <MainNavigation/>
           <main>{routes}</main>
-        </Router>
+      
       </AuthContext.Provider>
       </SocketContext.Provider>
     </React.Fragment>

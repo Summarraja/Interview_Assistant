@@ -17,18 +17,20 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import { BsFillPersonCheckFill } from "react-icons/bs";
 import Typography from "@material-ui/core/Typography";
-import { FaUserClock, FaUserCheck } from "react-icons/fa";
+import { FaUserCheck, FaUserTimes } from "react-icons/fa";
 import { ImUserPlus } from "react-icons/im";
 
 const useStyles = makeStyles((theme) => ({
   ActionButton: {
-    fontSize: "0.8rem",
-    margin: "15px 0px",
     height: "32px",
-    width: "140px",
+    marginTop: "12px ",
+    marginRight: "10px",
+    // [theme.breakpoints.up("sm")]: {
+    //   float: "left",
+    // },
     [theme.breakpoints.down("xs")]: {
-      width: "120px",
-      height: "30px",
+      height: "32px",
+      width: "90px",
     },
   },
   listItem: {
@@ -46,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
   },
   statusIconStyle: {
-    marginRight: "7px",
+    marginRight: "3px",
     transform: "translate(1px, 3px)",
     fontSize: "1rem",
   },
@@ -59,96 +61,21 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-const CandidatesDialogItems = (props) => {
-
+const CandidateRequestsDialogItems = (props) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-  const [responseStatus, setResponseStatus] = useState();
 
   const Users = [];
   Users.push(props.userId);
 
   const classes = useStyles();
-  const [interview, setInterview] = useState("");
+  const [responseStatus, setResponseStatus] = useState();
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    const fetchInterview = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/${props.interId}`,
-          "GET",
-          null,
-          {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + auth.token,
-          }
-        );
-        setInterview(responseData.interview);
-      } catch (err) {}
-    };
-    props.interId && fetchInterview();
-  }, []);
-
-  function findAddedCandidates(arr1, arr2) {
-    return arr1.some((item) => arr2 == item.id);
-  }
-  function findRequestedCandidates(arr1, arr2) {
-    return arr1.some((item) => arr2 == item);
-  }
-
-  function findAcceptingCandidates(arr1, arr2) {
-    return arr1.some((item) => arr2 == item.id);
-  }
-
-
-  const inviteCandidateHandler = () => {
-    const sendInvitationRequest = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/invitecandidate/${props.interId}`,
-          "PATCH",
-          JSON.stringify({
-            uid: props.userId,
-          }),
-          {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + auth.token,
-          }
-        );
-        setInterview(responseData.interview);
-        
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    sendInvitationRequest();
-  };
-
-  const removeCandidateHandler = () => {
-    const removeAddedCand = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/removecandidate/${props.interId}`,
-          "PATCH",
-          JSON.stringify({
-            uid: props.userId,
-          }),
-          {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + auth.token,
-          }
-        );
-        setResponseStatus(responseData.responseDone);
-       props.getInterviewRequestsData();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    removeAddedCand();
-  };
   const AcceptCandidateReqHandler = () => {
-     const AcceptCandRequest = async () => {  
+    console.log("sent: " + props.interId);
+    console.log("user: " + props.userId);
+    const AcceptCandRequest = async () => {
       try {
         const responseData = await sendRequest(
           `http://localhost:5000/api/interviews/acceptcandidatereq/${props.interId}`,
@@ -161,6 +88,7 @@ const CandidatesDialogItems = (props) => {
             Authorization: "Bearer " + auth.token,
           }
         );
+       
         setResponseStatus(responseData.responseDone);
         props.getInterviewRequestsData();
       } catch (err) {
@@ -169,45 +97,54 @@ const CandidatesDialogItems = (props) => {
     };
     AcceptCandRequest();
   };
+  const RejectCandidateReqHandler = () => {
+    const RejectCandRequest = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/interviews/rejectcandidatereq/${props.interId}`,
+          "PATCH",
+          JSON.stringify({
+            uid: props.userId,
+          }),
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+     
+        setResponseStatus(responseData.responseDone);
+        props.getInterviewRequestsData();
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    RejectCandRequest();
+  };
+
   const clearSuccess = () => {
     setSuccess(false);
   };
   useEffect(() => {
-    setSuccess(status == 201);
+    setSuccess(status == 200);
   }, [status]);
   return (
     <>
-      {console.log(status)}
       {
         <Snackbar
-          open={success || responseStatus == "removed" || !!error}
+          open={success || !!error}
           autoHideDuration={6000}
-          onClose={
-            status == "201" || responseStatus == "removed"
-              ? clearSuccess
-              : clearError
-          }
+          onClose={status == "200" ? clearSuccess : clearError}
         >
           <MuiAlert
             elevation={6}
             variant="filled"
-            severity={
-              status == "201" || responseStatus == "removed"
-                ? "success"
-                : "error"
-            }
-            onClose={
-              status == "201" || responseStatus == "removed"
-                ? clearSuccess
-                : clearError
-            }
+            severity={status == "200" ? "success" : "error"}
+            onClose={status == "200 " ? clearSuccess : clearError}
           >
-            {status == "201"
-              ? "Invitation has sent successfully!"
-              : responseStatus == "removed"
-              ? "Candidate has been removed from the Interview successfully!"
-              : responseStatus == "accepted"
+            {status == "200" && responseStatus == "accepted"
               ? "Candidate Request has been accepted successfully!"
+              : responseStatus == "rejected"
+              ? "Candidate Request has been rejected successfully!"
               : error}
           </MuiAlert>
         </Snackbar>
@@ -216,7 +153,7 @@ const CandidatesDialogItems = (props) => {
       {props.userId != auth.userId && (
         <List className={classes.list}>
           <Grid container>
-            <Grid item xs={6} sm={8} className={classes.responsive}>
+            <Grid item sm={6} xs={6} className={classes.responsive}>
               <ListItem
                 className={classes.listItem}
                 button
@@ -238,12 +175,53 @@ const CandidatesDialogItems = (props) => {
             </Grid>
             {isLoading && <LoadingSpinner open={isLoading} />}
 
-            <Grid item sm={4} xs={6} align="center">
-              {/* IF */}
+            <Grid item sm={6} xs={6} align="center">
+              {status == "200" ? (
+                <Typography variant="subtitle2" className={classes.statusStyle}>
+                  {responseStatus == "accepted" ? (
+                    <FaUserCheck className={classes.statusIconStyle} />
+                  ) : (
+                    <FaUserTimes className={classes.statusIconStyle} />
+                  )}
+
+                  {responseStatus == "accepted" ? "ACCEPTED" : "REJECTED"}
+                </Typography>
+              ) : (
+                <>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    className={classes.ActionButton}
+                    startIcon={<FaUserCheck style={{ marginLeft: 6 }} />}
+                    onClick={AcceptCandidateReqHandler}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    className={classes.ActionButton}
+                    startIcon={<FaUserTimes style={{ marginLeft: 6 }} />}
+                    onClick={RejectCandidateReqHandler}
+                    //  component={Link}
+                    //  to={`/interviews/view/${props.id}`}
+                  >
+                    Reject
+                  </Button>
+                </>
+              )}
+            </Grid>
+
+            {/* <Grid item sm={4} xs={6} align="center">
               {props.interCandidates && !props.searchItem ? (
                 Users.map(
                   (id) =>
-                    findAddedCandidates(props.interCandidates, id) && (
+                    findAddedCandidates(
+                      props.interCandidates,
+                      id
+                    ) && (
                       <Button
                         key={id}
                         variant="contained"
@@ -258,26 +236,12 @@ const CandidatesDialogItems = (props) => {
                       </Button>
                     )
                 )
-              ) : // ELSE
-              //IF
-              typeof interview.sentRequests !== "undefined" &&
-                props.interCandidates &&
-                props.interReceivedRequests ? (
-                //  else if
+              ) : typeof interview.sentRequests !== "undefined" &&
+                props.interCandidates ? (
                 Users.map((id) =>
                   findAddedCandidates(props.interCandidates, id) ? (
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.statusStyle}
-                      key={id}
-                    >
-                      <BsFillPersonCheckFill
-                        className={classes.statusIconStyle}
-                        key={id}
-                      />
-                      ADDED
-                    </Typography>
-                  ) : //  else if
+              
+                  ) : 
                   findRequestedCandidates(interview.sentRequests, id) ||
                     status == 201 ? (
                     <Typography
@@ -291,34 +255,9 @@ const CandidatesDialogItems = (props) => {
                       />
                       REQUESTED
                     </Typography>
-                  ) : //else
-                  findAcceptingCandidates(props.interReceivedRequests, id) &&
-                    status == "200" ? (
-                    responseStatus == "accepted" ? (
-                      <Typography
-                        variant="subtitle2"
-                        className={classes.statusStyle}
-                        key={id}
-                      >
-                        <FaUserCheck
-                          className={classes.statusIconStyle}
-                          key={id}
-                        />
-                        ACCEPTED
-                      </Typography>
-                    ) : (
-                      <Button
-                        key={id}
-                        variant="contained"
-                        color="primary"
-                        className={classes.ActionButton}
-                        startIcon={<FaUserCheck style={{ marginLeft: 6 }} />}
-                        onClick={AcceptCandidateReqHandler}
-                      >
-                        Accept
-                      </Button>
-                    )
-                  ) : (
+                  )
+                   :
+                    (
                     <Button
                       variant="contained"
                       color="primary"
@@ -331,21 +270,19 @@ const CandidatesDialogItems = (props) => {
                     </Button>
                   )
                 )
-              ) : (
-                //ELSE
-                //ELSE
+              ) 
+              : 
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.ActionButton}
                   onClick={inviteCandidateHandler}
                   startIcon={<PersonAddIcon style={{ marginLeft: 6 }} />}
-                  //key={id}
                 >
-                  Invite
+                  INVITE
                 </Button>
-              )}
-            </Grid>
+              }
+            </Grid>*/}
           </Grid>
         </List>
       )}
@@ -353,4 +290,4 @@ const CandidatesDialogItems = (props) => {
   );
 };
 
-export default CandidatesDialogItems;
+export default CandidateRequestsDialogItems;
