@@ -85,7 +85,6 @@ const Interview = () => {
           }
         );
         setRole(responseData.setting.role);
-        console.log("role: " + responseData.setting.role);
       } catch (err) {
         console.log(err);
       }

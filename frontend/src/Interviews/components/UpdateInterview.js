@@ -86,9 +86,6 @@ const validationSchema = yup.object().shape({
 });
 
 const UpdateInterview = (props) => {
-console.log("Added: "+props.userAddedInterviews);
-console.log("sent: "+props.userSentRequests);
-console.log("requested: "+props.userReceivedRequests);
   const interviewId = props.interId;
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
@@ -146,8 +143,6 @@ console.log("requested: "+props.userReceivedRequests);
   };
 
   const sendInterviewRequestHandler = () => {
-    console.log("Interview: " + props.interId);
-    console.log("user: " + auth.userId);
     const sendInterviewRequest = async () => {
       try {
         const responseData = await sendRequest(

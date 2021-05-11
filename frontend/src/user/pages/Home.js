@@ -75,7 +75,6 @@ export default function Home(props) {
           }
         );
         setResume(responseData.resumes);
-        console.log(responseData.resumes);
       } catch (err) {
         console.log(err);
       }

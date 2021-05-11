@@ -82,10 +82,6 @@ const UpdateCertificate = (props) => {
   };
 
   const onSubmitHandler = async (values) => {
-    console.log(values.title);
-    console.log(values.description);    
-    console.log(values.institute);
-    console.log(field);
    
     try {
       const responseData = await sendRequest(
@@ -104,14 +100,12 @@ const UpdateCertificate = (props) => {
       );
       status == 200 && props.setDisableField(true);
       status == 200 ? setSuccess(true) : setSuccess(false)
-     // status == 200 ? setSuccess(true) : setSuccess(false)
      
     } catch (err) {}
   };
 
   return (
     <>
-    {console.log(status)}
       {isLoading && <LoadingSpinner open={isLoading} />}
             <Snackbar
               open={success || !!error}

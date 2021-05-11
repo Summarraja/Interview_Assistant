@@ -129,7 +129,6 @@ const CertificateForm = (props) => {
 
   return (
     <>
-      {console.log(status)}
 
       <LoadingSpinner open={isLoading} />
       <Snackbar

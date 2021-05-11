@@ -177,7 +177,6 @@ const CandidatesDialogItems = (props) => {
   }, [status]);
   return (
     <>
-      {console.log(status)}
       {
         <Snackbar
           open={success || responseStatus == "removed" || !!error}

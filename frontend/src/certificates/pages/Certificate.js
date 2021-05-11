@@ -103,7 +103,7 @@ const Certificate = () => {
             setApprovedCertCount(approvedCertCount + 1);
         });
       } else {
-        console.log("else");
+       
         setApprovedCertCount(loadedCertificates.length);
       }
     };

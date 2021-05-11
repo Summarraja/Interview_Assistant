@@ -70,7 +70,6 @@ const ViewInterview = (props) => {
  
   useEffect(() => {
     const getCandidateSentReq = async () => {
-      console.log("USID: " + auth.userId);
       try {
         const responseData = await sendRequest(
           `http://localhost:5000/api/users/${auth.userId}`,

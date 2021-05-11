@@ -130,8 +130,6 @@ const InterviewItems = (props) => {
   };
 
   const AcceptReceiveRequestHandler = () => {
-    console.log("sent: " + props.InterID);
-    console.log("user: " + auth.userId);
     const AcceptReceiveRequest = async () => {
       try {
         const responseData = await sendRequest(

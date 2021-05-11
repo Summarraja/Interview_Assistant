@@ -94,7 +94,7 @@ const InterviewMenu = (props) => {
       props.setInterSentRequests(responseData.sentRequests);
       
       props.setInterReceivedRequests(responseData.receivedRequests);
-      console.log("MENU: "+ responseData.receivedRequests.length)
+
       props.setInterCandidates(responseData.candidates);
       
 

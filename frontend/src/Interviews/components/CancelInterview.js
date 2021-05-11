@@ -103,8 +103,6 @@ const CancelInterview = (props) => {
 
   return (
     <>
-      {console.log("STSTAS: " + status)}
-      {console.log("succes: " + success)}
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}

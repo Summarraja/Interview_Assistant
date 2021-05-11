@@ -122,7 +122,6 @@ export default function UserProfile() {
     })
   }
   else{
-    console.log("else")
     setApprovedCertCount(certificates.length)
     
   }}

@@ -73,8 +73,6 @@ const CandidateRequestsDialogItems = (props) => {
   const [success, setSuccess] = useState(false);
 
   const AcceptCandidateReqHandler = () => {
-    console.log("sent: " + props.interId);
-    console.log("user: " + props.userId);
     const AcceptCandRequest = async () => {
       try {
         const responseData = await sendRequest(

@@ -61,7 +61,6 @@ const DeleteCertificate = (props) => {
 
   return (
     <>
-      {console.log(status)}
       {isLoading && <LoadingSpinner open={isLoading} />}
 
       <Snackbar
