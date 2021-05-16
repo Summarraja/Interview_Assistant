@@ -13,6 +13,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { Typography } from "@material-ui/core";
+import UploadPhoto from "../../user/components/UploadPhoto";
+//import UploadCertificate from "./uploadCertificate";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -38,6 +40,14 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Times New Roman",
     fontSize: "0.8rem",
   },
+  content: {
+    textAlign: "center",
+  },
+  preview: {
+    alignContent: "center",
+    width: "70%",
+    height: "70%",
+  },
 }));
 
 const fields = [
@@ -53,9 +63,38 @@ const fields = [
 const CertificateForm = (props) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const [open, setOpen] = useState(false);
+  const [file, setFile] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState();
   const theme = useTheme();
   const classes = useStyles();
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!file) {
+      return;
+    }
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      setPreviewUrl(fileReader.result);
+    };
+    fileReader.readAsDataURL(file);
+  }, [file]);
+
+  const pickedHandler = (event) => {
+    let pickedFile;
+    if (event.target.files && event.target.files.length === 1) {
+      pickedFile = event.target.files[0];
+      setFile(pickedFile);
+    }
+  };
+
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
 
   const clearSuccess = () => {
     setSuccess(false);
@@ -69,7 +108,7 @@ const CertificateForm = (props) => {
     title: "",
     description: "",
     institute: "",
-    CertificateImage: "",
+    //   CertificateImage: "",
   };
 
   // const FILE_SIZE = 160 * 1024;
@@ -93,7 +132,7 @@ const CertificateForm = (props) => {
       .string()
       .min(10, "Institute must be atleast 10 characters long")
       .required("Institute is required"),
-    CertificateImage: yup.mixed().required("A Certificate Image is required"),
+    //  CertificateImage: yup.mixed().required("A Certificate Image is required"),
     //   .test(
     //     "fileSize",
     //     "File too large",
@@ -107,28 +146,30 @@ const CertificateForm = (props) => {
   });
 
   const onSubmitHandler = async (values) => {
+    console.log("File: " + file)
     try {
+      const formData = new FormData();
+      formData.append( 'title', values.title);
+      formData.append( 'description', values.description);
+      formData.append( 'institute', values.institute);
+      formData.append( 'fieldTitle', props.field);
+      formData.append('image', file);
       const responseData = await sendRequest(
         "http://localhost:5000/api/certificates/",
         "POST",
-        JSON.stringify({
-          title: values.title,
-          description: values.description,
-          institute: values.institute,
-          fieldTitle: props.field,
-        }),
+        formData,
         {
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
           Authorization: "Bearer " + auth.token,
         }
       );
-     props.fetchCertificates();
+      console.log(responseData.certificate)
+      props.fetchCertificates();
     } catch (err) {}
   };
 
   return (
     <>
-
       <LoadingSpinner open={isLoading} />
       <Snackbar
         open={success || !!error}
@@ -224,6 +265,17 @@ const CertificateForm = (props) => {
                 </Grid>
               </Grid>
               <Grid item xs={12} sm={12} align="center">
+                {/* <UploadCertificate
+                  center
+                /> */}
+                {/* <input
+                  style={{ display: "none" }}
+                  id="upload-photo"
+                  name="upload-photo"
+                  type="file"
+                  accept=".jpg,.png,.jpeg"
+                  onChange={pickedHandler}
+                /> */}
                 <input
                   accept="image/*"
                   className={classes.input}
@@ -231,13 +283,19 @@ const CertificateForm = (props) => {
                   type="file"
                   multiple
                   name="CertificateImage"
-                  onChange={(event) => {
-                    fProps.setFieldValue(
-                      "CertificateImage",
-                      event.target.files[0]
-                    );
-                  }}
+                  // onChange={(event) => {
+                  //   fProps.setFieldValue(
+                  //     "CertificateImage",
+                  //     event.target.files[0]
+                  //   );
+                  // }}
+                  onChange = {pickedHandler}
                 />
+
+                <div className={classes.content}>
+                  <img className={classes.preview} src={previewUrl} />
+                  <br />
+                </div>
 
                 <label htmlFor="contained-button-file">
                   <Button
@@ -245,19 +303,32 @@ const CertificateForm = (props) => {
                     variant="contained"
                     color="secondary"
                     component="span"
+                   // onClick={handleOpenDialog}
                   >
                     Attach Certificate
                   </Button>
+
+                  {/* {open && (
+                <UploadPhoto
+                  open={open}
+                  handleCloseDialog={handleCloseDialog}
+                  setOpen={setOpen}
+                  attachCertificate={attachCertificate}
+                  setAttachCertificate = {setAttachCertificate}
+                  setCertificateFile = {setCertificateFile}
+
+                />
+              )} */}
                 </label>
                 <div
                   style={{ color: "#004777" }}
                   className={classes.uploadImageText}
                 >
-                  {fProps.values.CertificateImage
-                    ? fProps.values.CertificateImage.name
+                  {file
+                    ? file.name
                     : "No file Chosen"}
                 </div>
-                 </Grid>
+              </Grid>
             </Grid>
 
             <Button

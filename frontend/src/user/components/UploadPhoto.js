@@ -29,10 +29,10 @@ const useStyles = makeStyles((theme) => ({
         textAlign: "center"
     },
     preview: {
-        margin: "auto",
-        display: "block",
-        maxWidth: '60%',
-        maxHeight: '60%'
+
+        alignContent: "center",
+        width: "60%",
+        height: "60%"
     }
 }));
 

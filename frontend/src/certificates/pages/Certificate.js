@@ -95,16 +95,6 @@ const Certificate = () => {
   }, [uid]);
 
 
-  // useEffect(() => {
-  //   const countApprovedCert = () => {
-  //     if (uid) {
-  //       loadedCertificates.map((cert) => {
-  //         cert.isApproved == true &&
-  //           setApprovedCertCount(approvedCertCount + 1);
-  //       });
-  //     } else {
-       
-  //       setApprovedCertCount(loadedCertificates.length);
 
   useEffect (()=>{
     const countApprovedCert = () =>{

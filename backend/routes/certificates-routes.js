@@ -4,8 +4,7 @@ const { check } = require('express-validator');
 const certificatesControllers = require('../controllers/certificates-controllers');
 const checkAuth = require('../middleware/check-auth');
 const checkAdmin = require('.././middleware/check-admin');
-// const fileUpload = require('../middleware/file-upload');
-
+const fileUpload = require('../middleware/file-upload');
 
 const router = express.Router();
 
@@ -16,7 +15,7 @@ router.get('/user/:uid', certificatesControllers.getCertificatesByUserId);
 
 router.post(
     '/',
-  //  fileUpload.single('image'),
+    fileUpload.single('image'),
     [
         check('title')
         .not()
@@ -55,5 +54,11 @@ router.patch(
     '/:cid/reject',
     certificatesControllers.rejectCertificate
 );
-
+// router.post('/uploadImage',
+//    fileUpload.single('image'),
+//   [
+//     check('userId').isMongoId(),
+//   ],
+//   certificatesControllers.uploadCertificate
+// );
 module.exports = router;

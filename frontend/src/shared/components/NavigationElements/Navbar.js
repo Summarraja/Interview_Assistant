@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   MainLogo: {
     flexGrow: 1,
+    color: "#fff"
   },
   switchControl: {
     marginRight: "0px",
