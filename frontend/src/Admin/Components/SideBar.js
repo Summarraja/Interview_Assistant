@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -16,12 +16,18 @@ import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from "@material-ui/icons/Search";
+import { AuthContext } from "../../shared/context/auth-context";
+import Button from "@material-ui/core/Button";
+import {Link} from "react-router-dom";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+  },
+  button: {
+    margin: "auto 8px",
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -96,6 +102,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ClippedDrawer() {
   const classes = useStyles();
+  const auth = useContext(AuthContext);
+
+  const logout=()=>{
+    auth.logout();
+  }
 
   return (
     <div className={classes.root}>
@@ -105,6 +116,14 @@ export default function ClippedDrawer() {
           <Typography variant="h5" noWrap style ={{float:"left"}}>
            Admin 
           </Typography>
+          <Button style={{float:"right", flexDirection:"column"}}
+                  variant="contained"
+                  color="secondary"
+                  className={classes.button}
+                  onClick={logout}
+                >
+                  LogOut
+                </Button>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -150,7 +169,10 @@ export default function ClippedDrawer() {
           <Divider />
 
           <List className={classes.list}>        
-              <ListItem button >
+              <ListItem button 
+              component={Link}
+              to ="/admin/faq"
+              >
                 <ListItemIcon>
                 <LiveHelpIcon/>
                 </ListItemIcon>

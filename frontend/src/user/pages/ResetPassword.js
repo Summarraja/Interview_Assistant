@@ -93,7 +93,6 @@ export default function ResetPassword() {
           >
             {(props) => (
               <Form  className={classes.form}>
-                {console.log(props)}
                 <Field
                   as={TextField}
                   variant="outlined"

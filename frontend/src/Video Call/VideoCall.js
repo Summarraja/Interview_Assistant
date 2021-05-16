@@ -408,7 +408,6 @@ function VideoCall(props) {
             </div>
         </>
     );
-
 }
 
 export default VideoCall;

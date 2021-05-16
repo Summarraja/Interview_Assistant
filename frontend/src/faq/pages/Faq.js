@@ -10,12 +10,12 @@ import { Fragment } from "react";
 import FaqCollection from "../components/FaqCollection";
 
 const useStyles = makeStyles((theme) => ({
-  // root:{
-  //  [theme.breakpoints.up("sm")]:{
-  //    marginLeft: 230
-    
-  //  }
-  //},
+  root: {
+    paddingLeft: 60,
+    [theme.breakpoints.down("xs")]: {
+      paddingLeft: 0,
+    },
+  },
   paper: {
     backgroundColor: "#4E78A0",
     [theme.breakpoints.up("xs")]: {
@@ -93,8 +93,8 @@ export default function FAQ(props) {
   const classes = useStyles();
   return (
 <Fragment>
-      <div className={classes.root}>
-      <div className="TopHeader" >
+      <div className={classes.root} >
+      <div className="TopHeader"  >
         <Typography variant="h4" align="center" style={MainHeading}>
           How can we help you?
         </Typography>

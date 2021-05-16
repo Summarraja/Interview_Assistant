@@ -87,15 +87,14 @@ const createCertificate = async (req, res, next) => {
         );
         return next(error);
     }
-
+    console.log("File Path:  "+ req.file.path);
     const createdCertificate = new Certificate({
         title,
         description,
         institute,
         isApproved: false,
-       // image: req.file != undefined ? req.file.path : "/", //change
         field: field.id,
-        file: "https://blockgeeks.com/wp-content/uploads/2019/04/Certificate-2.jpg",
+        image: req.file.path,
         creator: req.userData.userId
     });
 
@@ -344,6 +343,8 @@ const deleteCertificate = async (req, res, next) => {
     res.status(200).json({ message: 'Deleted certificate.' });
 };
 
+
+
 exports.getCertificateById = getCertificateById;
 exports.getCertificatesByUserId = getCertificatesByUserId;
 exports.createCertificate = createCertificate;
@@ -351,3 +352,4 @@ exports.updateCertificate = updateCertificate;
 exports.deleteCertificate = deleteCertificate;
 exports.acceptCertificate = acceptCertificate;
 exports.rejectCertificate = rejectCertificate;
+

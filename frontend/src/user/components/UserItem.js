@@ -25,6 +25,7 @@ import { AuthContext } from '../../shared/context/auth-context';
 import { RiUserUnfollowFill } from "react-icons/ri";
 import { FaRegAddressCard } from "react-icons/fa";
 
+
 const useStyles = makeStyles((theme) => ({
   Avatar: {
     display: "flex",
@@ -208,13 +209,13 @@ const UserItem = (props) => {
                 color="primary"
                 size="small"
                 component={Link}
-                to="/interviews"
+                to={`/interviews/${props.resume.user}`}
               >
                 View Interviews
               </Button>
             </AccordionDetails>
           </Accordion>
-        )}
+         )}
         <Accordion style={accordStyle} expanded={true}>
           <AccordionSummary
             //   expandIcon={<ExpandMoreIcon />}

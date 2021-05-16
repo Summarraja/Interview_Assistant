@@ -23,6 +23,7 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 
 const useStyles = makeStyles((theme) => ({
+
   card: {
     width: "100%",
     display: "flex",
@@ -155,6 +156,8 @@ const CertificateItem = (props) => {
         status={props.status}
         certId = {props.id}
         hasDeleteAccess = {props.hasDeleteAccess}
+        setLoadedCertificates={props.setLoadedCertificates}
+    
       />
     </Menu>
         
@@ -163,7 +166,7 @@ const CertificateItem = (props) => {
  
 
   return (
-   
+ 
     <Card className={classes.card}>
       <Grid container spacing={2} >
         <Grid item sm={6} lg={7} style={{ flexGrow: 1 }}>
@@ -213,6 +216,7 @@ const CertificateItem = (props) => {
  
      
     </Card>
+   
     
   );
 };

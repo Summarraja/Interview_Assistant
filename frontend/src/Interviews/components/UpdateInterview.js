@@ -14,6 +14,16 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
 import { AuthContext } from "../../shared/context/auth-context";
+import { BiSave } from "react-icons/bi";
+import { FiCheckSquare } from "react-icons/fi";
+import { SiCheckmarx } from "react-icons/si";
+import Typography from "@material-ui/core/Typography";
+import {
+  BsBoxArrowInUpLeft,
+  BsPersonCheckFill,
+  BsPersonPlusFill,
+} from "react-icons/bs";
+import { GrUserExpert } from "react-icons/gr";
 
 const useStyles = makeStyles((theme) => ({
   GridStyle: {
@@ -26,7 +36,31 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 7,
   },
   submit: {
-    float: "right",
+    textAlign: "center",
+
+    marginTop: 10,
+  },
+  statusStyle: {
+    background: "#4E78A0",
+    fontSize: "1rem",
+    color: "#fff",
+    // textAlign: "center",
+    height: "35px",
+    // marginTop: "12px ",
+    padding: "5px",
+    // alignContent: "center",
+    width: "100%",
+    textAlign: "center",
+    borderRadius: 4,
+  //  margin: "0px 80px",
+    [theme.breakpoints.down("xs")]: {
+      float: "right"
+    },
+  },
+  statusIconStyle: {
+    marginRight: "7px",
+    transform: "translate(1px, 3px)",
+    fontSize: "1rem",
   },
 }));
 
@@ -49,7 +83,7 @@ const validationSchema = yup.object().shape({
     .string()
     .min(15, "Description must be atleast 15 characters long")
     .required("Description is required"),
-}); 
+});
 
 const UpdateInterview = (props) => {
   const interviewId = props.interId;
@@ -59,13 +93,17 @@ const UpdateInterview = (props) => {
   const [doi, setDoi] = useState(props.loadedInterview.date);
   const [time, setTime] = useState(props.loadedInterview.time);
   const [success, setSuccess] = useState(false);
+  const [interview, setInterview] = useState();
+
+  function onCandidateSentRequest(arr1, arr2) {
+    return arr1.some((item) => arr2 == item._id);
+  }
 
   const clearSuccess = () => {
     setSuccess(false);
-   
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status == 200 || status == 201);
   }, [status]);
 
   const classes = useStyles();
@@ -80,11 +118,6 @@ const UpdateInterview = (props) => {
   };
 
   const onSubmitHandler = async (values) => {
-    console.log(values.title);
-    console.log(values.description);
-    console.log(field);
-    console.log(doi);
-    console.log(time);
     try {
       const responseData = await sendRequest(
         `http://localhost:5000/api/interviews/${interviewId}`,
@@ -95,40 +128,66 @@ const UpdateInterview = (props) => {
           fieldTitle: field,
           date: doi,
           time: time,
-          isCancelled: false
+          isCancelled: false,
         }),
         {
           "Content-Type": "application/json",
           Authorization: "Bearer " + auth.token,
         }
-
       );
-      status == 200 && props.setDisableField(true) ? setSuccess(true) : setSuccess(false)
-      status == 200 ? setSuccess(true) : setSuccess(false)
+      status == 200 && props.setDisableField(true)
+        ? setSuccess(true)
+        : setSuccess(false);
+      status == 200 ? setSuccess(true) : setSuccess(false);
     } catch (err) {}
   };
 
+  const sendInterviewRequestHandler = () => {
+    const sendInterviewRequest = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/interviews/sendinterrequest/${props.interId}`,
+          "PATCH",
+          JSON.stringify({
+            uid: auth.userId,
+          }),
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setInterview(responseData.interview);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    sendInterviewRequest();
+  };
   return (
-  
     <>
-     { console.log("status:  "+ status)}
-     {isLoading && <LoadingSpinner open={isLoading} />}
+      {isLoading && <LoadingSpinner open={isLoading} />}
 
-            <Snackbar
-              open={success|| !!error}
-              autoHideDuration={6000}
-              onClose={status == "200" ? clearSuccess : clearError}
-            >
-              <MuiAlert
-                elevation={6}
-                variant="filled"
-                severity={status == "200" ? "success" : "error"}
-                onClose={status == "200" ? clearSuccess : clearError}
-              >
-                {status == "200" ? "Interview Updated Successfully!" : error}
-              </MuiAlert>
-            </Snackbar>
-          
+      <Snackbar
+        open={success || !!error}
+        autoHideDuration={6000}
+        onClose={status == "200" || status == "201" ? clearSuccess : clearError}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity={status == "200" || status == "201" ? "success" : "error"}
+          onClose={
+            status == "200" || status == "201" ? clearSuccess : clearError
+          }
+        >
+          {status == "200"
+            ? "Interview Updated Successfully!"
+            : status == "201"
+            ? "Request has been sent to the Interview"
+            : error}
+        </MuiAlert>
+      </Snackbar>
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -136,8 +195,6 @@ const UpdateInterview = (props) => {
       >
         {(fProps) => (
           <Form>
-         
-
             <Grid container>
               <Grid item={true} xs={12} sm={12}>
                 <Grid item={true} xs={12}>
@@ -239,19 +296,81 @@ const UpdateInterview = (props) => {
               {/* <Grid item xs={6}></Grid> */}
             </Grid>
 
-            {!props.disableField && props.hasEditAccess &&  (
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                disabled={
-                  !(fProps.isValid || !field || !doi || fProps.isSubmitting)
-                }
-                className={classes.submit}
-              >
-                Save Changes
-              </Button>
-            )}
+            <Grid className={classes.submit}>
+              {!props.disableField && props.hasEditAccess && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  disabled={
+                    !(fProps.isValid || !field || !doi || fProps.isSubmitting)
+                  }
+                  startIcon={<BiSave style={{ marginLeft: 6 }} />}
+                >
+                  Save Changes
+                </Button>
+              )}
+
+              {auth.setting.role == "Candidate" && (
+                    onCandidateSentRequest(
+                      props.userAddedInterviews,
+                      props.interId
+                    ) ? (
+                      <div className={classes.Typo}>
+                        <Typography
+                          variant="subtitle2"
+                          className={classes.statusStyle}
+                        >
+                          <BsPersonCheckFill className={classes.statusIconStyle} />
+                          You are already ADDED to this Interview
+                        </Typography>
+                      </div>
+                    ) : status == "201" ||
+                      onCandidateSentRequest(
+                        props.userSentRequests,
+                        props.interId
+                      ) ? (
+                      // !onCandidateSentRequest(props.userAddedInterviews, props.interId)  ? (
+                      <div className={classes.Typo}>
+                        <Typography
+                          variant="subtitle2"
+                          className={classes.statusStyle}
+                        >
+                          <FiCheckSquare className={classes.statusIconStyle} />
+                          You have SENT request on this Interview
+                        </Typography>
+                      </div>
+                    ) : !onCandidateSentRequest(
+                        props.userReceivedRequests,
+                        props.interId
+                      ) &&
+                      props.InterviewStatus == "PENDING" &&
+                      auth.setting.role == "Candidate" &&
+                      !props.hasEditAccess ? (
+                      <Button
+                        onClick={sendInterviewRequestHandler}
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        startIcon={<BsBoxArrowInUpLeft style={{ marginLeft: 6 }} />}
+                      >
+                        Send Request
+                      </Button>
+                    ) : (
+                      <div className={classes.Typo}>
+                        <Typography
+                          variant="subtitle2"
+                          className={classes.statusStyle}
+                        >
+                          <BsPersonPlusFill className={classes.statusIconStyle} />
+                          You are already INVITED to this Interview
+                        </Typography>
+                      </div>
+                    )
+              )}
+          
+            </Grid>
           </Form>
         )}
       </Formik>

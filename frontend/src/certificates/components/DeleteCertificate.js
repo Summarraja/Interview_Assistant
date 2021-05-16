@@ -52,7 +52,7 @@ const DeleteCertificate = (props) => {
           Authorization: "Bearer " + auth.token,
         }
       );
-    //  status == 200 && setSuccess(true);
+      props.fetchCertificates();
       props.setOpenDeleteDialog(false);
     } catch (err) {
       console.log(err);

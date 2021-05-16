@@ -136,7 +136,6 @@ export default function UserProfile() {
   return (
     <Container maxWidth="sm">
       <CssBaseline />
-
       <LoadingSpinner open={isLoading}/>
       {!isLoading && 
        <User approvedCertCount = {approvedCertCount} otherUser = {uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>

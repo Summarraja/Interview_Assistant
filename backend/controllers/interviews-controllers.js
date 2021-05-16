@@ -5,6 +5,7 @@ const HttpError = require('../models/http-error');
 const Interview = require('../models/interview');
 const Field = require('../models/field');
 const User = require('../models/user');
+const setting = require('../models/setting');
 
 const getInterviewById = async (req, res, next) => {
     const interviewId = req.params.iid;
@@ -64,7 +65,47 @@ const getInterviewsByUserId = async (req, res, next) => {
 }
 
 };
+const getInterviewerRequests = async (req, res, next) => {
+    let interId = req.params.iid;
+    
+    let interviewerRequests;
+    try {
+        interviewerRequests = await Interview.findById(interId).populate('sentRequests').populate('receivedRequests').populate('candidates')
+      
+    } catch (err) {
+      const error = new HttpError(
+        "Fetching interviewer sent and received requests failed, please try again later.",
+        500
+      );
+      return next(error);
+    }
+    if (!interviewerRequests) {
+      const error = new HttpError(
+        "Could not find interview with provided id.",
+        401
+      );
+      return next(error);
+    }
 
+    // try {
+    // candidateResumes = await interviewerRequests.candidates.map(candidate => User.findById(candidate._id).populate('resume'))
+   
+    // } catch (err) {
+    //     console.log("Interveiw resume: "+err)
+    //   const error = new HttpError(
+    //     "Fetching candidate resumes failed, please try again later.",
+    //     500
+    //   );
+    //   return next(error);
+    // }
+   
+
+    //candidateResumes = await User.findById(interviewerRequests.candidates.id).populate('resume')
+ 
+    res.json({ sentRequests: interviewerRequests.sentRequests.map(candidate => candidate.toObject({getters: true})), 
+        receivedRequests: interviewerRequests.receivedRequests.map(candidate => candidate.toObject({getters: true})), 
+        candidates: interviewerRequests.candidates.map(candidate => candidate.toObject({getters: true}))});
+  };
 const createInterview = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -212,7 +253,7 @@ const updateInterview = async (req, res, next) => {
         return next(error);
     }
 
-    res.status(200).json({ interview: interview.toObject({ getters: true }) });
+    res.status(200).json({ interview: interview.toObject({ getters: true }) , responseDone: "Cancelled"});
 };
 
 const deleteInterview = async (req, res, next) => {
@@ -258,10 +299,10 @@ const deleteInterview = async (req, res, next) => {
         return next(error);
     }
 
-    res.status(200).json({ message: 'Deleted interview.' });
+    res.status(200).json({ message: 'Interview Deleted' });
 };
 
-const addCandidate = async (req, res, next) => {
+const AcceptInviteReq = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return next(
@@ -308,20 +349,27 @@ const addCandidate = async (req, res, next) => {
         );
         return next(error);
     }
-    if (interview.creator.toString() !== req.userData.userId) {
-        const error = new HttpError('You are not allowed to edit this interview.', 401);
-        return next(error);
-    }
+    // if (interview.creator.toString() !== req.userData.userId) {
+    //     const error = new HttpError('You are not allowed to edit this interview.', 401);
+    //     return next(error);
+    // }
 
-    const added = interview.candidates.addToSet(candidate);
+    const added = interview.candidates.addToSet(candidate.id);
     if (added.length < 1) {
         const error = new HttpError('Candidate is already added to the interview.', 401);
         return next(error);
     }
-
+    candidate.receivedRequests.pull(interview.id);
+    candidate.addedInterviews.addToSet(interview.id);
+   interview.sentRequests.pull(candidate.id);
     try {
-        await interview.save();
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await interview.save({ session: sess });
+        await candidate.save({ session: sess });
+        await sess.commitTransaction();
     } catch (err) {
+       
         const error = new HttpError(
             'Something went wrong, could not add candidate to interview.',
             500
@@ -329,7 +377,231 @@ const addCandidate = async (req, res, next) => {
         return next(error);
     }
 
-    res.status(200).json({ interview: interview.toObject({ getters: true }) });
+    res.status(200).json({ interview: interview.toObject({ getters: true }), responseDone: "accepted" });
+};
+
+const rejectInviteReq = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
+
+    const { uid } = req.body;
+
+    let candidate;
+    try {
+        candidate = await User.findById(uid);
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not find a User.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!candidate) {
+        const error = new HttpError(
+            'Could not find candidate for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    const interviewId = req.params.iid;
+
+    let interview;
+    try {
+        interview = await Interview.findById(interviewId);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not find interview of specified id.',
+            500
+        );
+        return next(error);
+    }
+    if (!interview) {
+        const error = new HttpError(
+            'Could not find interview for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    // if (interview.creator.toString() !== req.userData.userId) {
+    //     const error = new HttpError('You are not allowed to edit this interview.', 401);
+    //     return next(error);
+    // }
+
+    // const added = interview.candidates.addToSet(candidate.id);
+    // if (added.length < 1) {
+    //     const error = new HttpError('Candidate is already added to the interview.', 401);
+    //     return next(error);
+    // }
+    candidate.receivedRequests.pull(interview.id);
+    interview.sentRequests.pull(candidate.id);
+  
+    try {
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await interview.save({ session: sess });
+        await candidate.save({ session: sess });
+        await sess.commitTransaction();
+    } catch (err) {
+       
+        const error = new HttpError(
+            'Something went wrong, could not add candidate to interview.',
+            500
+        );
+        return next(error);
+    }
+
+    res.status(200).json({ interview: interview.toObject({ getters: true }) , responseDone: "rejected"});
+};
+
+const AcceptCandidateReq = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
+
+    const { uid } = req.body;
+
+    let candidate;
+    try {
+        candidate = await User.findById(uid);
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not find a User.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!candidate) {
+        const error = new HttpError(
+            'Could not find candidate for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    const interviewId = req.params.iid;
+
+    let interview;
+    try {
+        interview = await Interview.findById(interviewId);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not find interview of specified id.',
+            500
+        );
+        return next(error);
+    }
+    if (!interview) {
+        const error = new HttpError(
+            'Could not find interview for the provided id.',
+            404
+        );
+        return next(error);
+    }
+
+    const added = interview.candidates.addToSet(candidate.id);
+    if (added.length < 1) {
+        const error = new HttpError('Candidate is already added to the interview.', 401);
+        return next(error);
+    }
+    candidate.sentRequests.pull(interview.id);
+    interview.receivedRequests.pull(candidate.id);
+    candidate.addedInterviews.addToSet(interview.id);
+   
+    try {
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await interview.save({ session: sess });
+        await candidate.save({ session: sess });
+        await sess.commitTransaction();
+    } catch (err) {
+       
+        const error = new HttpError(
+            'Something went wrong, could not add candidate to interview.',
+            500
+        );
+        return next(error);
+    }
+
+    res.status(200).json({ interview: interview.toObject({ getters: true }), responseDone: "accepted" });
+};
+
+const RejectCandidateReq = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
+
+    const { uid } = req.body;
+
+    let candidate;
+    try {
+        candidate = await User.findById(uid);
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not find a User.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!candidate) {
+        const error = new HttpError(
+            'Could not find candidate for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    const interviewId = req.params.iid;
+
+    let interview;
+    try {
+        interview = await Interview.findById(interviewId);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not find interview of specified id.',
+            500
+        );
+        return next(error);
+    }
+    if (!interview) {
+        const error = new HttpError(
+            'Could not find interview for the provided id.',
+            404
+        );
+        return next(error);
+    }
+
+   
+    candidate.sentRequests.pull(interview.id);
+    interview.receivedRequests.pull(candidate.id);
+   
+   
+    try {
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await interview.save({ session: sess });
+        await candidate.save({ session: sess });
+        await sess.commitTransaction();
+    } catch (err) {
+       
+        const error = new HttpError(
+            'Something went wrong, could not add candidate to interview.',
+            500
+        );
+        return next(error);
+    }
+
+    res.status(200).json({ interview: interview.toObject({ getters: true }), responseDone: "rejected" });
 };
 
 const inviteCandidate = async (req, res, next) => {
@@ -416,6 +688,158 @@ const inviteCandidate = async (req, res, next) => {
     res.status(201).json({ interview: interview.toObject({ getters: true }) });
 };
 
+
+const RequestForInterview = async (req, res, next) => {
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
+
+    const { uid } = req.body;
+
+    let candidate;
+    try {
+        candidate = await User.findById(uid);
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not find a User.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!candidate) {
+        const error = new HttpError(
+            'Could not find candidate for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    const interviewId = req.params.iid;
+
+    let interview;
+    try {
+        interview = await Interview.findById(interviewId);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not find interview of specified id.',
+            500
+        );
+        return next(error);
+    }
+    if (!interview) {
+        const error = new HttpError(
+            'Could not find interview for the provided id.',
+            404
+        );
+        return next(error);
+    }
+
+    candidate.sentRequests.addToSet(interview.id);
+    interview.receivedRequests.addToSet(candidate.id);
+
+    try {
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await interview.save({ session: sess });
+        await candidate.save({ session: sess });
+        await sess.commitTransaction();
+    } catch (err) {
+        console.log("Interview: " + err)
+        const error = new HttpError(
+            'Something went wrong, could not send request to the Candidate for interview.',
+            500
+        );
+        return next(error);
+    }
+
+
+    // try {
+    //     await interview.save();
+    // } catch (err) {
+    //     const error = new HttpError(
+    //         'Something went wrong, could not send request to the Candidate for interview.',
+    //         500
+    //     );
+    //     return next(error);
+    // }
+
+    res.status(201).json({ interview: interview.toObject({ getters: true }) });
+};
+
+
+const cancelRequestForInterview = async (req, res, next) => {
+    const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+       return next(
+           new HttpError('Invalid inputs passed, please check your data.', 422)
+       );
+   }
+
+   const { uid } = req.body;
+
+   let candidate;
+   try {
+       candidate = await User.findById(uid);
+   } catch (err) {
+       const error = new HttpError(
+           'Something went wrong, could not find a User.',
+           500
+       );
+       return next(error);
+   }
+
+   if (!candidate) {
+       const error = new HttpError(
+           'Could not find candidate for the provided id.',
+           404
+       );
+       return next(error);
+   }
+   const interviewId = req.params.iid;
+
+   let interview;
+   try {
+       interview = await Interview.findById(interviewId);
+   } catch (err) {
+       const error = new HttpError(
+           'Could not find interview of specified id.',
+           500
+       );
+       return next(error);
+   }
+   if (!interview) {
+       const error = new HttpError(
+           'Could not find interview for the provided id.',
+           404
+       );
+       return next(error);
+   }
+
+   candidate.sentRequests.pull(interview.id);
+   interview.receivedRequests.pull(candidate.id);
+
+   try {
+       const sess = await mongoose.startSession();
+       sess.startTransaction();
+       await interview.save({ session: sess });
+       await candidate.save({ session: sess });
+       await sess.commitTransaction();
+   } catch (err) {
+       console.log("Interview: " + err)
+       const error = new HttpError(
+           'Something went wrong, could not cancel sent request for interview of the Candidate.',
+           500
+       );
+       return next(error);
+   }
+
+   res.status(201).json({ interview: interview.toObject({ getters: true }) });
+};
+
+
 const removeCandidate = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -463,27 +887,34 @@ const removeCandidate = async (req, res, next) => {
         );
         return next(error);
     }
-    if (interview.creator.toString() !== req.userData.userId) {
-        const error = new HttpError('You are not allowed to edit this interview.', 401);
-        return next(error);
-    }
+    // if (interview.creator.toString() !== req.userData.userId) {
+    //     const error = new HttpError('You are not allowed to edit this interview.', 401);
+    //     return next(error);
+    // }
     if (!interview.candidates.includes(candidate.id)) {
         const error = new HttpError('Candidate is already not added in the interview.', 401);
         return next(error);
     }
-    interview.candidates.pull(candidate);
+    interview.candidates.pull(candidate.id);
+    candidate.addedInterviews.pull(interview.id);
+    interview.sentRequests.pull(candidate.id);
 
     try {
-        await interview.save();
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await interview.save({ session: sess });
+        await candidate.save({ session: sess });
+        await sess.commitTransaction();
     } catch (err) {
+      
         const error = new HttpError(
-            'Something went wrong, could not remove candidate from interview.',
+            'Something went wrong, could not remove candidate from Interview.',
             500
         );
         return next(error);
     }
 
-    res.status(200).json({ interview: interview.toObject({ getters: true }) });
+    res.status(200).json({ interview: interview.toObject({ getters: true }) , responseDone: "removed" });
 };
 
 exports.getInterviewById = getInterviewById;
@@ -491,6 +922,12 @@ exports.getInterviewsByUserId = getInterviewsByUserId;
 exports.createInterview = createInterview;
 exports.updateInterview = updateInterview;
 exports.deleteInterview = deleteInterview;
-exports.addCandidate = addCandidate;
+exports.AcceptInviteReq = AcceptInviteReq;
+exports.rejectInviteReq = rejectInviteReq;
 exports.removeCandidate = removeCandidate;
+exports.cancelRequestForInterview = cancelRequestForInterview;
 exports.inviteCandidate = inviteCandidate;
+exports.RequestForInterview = RequestForInterview;
+exports.getInterviewerRequests = getInterviewerRequests;
+exports.AcceptCandidateReq = AcceptCandidateReq;
+exports.RejectCandidateReq = RejectCandidateReq;

@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   MainLogo: {
     flexGrow: 1,
+    color: "#fff"
   },
   switchControl: {
     marginRight: "0px",
@@ -226,7 +227,7 @@ export default function Navbar(props) {
         <Typography variant="subtitle1">Help & Support</Typography>
       </MenuItem>
     </Menu>
-  );
+  )
 
   const desktopMenu = (
     <Menu
@@ -339,10 +340,10 @@ export default function Navbar(props) {
             </IconButton>
           )}
 
-          <Typography variant="h5" className={classes.MainLogo}>
+          <Typography variant="h4" className={classes.MainLogo}>
             SmartHire
           </Typography>
-
+      
           <div className={classes.sectionDesktop}>
             {!auth.isLoggedIn && (
               <>

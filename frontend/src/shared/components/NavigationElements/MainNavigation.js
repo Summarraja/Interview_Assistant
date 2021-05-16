@@ -21,6 +21,7 @@ import { AuthContext } from "../../context/auth-context";
 import { SocketContext } from "../../context/socket-context";
 import { Link } from "react-router-dom";
 import { IoRibbonOutline } from "react-icons/io5";
+import { GoHome } from "react-icons/go";
 import { ImProfile } from "react-icons/im";
 import { TiMessages } from "react-icons/ti";
 import Badge from "@material-ui/core/Badge";
@@ -36,8 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0
-
+    flexShrink: 0,
   },
   drawerPaper: {
     width: drawerWidth
@@ -141,6 +141,30 @@ const MainNavigation = () => {
 
   const drawerItems = (
     <List style={{ margin: "2rem auto" }}>
+        <Tooltip
+        title={OpenDrawer ? "" : "Home"}
+        placement="right"
+        TransitionComponent={Fade}
+        TransitionProps={{ timeout: 600 }}
+      >
+        <ListItem
+          button
+          key="Home"
+          onClick={() => {
+            SetOpenDrawer(false);
+          }}
+          component={Link}
+          to="/"
+        >
+          <ListItemIcon>
+            <GoHome className = {classes.Navicon} />
+          </ListItemIcon>
+          <ListItemText primary="Home" />
+        </ListItem>
+      </Tooltip>
+     
+<Divider variant="middle" className={classes.divider}/>
+     
       <Tooltip
         title={OpenDrawer ? "" : "Inbox"}
         placement="right"

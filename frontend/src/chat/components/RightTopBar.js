@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import {Link} from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import { Grid, IconButton, Typography } from "@material-ui/core";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -40,6 +41,7 @@ function RightTopBar(props) {
             state: { to: (props.selectedChat.from == auth.userId) ? props.selectedChat.with : props.selectedChat.from, type: "video" }
           });
         }}>
+
           <VideocamIcon color="primary" />
         </IconButton>
 

@@ -1,12 +1,6 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-  useLocation
-} from "react-router-dom";
+import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 
 import Auth from "./user/pages/Auth";
 import signUp from "./user/pages/signUp";
@@ -33,13 +27,17 @@ import ViewCertificate from "./certificates/pages/ViewCertificate";
 import io from "socket.io-client";
 
 import AdminHome from "./Admin/pages/AdminHome";
-import Resume from './Resumes/Pages/Resume';
-import VideoCall from './Video Call/VideoCall';
 import RTC from './RTC';
+import Resume from "./Resumes/Pages/Resume";
+import VideoCall from "./Video Call/VideoCall";
+import Home from "./user/pages/Home";
+import SideBar from "./Admin/Components/SideBar"
+import ViewFaqs from "./Admin/Components/Faqs/ViewFaqs";
 
 const App = () => {
   let location = useLocation();
   const { token, login, logout, userId, resume, setting } = useAuth();
+  const auth = useContext(AuthContext);
   const [socket, setSocket] = useState();
 
   let routes;
@@ -47,36 +45,44 @@ const App = () => {
     if (setting && setting.role == "Admin") {
       routes = (
         <Switch>
-          <Route path="/admin" exact component={AdminHome} />
+          <Route path="/admin/home" exact component={AdminHome} />
           <Route path="/admin/certificates" exact component={AdminHome} />
-          <Route path="/admin/faq" exact component={AdminHome} />
+          <Route path="/admin/faq" exact component={ViewFaqs} />
           <Route path="/admin/respondProblem" exact component={AdminHome} />
-          <Redirect to="/admin" />
-        </Switch>
 
+          <Redirect to="/admin/home" />
+        </Switch>
       );
-    }
-    else {
+
+    } else {
       routes = (
         <Switch>
           <Route path="/Faq" exact component={Faq} />
+          <Route path="/" exact component={Home} />
           <Route path="/profile" exact component={UserProfile} />
           <Route path="/profile/:uid" exact component={UserProfile} />
           <Route path="/interviews/:uid" exact component={Interview} />
           <Route path="/chat" exact component={Chat} />
           <Route path="/interviews/new" exact component={CreateInterview} />
           <Route path="/interview/candidates" exact component={CandidateList} />
-          <Route path="/interviews/view/:interId" exact component={ViewInterview} />
+          <Route
+            path="/interviews/view/:interId"
+            exact
+            component={ViewInterview}
+          />
           <Route path="/certificates/:uid" exact component={Certificate} />
-          <Route path="/certificates/edit/:certId" exact component={ViewCertificate} />
+          <Route
+            path="/certificates/edit/:certId"
+            exact
+            component={ViewCertificate}
+          />
           <Route path="/resume" exact component={Resume} />
           <Route path="/videocall" exact component={VideoCall} />
           <Redirect to="/" />
         </Switch>
       );
     }
-  }
-  else {
+  } else {
     routes = (
       <Switch>
         <Route path="/signup" exact component={signUp} />
@@ -104,7 +110,6 @@ const App = () => {
   }
   useEffect(() => {
     if (userId) {
-
       setSocket(io.connect("http://localhost:5000", { query: "id=" + userId }));
     }
   }, [userId]);
@@ -120,17 +125,19 @@ const App = () => {
             login: login,
             logout: logout,
             resume: resume,
-            setting: setting
+            setting: setting,
           }}
         >
 
           {location.pathname !== "/admin" && location.pathname !== "/videocall" && <MainNavigation />}
           <RTC />
-          <main>{routes}</main>
 
+          {location.pathname == "/admin/home" || location.pathname == "/admin/faq" ||
+            location.pathname == "/admin/certificates" ||
+            location.pathname == "/admin/respondProblem" ? <SideBar /> : location.pathname == "/videocall" ? "" : <MainNavigation />}
+          <main>{routes}</main>
         </AuthContext.Provider>
       </SocketContext.Provider>
-
     </React.Fragment>
   );
 };

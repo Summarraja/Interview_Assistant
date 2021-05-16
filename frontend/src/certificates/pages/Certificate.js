@@ -1,4 +1,4 @@
-import React, { useContext, useState , useEffect} from "react";
+import React, { useContext, useState, useEffect } from "react";
 // import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import bgInterview5 from "../../shared/components/UIElements/Images/bgInterview5.jpg";
@@ -17,7 +17,10 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#fff",
-   
+    paddingLeft: 60,
+    [theme.breakpoints.down("xs")]: {
+      paddingLeft: 0,
+    },
   },
   hero: {
     width: "100%",
@@ -28,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         rgba(0, 27.8, 46.7, 0.7),
         rgba(78, 120, 160, 0.7)
       ), url(${bgInterview5})`,
-         // background:
+    // background:
     //   "linear-gradient( rgba(0, 27.8, 46.7, 0.7), rgba(78, 120, 160, 0.5))",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
@@ -54,12 +57,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const Certificate = () => {
- const [loadedCertificates, setLoadedCertificates ] = useState([]);
-  const {uid} = useParams();
+  const [loadedCertificates, setLoadedCertificates] = useState([]);
+  const { uid } = useParams();
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-  const [approvedCertCount, setApprovedCertCount] =useState (0);
+  const [approvedCertCount, setApprovedCertCount] = useState(0);
   const auth = useContext(AuthContext);
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -76,7 +78,7 @@ const Certificate = () => {
       try {
         const responseData = await sendRequest(
           "http://localhost:5000/api/certificates/user/" + usID,
-          'GET',
+          "GET",
           null,
           {
             "Content-Type": "application/json",
@@ -88,12 +90,11 @@ const Certificate = () => {
         console.log(err);
       }
     };
-    if(uid)
-    fetchCertificates(uid);
-    else
-    fetchCertificates(auth.userId)
-    
+    if (uid) fetchCertificates(uid);
+    else fetchCertificates(auth.userId);
   }, [uid]);
+
+
 
   useEffect (()=>{
     const countApprovedCert = () =>{
@@ -105,62 +106,61 @@ const Certificate = () => {
     else{
       setApprovedCertCount(loadedCertificates.length)
       
-    }}
+    }
+  }
       if (loadedCertificates){
          countApprovedCert();
       
       }
-   }, [uid, loadedCertificates]) 
-
-  const hasDeleteAccess = uid && uid  == auth.userId ;
   
+  }, [uid, loadedCertificates]);
+
+  const hasDeleteAccess = uid && uid == auth.userId;
+
   return (
- 
     <div className={classes.root}>
-    <Box className={classes.hero}>
-      <Box>Certificates</Box>
-    </Box>
-    
-    <Container maxWidth="lg" component="main" >
-      <Paper elevation={5} className={classes.paper}>
-     
-       {hasDeleteAccess && (
-            <Button
-            variant="contained"
-            color="primary"
-            onClick={
-              handleOpenDialog
-            }
-            className={classes.button}
-            startIcon={<AddIcon />}
-          >
-           Add Cerificates
-          </Button>
-  
-       ) }
-     
-        {open && (
-              <AddCertificate
-                open={open}
-                handleCloseDialog={handleCloseDialog}
-                setOpen={setOpen}
-              />
-            )}
-              {
-              (!isLoading)? (<CertificateList items={loadedCertificates} hasDeleteAccess={hasDeleteAccess} approvedCertCount={approvedCertCount} />) :
-                <LoadingSpinner open={true}
-                 />
-            }
+      <Box className={classes.hero}>
+        <Box style={{ fontFamily: "Serif, Open Sans, Arial" }}>
+          Certificates
+        </Box>
+      </Box>
 
-          
-          </Paper>
-        </Container>
-     
-    
-      
-        
-      </div>
-   
+      <Container maxWidth="lg" component="main">
+        <Paper elevation={5} className={classes.paper}>
+          {hasDeleteAccess && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpenDialog}
+              className={classes.button}
+              startIcon={<AddIcon />}
+            >
+              Add Cerificates
+            </Button>
+          )}
+
+          {open && (
+            <AddCertificate
+              open={open}
+              handleCloseDialog={handleCloseDialog}
+              setOpen={setOpen}
+              setLoadedCertificates={setLoadedCertificates}
+            />
+          )}
+          {!isLoading ? (
+            <CertificateList
+              items={loadedCertificates}
+              uid={uid}
+              setLoadedCertificates={setLoadedCertificates}
+              hasDeleteAccess={hasDeleteAccess}
+              approvedCertCount={approvedCertCount}
+            />
+          ) : (
+            <LoadingSpinner open={true} />
+          )}
+        </Paper>
+      </Container>
+    </div>
   );
 };
 

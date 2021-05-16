@@ -1,22 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
-import InterviewCandidates from "./InterviewCandidates";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import CandidateRequests from "./CandidateRequests";
 
-const CandidateList = (props) => {
-
+const CandidateRequestsList = (props) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
-  const [candidateResume, setCandidateResume] = useState([]);
-  const [receivedCandResume, setReceivedCandResume ] = useState([]);
-
-
+  const [receivedCandResume, setReceivedCandResume] = useState([]);
 
   useEffect(() => {
-    setCandidateResume([]);
-    const fetchCandidateResume = async (candID) => {
+    setReceivedCandResume([]);
+    const fetchReceiveCandResume = async (candID) => {
       try {
         const responseData = await sendRequest(
           `http://localhost:5000/api/resumes/user/${candID}`,
@@ -28,34 +24,27 @@ const CandidateList = (props) => {
           }
         );
 
-        setCandidateResume((oldArray) => [...oldArray, responseData.resume]);
+        setReceivedCandResume((oldArray) => [...oldArray, responseData.resume]);
       } catch (err) {
         console.log(err);
       }
     };
-    props.interCandidates.map((candidate) =>
-      fetchCandidateResume(candidate.id)
+    props.interReceivedRequests.map((candidate) =>
+      fetchReceiveCandResume(candidate.id)
     );
-  }, [props.interCandidates]);
+  }, [props.interReceivedRequests]);
 
   return (
-   
     !isLoading &&
-    
-    candidateResume && (
-    
-      <InterviewCandidates
-        candidateResume={candidateResume}
-        interCandidates={props.interCandidates}
-        interReceivedRequests = {props.interReceivedRequests}
+    receivedCandResume && (
+      <CandidateRequests
+        receivedCandResume={receivedCandResume}
         interId={props.interId}
         open={props.open}
         setOpen={props.setOpen}
         getInterviewRequestsData = {props.getInterviewRequestsData}
       />
-   
     )
-   
   );
 };
-export default CandidateList;
+export default CandidateRequestsList;
