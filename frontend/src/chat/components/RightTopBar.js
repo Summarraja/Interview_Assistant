@@ -5,11 +5,13 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import CallIcon from '@material-ui/icons/Call';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import './RightTopBar.css';
-import {AuthContext} from '../../shared/context/auth-context';
+import { AuthContext } from '../../shared/context/auth-context';
+import { Redirect } from 'react-router'
+import { useHistory } from 'react-router-dom'
 
 function RightTopBar(props) {
   const auth = useContext(AuthContext);
-
+  const history = useHistory();
   return (
     <>
       <div className="avatar-component">
@@ -18,18 +20,26 @@ function RightTopBar(props) {
         </Avatar>
         <div style={{ margin: "10px" }}>
           <Typography variant="h6" >
-            { (props.selectedChat.from==auth.userId)? props.selectedChat.withName:props.selectedChat.fromName}
+            {(props.selectedChat.from == auth.userId) ? props.selectedChat.withName : props.selectedChat.fromName}
           </Typography>
         </div>
 
       </div>
       <div style={{ float: "right" }}>
-        <IconButton
-        >
+        <IconButton onClick={() => {
+          history.push({
+            pathname: '/videocall',
+            state: { to: (props.selectedChat.from == auth.userId) ? props.selectedChat.with : props.selectedChat.from, type: "audio" }
+          });
+        }} >
           <CallIcon color="primary" />
         </IconButton>
-        <IconButton
-        >
+        <IconButton onClick={() => {
+          history.push({
+            pathname: '/videocall',
+            state: { to: (props.selectedChat.from == auth.userId) ? props.selectedChat.with : props.selectedChat.from, type: "video" }
+          });
+        }}>
           <VideocamIcon color="primary" />
         </IconButton>
 

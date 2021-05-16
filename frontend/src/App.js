@@ -35,30 +35,26 @@ import io from "socket.io-client";
 import AdminHome from "./Admin/pages/AdminHome";
 import Resume from './Resumes/Pages/Resume';
 import VideoCall from './Video Call/VideoCall';
-
+import RTC from './RTC';
 
 const App = () => {
   let location = useLocation();
   const { token, login, logout, userId, resume, setting } = useAuth();
-  const [socket,setSocket] = useState();
- 
+  const [socket, setSocket] = useState();
+
   let routes;
   if (token) {
     if (setting && setting.role == "Admin") {
-      // console.log("Role" + setting.role)
       routes = (
-       
         <Switch>
-           {console.log("Role2" + setting.role)}
           <Route path="/admin" exact component={AdminHome} />
           <Route path="/admin/certificates" exact component={AdminHome} />
           <Route path="/admin/faq" exact component={AdminHome} />
           <Route path="/admin/respondProblem" exact component={AdminHome} />
-          <Redirect to="/admin"/>
+          <Redirect to="/admin" />
         </Switch>
 
       );
-
     }
     else {
       routes = (
@@ -75,7 +71,6 @@ const App = () => {
           <Route path="/certificates/edit/:certId" exact component={ViewCertificate} />
           <Route path="/resume" exact component={Resume} />
           <Route path="/videocall" exact component={VideoCall} />
-
           <Redirect to="/" />
         </Switch>
       );
@@ -103,16 +98,16 @@ const App = () => {
         />
         <Route path="/Reset" exact component={ResetPassword} />
         <Route path="/Faq" exact component={Faq} />
-        <Redirect to="/auth"/>
+        <Redirect to="/auth" />
       </Switch>
     );
   }
   useEffect(() => {
     if (userId) {
 
-setSocket(io.connect("http://localhost:5000", { query: "id=" + userId }));
-}
-}, [userId]);
+      setSocket(io.connect("http://localhost:5000", { query: "id=" + userId }));
+    }
+  }, [userId]);
 
   return (
     <React.Fragment>
@@ -128,10 +123,11 @@ setSocket(io.connect("http://localhost:5000", { query: "id=" + userId }));
             setting: setting
           }}
         >
-   
-            {location.pathname !== "/admin" && <MainNavigation />}
-            <main>{routes}</main>
-        
+
+          {location.pathname !== "/admin" && location.pathname !== "/videocall" && <MainNavigation />}
+          <RTC />
+          <main>{routes}</main>
+
         </AuthContext.Provider>
       </SocketContext.Provider>
 

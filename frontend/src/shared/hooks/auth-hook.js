@@ -9,28 +9,28 @@ export const useAuth = () => {
   const [resume, setResume] = useState(null);
 
   const [setting, setSetting] = useState(null);
-  
+
   const login = useCallback((uid, token, resume, setting, expirationDate) => {
     setToken(token);
     setUserId(uid);
     setResume(resume);
     setSetting(setting);
     const tokenExpirationDate =
-    expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60 );
+      expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60 * 12);
     setTokenExpirationDate(tokenExpirationDate);
     localStorage.setItem(
       'userData',
       JSON.stringify({
         userId: uid,
-        resume:resume,
+        resume: resume,
         setting: setting,
         token: token,
         expiration: tokenExpirationDate.toISOString()
       })
-      );
-    }, []);
+    );
+  }, []);
 
-    const logout = useCallback(() => {
+  const logout = useCallback(() => {
     setToken(null);
     setTokenExpirationDate(null);
     setUserId(null);
@@ -57,5 +57,5 @@ export const useAuth = () => {
     }
   }, [login]);
 
-  return { token, login, logout, userId,resume, setting};
+  return { token, login, logout, userId, resume, setting };
 };

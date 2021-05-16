@@ -43,7 +43,7 @@ const getUserData = async (req, res, next) => {
     );
     return next(error);
   }
-  res.json({ name: user.resume.firstname + " " + user.resume.lastname });
+  res.json({ name: user.resume.fullname, image:user.resume.image });
 };
 
 const sendCode = async (req, res, next) => {
