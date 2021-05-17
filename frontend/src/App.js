@@ -27,11 +27,13 @@ import ViewCertificate from "./certificates/pages/ViewCertificate";
 import io from "socket.io-client";
 
 import AdminHome from "./Admin/pages/AdminHome";
+import RTC from './RTC';
 import Resume from "./Resumes/Pages/Resume";
 import VideoCall from "./Video Call/VideoCall";
 import Home from "./user/pages/Home";
 import SideBar from "./Admin/Components/SideBar"
 import ViewFaqs from "./Admin/Components/Faqs/ViewFaqs";
+
 const App = () => {
   let location = useLocation();
   const { token, login, logout, userId, resume, setting } = useAuth();
@@ -43,14 +45,15 @@ const App = () => {
     if (setting && setting.role == "Admin") {
       routes = (
         <Switch>
-          {console.log("Role2" + setting.role)}
           <Route path="/admin/home" exact component={AdminHome} />
           <Route path="/admin/certificates" exact component={AdminHome} />
           <Route path="/admin/faq" exact component={ViewFaqs} />
           <Route path="/admin/respondProblem" exact component={AdminHome} />
+
           <Redirect to="/admin/home" />
         </Switch>
       );
+
     } else {
       routes = (
         <Switch>
@@ -75,7 +78,6 @@ const App = () => {
           />
           <Route path="/resume" exact component={Resume} />
           <Route path="/videocall" exact component={VideoCall} />
-
           <Redirect to="/" />
         </Switch>
       );
@@ -126,12 +128,13 @@ const App = () => {
             setting: setting,
           }}
         >
-        
-        {location.pathname == "/admin/home" || location.pathname == "/admin/faq" ||
-          location.pathname == "/admin/certificates" ||
-          location.pathname == "/admin/respondProblem"? <SideBar/> : location.pathname == "/videocall" ? "" : <MainNavigation/>}
 
+          {location.pathname !== "/admin" && location.pathname !== "/videocall" && <MainNavigation />}
+          <RTC />
 
+          {location.pathname == "/admin/home" || location.pathname == "/admin/faq" ||
+            location.pathname == "/admin/certificates" ||
+            location.pathname == "/admin/respondProblem" ? <SideBar /> : location.pathname == "/videocall" ? "" : <MainNavigation />}
           <main>{routes}</main>
         </AuthContext.Provider>
       </SocketContext.Provider>
