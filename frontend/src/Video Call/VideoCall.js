@@ -5,7 +5,7 @@ import CallEndIcon from "@material-ui/icons/CallEnd";
 import MicOffIcon from "@material-ui/icons/MicOff";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import { Grid, IconButton, makeStyles } from "@material-ui/core";
-
+import SentimentVerySatisfiedIcon from '@material-ui/icons/SentimentVerySatisfied';
 const useStyles = makeStyles((theme) => ({
   root: {
     "&:hover": {
@@ -15,18 +15,26 @@ const useStyles = makeStyles((theme) => ({
 
   bottomDiv: {
     position: "absolute",
-    width: "50%",
+     width: "40%",
+
     zIndex: -1,
     bottom: "0px",
     backgroundColor: "#d3d3d3",
-    alignItems: "centers",
-    margin: "10px",
-    [theme.breakpoints.up("xm")]: {
-      float: "left",
-      flexGrow: 1,
-      zIndex: -1,
+   // flexDirection: "column",
+//     // alignItems: "centers",
+//     margin: "1%",
+    [theme.breakpoints.down("sm")]: {
+    //   float: "left",
+    //   flexGrow: 1,
+    //   zIndex: -1,
+    // flexDirection: "column",
+    // height: "auto"
     },
-  },
+    [theme.breakpoints.down("md")]: {
+    width: "50%", 
+    }
+ },
+
 
   topdiv: {
     marginLeft: "150px",
@@ -36,10 +44,10 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
     position: "relative",
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    // justifyContent: "center",
+    // alignItems: "center",
     overflow: "hidden",
-    [theme.breakpoints.up("xm")]: {
+    [theme.breakpoints.up("xs")]: {
       marginLeft: "0px",
       marginRight: "0px",
     },
@@ -53,11 +61,11 @@ function VideoCall() {
   const classes = useStyles();
 
   const IconStyles = {
-    marginLeft: "45px",
-    marginRight: "45px",
-    marginTop: "5px",
-    marginBottom: "5px",
+     margin: "2% 5%" 
+
   };
+
+ 
 
   const imgStyle = {
     marginTop: "80px",
@@ -117,7 +125,7 @@ function VideoCall() {
         </div>
 
         <div className={classes.bottomDiv}>
-          <Grid align="center">
+          <Grid align="center" >
             <IconButton
               style={IconStyles}
               onClick={() => setmicClicked(!micClicked)}
@@ -143,6 +151,10 @@ function VideoCall() {
             <IconButton className={classes.root} style={IconStyles}>
               <CallEndIcon color="primary" style={{ fontSize: "2rem" }} />
             </IconButton>
+            <IconButton  style={IconStyles}>
+              <SentimentVerySatisfiedIcon color="primary" style={{ fontSize: "2rem"  }}  />
+            </IconButton>
+        
           </Grid>
         </div>
       </div>

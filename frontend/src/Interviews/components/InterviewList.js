@@ -115,12 +115,20 @@ const InterviewList = (props) => {
           </Card> ) : 
          ( props.userSentRequests.map((sentReq) => (
             <MyInterviewCandidate
-            getCandidateRequestsData = {getCandidateRequestsData}
+              getCandidateRequestsData = {getCandidateRequestsData}
               key={sentReq.id}
               InterID={sentReq.id}
               InterTitle = {sentReq.title}
               InterDate = {sentReq.date}
               tabValue= {value}
+              userSentRequests = {props.userSentRequests}
+              InterStatus={
+                sentReq.isCancelled
+                  ? "CANCELLED"
+                  : new Date(sentReq.date) > CurrentDate
+                  ? "PENDING"
+                  : "TAKEN"
+              }
               hasAccess={props.hasAccess}
             />
           )))}
@@ -140,6 +148,15 @@ const InterviewList = (props) => {
               InterTitle = {receiveReq.title}
               InterDate = {receiveReq.date}
               hasAccess={props.hasAccess}
+              userReceivedRequests = {props.userReceivedRequests}
+              InterStatus={
+                "TAKEN"
+                // receiveReq.isCancelled
+                //   ? "CANCELLED"
+                //   : new Date(receiveReq.date) > CurrentDate
+                //   ? "PENDING"
+                //   : "TAKEN"
+              }
               tabValue= {value}
             />
           )))}
@@ -158,6 +175,7 @@ const InterviewList = (props) => {
               InterID={addedInter.id}
               InterTitle = {addedInter.title}
               InterDate = {addedInter.date}
+              userAddedInterviews = {props.userAddedInterviews}
               InterStatus={
                 addedInter.isCancelled
                   ? "CANCELLED"

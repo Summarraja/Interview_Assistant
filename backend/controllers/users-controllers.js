@@ -50,7 +50,7 @@ const getUserData = async (req, res, next) => {
      receivedRequests: userRequests.receivedRequests.map(inter=> inter.toObject({getters:true})),
      addedInterviews: userRequests.addedInterviews.map(inter=> inter.toObject({getters:true}))});
 
-  res.json({ name: user.resume.firstname + " " + user.resume.lastname });
+  // res.json({ name: user.resume.firstname + " " + user.resume.lastname });
 
 };
 

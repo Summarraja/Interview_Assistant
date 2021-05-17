@@ -142,23 +142,26 @@ const InterviewItems = (props) => {
           <Typography variant="subtitle1">View Details</Typography>
         </MenuItem>
       )}
-      <Divider variant="middle" />
+          <Divider variant="middle" />
+    {props.hasAccess && props.role == "Interviewer" && (
+    
+          <InterviewMenu
+            closeInterviewMenu={closeInterviewMenu}
+            status={props.status}
+            intId={props.id}
+            interSentRequests={interSentRequests}
+            setInterSentRequests={setInterSentRequests}
+            interReceivedRequests={interReceivedRequests}
+            setInterReceivedRequests={setInterReceivedRequests}
+            interCandidates={interCandidates}
+            setInterCandidates={setInterCandidates}
+            setInterviews={props.setInterviews}
+          />
 
-      {!isLoading && (
-        <InterviewMenu
-          closeInterviewMenu={closeInterviewMenu}
-          status={props.status}
-          intId={props.id}
-          interSentRequests={interSentRequests}
-          setInterSentRequests={setInterSentRequests}
-          interReceivedRequests={interReceivedRequests}
-          setInterReceivedRequests={setInterReceivedRequests}
-          interCandidates={interCandidates}
-          setInterCandidates={setInterCandidates}
-          setInterviews={props.setInterviews}
-        />
-      )}
-    </Menu>
+          )}
+      </Menu>
+    
+    
   );
 
   return (
@@ -202,7 +205,7 @@ const InterviewItems = (props) => {
             </Button>
           </Grid>
         </Grid>
-        {props.hasAccess && props.role == "Interviewer" && (
+        { (
           <OutsideClickHandler onOutsideClick={closeInterviewMenu}>
             <IconButton onClick={openInterviewMenu}>
               <MoreVertIcon style={MoreIconStyle} />

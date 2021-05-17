@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { IconButton } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -14,7 +15,7 @@ import Navbar from "./Navbar";
 import Fade from "@material-ui/core/Fade";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import InsertChartIcon from "@material-ui/icons/InsertChart";
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import Hidden from "@material-ui/core/Hidden";
 import { Divider } from "@material-ui/core";
 import { AuthContext } from "../../context/auth-context";
@@ -26,6 +27,8 @@ import { ImProfile } from "react-icons/im";
 import { TiMessages } from "react-icons/ti";
 import Badge from "@material-ui/core/Badge";
 import { useHttpClient } from "../../hooks/http-hook";
+import { useHistory } from "react-router-dom";
+import { IoIosArrowDropleft } from "react-icons/io";
 
 const drawerWidth = 200;
 const useStyles = makeStyles((theme) => ({
@@ -40,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     flexShrink: 0,
   },
   drawerPaper: {
-    width: drawerWidth
+    width: drawerWidth,
   },
   content: {
     flexGrow: 1,
@@ -65,14 +68,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "2rem",
     color: "#fff",
     [theme.breakpoints.down("xs")]: {
-      color: "#004777"
+      color: "#004777",
     },
   },
   divider: {
-    backgroundColor: "#fff"
-  }
-
-
+    backgroundColor: "#fff",
+  },
 }));
 
 const MainNavigation = () => {
@@ -83,17 +84,17 @@ const MainNavigation = () => {
   const classes = useStyles();
   const [OpenDrawer, SetOpenDrawer] = useState(false);
   const [unreadChats, setUnreadChats] = useState(0);
+  let history = useHistory();
 
   useEffect(() => {
-    if (!socket)
-      return;
+    if (!socket) return;
     socket.on("message", (data) => {
-      console.log("msg  noti")
+      console.log("msg  noti");
       setUnreadChats(unreadChats + 1);
-    })
+    });
     socket.on("notification", (data) => {
-      console.log("noti")
-    })
+      console.log("noti");
+    });
 
     return () => {
       socket.off("message");
@@ -102,8 +103,7 @@ const MainNavigation = () => {
   }, [socket]);
 
   useEffect(() => {
-    if (!auth.userId)
-      return;
+    if (!auth.userId) return;
     getBadges();
   }, [auth.userId]);
   const getBadges = async () => {
@@ -118,9 +118,8 @@ const MainNavigation = () => {
         }
       );
       setUnreadChats(responseData.unreadChats);
-    } catch (err) { }
-
-  }
+    } catch (err) {}
+  };
   const openChat = async () => {
     try {
       const responseData = await sendRequest(
@@ -133,15 +132,32 @@ const MainNavigation = () => {
         }
       );
       setUnreadChats(responseData.unreadChats);
-    } catch (err) { }
-  }
+    } catch (err) {}
+  };
   const HandleDrawer = () => {
     SetOpenDrawer(!OpenDrawer);
   };
 
   const drawerItems = (
-    <List style={{ margin: "2rem auto" }}>
-        <Tooltip
+    <List >
+      <Tooltip
+        title="Back"
+        placement="right"
+        TransitionComponent={Fade}
+        TransitionProps={{ timeout: 600 }}
+
+      >
+        <IconButton
+          className={classes.Navicon}
+          onClick={() => history.goBack()}
+        >
+          <IoIosArrowDropleft
+             style={{ margin: "0px 0px 20px 5px" }}
+          />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip
         title={OpenDrawer ? "" : "Home"}
         placement="right"
         TransitionComponent={Fade}
@@ -157,14 +173,14 @@ const MainNavigation = () => {
           to="/"
         >
           <ListItemIcon>
-            <GoHome className = {classes.Navicon} />
+            <GoHome className={classes.Navicon} />
           </ListItemIcon>
           <ListItemText primary="Home" />
         </ListItem>
       </Tooltip>
-     
-<Divider variant="middle" className={classes.divider}/>
-     
+
+      <Divider variant="middle" className={classes.divider} />
+
       <Tooltip
         title={OpenDrawer ? "" : "Inbox"}
         placement="right"
@@ -192,7 +208,6 @@ const MainNavigation = () => {
       </Tooltip>
 
       <Divider variant="middle" className={classes.divider} />
-
 
       <Tooltip
         title={OpenDrawer ? "" : "Interviews"}
@@ -285,8 +300,6 @@ const MainNavigation = () => {
     </List>
   );
 
-
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -295,6 +308,7 @@ const MainNavigation = () => {
       {auth.isLoggedIn && (
         <>
           <Navbar HandleDrawer={HandleDrawer} />
+
           <Hidden smUp implementation="css">
             <Drawer
               className={classes.drawer}
@@ -327,6 +341,6 @@ const MainNavigation = () => {
       )}
     </div>
   );
-}
+};
 
 export default MainNavigation;
