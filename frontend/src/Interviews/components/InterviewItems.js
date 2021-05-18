@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Menu, MenuItem, Divider, withStyles } from "@material-ui/core";
 import { IoMdEye } from "react-icons/io";
@@ -13,22 +13,13 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import IconButton from "@material-ui/core/IconButton";
 import { grey } from "@material-ui/core/colors";
 import Button from "@material-ui/core/Button";
-import { ThemeProvider } from "@material-ui/styles";
-
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import BlockIcon from "@material-ui/icons/Block";
-
 import InterviewMenu from "./InterviewMenu";
 import ViewInterview from "../pages/ViewInterview";
-
-
-// const ButtonStyle= withStyles({
-// label:{
-//   fontFamily:"Serif, Open Sans, Arial",
-//   fontSize: "0.9rem"
-// },
-// })(Button);
-
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -76,9 +67,17 @@ const InterviewItems = (props) => {
   const MoreIconStyle = {
     marginTop: "5px",
   };
-
-
+  const auth = useContext(AuthContext);
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const classes = useStyles();
+
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const today = new Date();
+
+  const date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  const CurrentDate = new Date(date);
 
   const [InterviewMobAnchorEl, setInterviewMobAnchorEl] = useState(null);
   const isInterviewMenuOpen = Boolean(InterviewMobAnchorEl);
@@ -90,10 +89,34 @@ const InterviewItems = (props) => {
     setInterviewMobAnchorEl(null);
   };
 
+  const [interSentRequests, setInterSentRequests] = useState();
+  const [interReceivedRequests, setInterReceivedRequests] = useState();
+  const [interCandidates, setInterCandidates] = useState();
 
+  useEffect(() => {
+    const getInterviewRequestsData = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/interviews/interviewreq/${props.id}`,
+          "GET",
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setInterSentRequests(responseData.sentRequests);
+        setInterReceivedRequests(responseData.receivedRequests);
+        setInterCandidates(responseData.candidates);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+    if (auth.setting.role == "Interviewer") {
+      getInterviewRequestsData();
+    }
+  }, []);
 
   const InterviewMobileMenu = (
     <Menu
@@ -109,10 +132,9 @@ const InterviewItems = (props) => {
     >
       {matches && (
         <MenuItem
-        style={{ height: 40 }}
-        component={Link}
-        to={`/interviews/view/${props.id}`}
-      
+          style={{ height: 40 }}
+          component={Link}
+          to={`/interviews/view/${props.id}`}
         >
           <IconButton color="primary">
             <IoMdEye />
@@ -120,76 +142,80 @@ const InterviewItems = (props) => {
           <Typography variant="subtitle1">View Details</Typography>
         </MenuItem>
       )}
-      <Divider variant="middle" />
-     
-      <InterviewMenu
-        closeInterviewMenu={closeInterviewMenu}
-        status={props.status}
-        intId = {props.id}
-        // users = {props.users}
-      //  onDelete = {props.onDelete}
-      />
-    </Menu>
+          <Divider variant="middle" />
+    {props.hasAccess && props.role == "Interviewer" && (
+    
+          <InterviewMenu
+            closeInterviewMenu={closeInterviewMenu}
+            status={props.status}
+            intId={props.id}
+            interSentRequests={interSentRequests}
+            setInterSentRequests={setInterSentRequests}
+            interReceivedRequests={interReceivedRequests}
+            setInterReceivedRequests={setInterReceivedRequests}
+            interCandidates={interCandidates}
+            setInterCandidates={setInterCandidates}
+            setInterviews={props.setInterviews}
+          />
+
+          )}
+      </Menu>
+    
+    
   );
 
   return (
-    <Card className={classes.card}>
-      <Grid container spacing={5}>
-        <Grid item sm={6} lg={7} style={{ flexGrow: 1 }}>
-          <div className={classes.header}>
-            <Typography variant="h5" align="justify">
-              {props.title}
-            </Typography>
-            <Typography variant="subtitle1" style={{ color: grey[900] }}>
-              {props.date}
-            </Typography>
-          </div>
-        </Grid>
-        <Grid item sm={6} lg={5}>
-          <Typography
-            variant="subtitle2"
-            className={classes.statusStyle}
-          >
-            {(props.status === "PENDING" && (
-              <FaRegClock className={classes.statusIconStyle} />
-            )) ||
-              (props.status === "TAKEN" && (
-                <FaRegCheckCircle className={classes.statusIconStyle} />
+    <>
+      <Card className={classes.card}>
+        <Grid container spacing={5}>
+          <Grid item sm={6} lg={7} style={{ flexGrow: 1 }}>
+            <div className={classes.header}>
+              <Typography variant="h5" align="justify">
+                {props.title}
+              </Typography>
+              <Typography variant="subtitle1" style={{ color: grey[900] }}>
+                {props.date}
+              </Typography>
+            </div>
+          </Grid>
+          <Grid item sm={6} lg={5}>
+            <Typography variant="subtitle2" className={classes.statusStyle}>
+              {(props.status === "PENDING" && (
+                <FaRegClock className={classes.statusIconStyle} />
               )) ||
-              (props.status === "CANCELLED" && (
-                <BlockIcon className={classes.statusIconStyle} />
-              ))}
-            {props.status}
-          </Typography>
+                (props.status === "TAKEN" && (
+                  <FaRegCheckCircle className={classes.statusIconStyle} />
+                )) ||
+                (props.status === "CANCELLED" && (
+                  <BlockIcon className={classes.statusIconStyle} />
+                ))}
+              {props.status}
+            </Typography>
 
-
-          <ThemeProvider theme={theme}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-          
-
-           className={classes.ViewButton}
-            startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
-            component={Link}
-            to={`/interviews/view/${props.id}`}
-          >
-            View Details
-          </Button>
-          </ThemeProvider>
-        
-    
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              className={classes.ViewButton}
+              startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
+              component={Link}
+              to={`/interviews/view/${props.id}`}
+            >
+              View Details
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
-      <OutsideClickHandler onOutsideClick={closeInterviewMenu}>
-        <IconButton onClick={openInterviewMenu}>
-          <MoreVertIcon style={MoreIconStyle} />
-        </IconButton>
-      </OutsideClickHandler>
-      {InterviewMobileMenu}
-    
-    </Card>
+        { (
+          <OutsideClickHandler onOutsideClick={closeInterviewMenu}>
+            <IconButton onClick={openInterviewMenu}>
+              <MoreVertIcon style={MoreIconStyle} />
+            </IconButton>
+          </OutsideClickHandler>
+        )}
+
+        {InterviewMobileMenu}
+      </Card>
+    </>
   );
 };
 

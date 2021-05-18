@@ -23,19 +23,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
+
 const DeleteInterview = (props) => {
   const classes = useStyles();
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-  const [success, setSuccess] = useState(false);
 
-  const clearSuccess = () => {
-    setSuccess(false);
-    // props.setOpen(false);
-  };
-  useEffect(() => {
-    setSuccess(status == 200);
-  }, [status]);
 
   const CloseDeleteDialogHandler = () => {
     props.setOpenDeleteDialog(false);
@@ -53,36 +46,16 @@ const DeleteInterview = (props) => {
         }
       );
 
-      // props.onDelete(props.selectedInterviewId);
-
       props.setOpenDeleteDialog(false);
+      props.getData(auth.userId);
     } catch (err) {
       console.log(err);
     }
   };
-  const [open, setOpen] = React.useState(false);
-
-  const handleClick = () => {
-    setOpen(true);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
 
   return (
     <>
-      {console.log("loading: " + isLoading)}
-      {console.log("status: " + status)}
-
+  
       <Dialog
         onClose={CloseDeleteDialogHandler}
         open={props.OpenDeleteDialog}
@@ -112,20 +85,7 @@ const DeleteInterview = (props) => {
             Cancel
           </Button>
           {isLoading && <LoadingSpinner open={isLoading} />}
-          <Snackbar
-            open={success || !!error}
-            autoHideDuration={6000}
-            onClose={status == "200" ? clearSuccess : clearError}
-          >
-            <MuiAlert
-              elevation={6}
-              variant="filled"
-              severity={status == "200" ? "success" : "error"}
-              onClose={status == "200" ? clearSuccess : clearError}
-            >
-              {status == "200" ? "Interview Deleted Successfully!" : error}
-            </MuiAlert>
-          </Snackbar>
+
           <Button
             onClick={confirmDeleteHandler}
             variant="contained"

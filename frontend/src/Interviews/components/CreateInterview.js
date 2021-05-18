@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState , useContext} from "react";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Link from "@material-ui/core/Link";
@@ -64,6 +64,29 @@ const CreateInterview = (props) => {
     backgroundColor: "primary",
   };
   const classes = useStyles();
+  const auth = useContext(AuthContext);
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+
+    const getData = async (usID) => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/interviews/user/" + usID,
+          "GET",
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        props.setInterviews(responseData.interviews);
+      
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+  
+ 
 
   return (
     <Fragment>
@@ -90,6 +113,8 @@ const CreateInterview = (props) => {
               timeOfInter={timeOfInter}
               setTimeOfInter={setTimeOfInter}
               setOpen={props.setOpen}
+              getData = {getData}
+            
             />
           </div>
         </DialogContent>

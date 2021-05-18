@@ -59,7 +59,6 @@ const CustomizedDialogs = (props) => {
           }
         );
         setResume(responseData.resumes);
-      
       } catch (err) {
         console.log(err);
       }
@@ -81,7 +80,7 @@ const CustomizedDialogs = (props) => {
           onClose={handleCloseDialog}
           className={classes.dialogTitle}
         >
-          Search Candidates
+          Candidates
           <SearchCandidates
             setSearchItem={setSearchItem}
             searchItem={searchItem}
@@ -94,14 +93,18 @@ const CustomizedDialogs = (props) => {
         <DialogContent dividers>
           <div align="center">
             {!searchItem || !closeIcon
-              ? props.items.length === 0
-                ? "No users Found"
-                : props.items.map((candidate) => (
+              ? props.candidateResume.length === 0
+                ? "No Candidates have been added to this Interview. "
+                : props.candidateResume.map((candidate) => (
                     <CandidatesDialogItems
                       key={candidate.id}
                       id={candidate.id}
-                      name={candidate.name}
-                      image={candidate.image}
+                      name={candidate.fullname}
+                      userId={candidate.user}
+                      interId={props.interId}
+                      interCandidates={props.interCandidates}
+                      getInterviewRequestsData = {props.getInterviewRequestsData}
+                       //  image={candidate.image}
                     />
                   ))
               : resume.length === 0
@@ -110,9 +113,14 @@ const CustomizedDialogs = (props) => {
                   <CandidatesDialogItems
                     key={resume._id}
                     id={resume._id}
-                    name={resume.firstname + " " + resume.lastname}
+                    name={resume.fullname}
                     interId={props.interId}
                     userId={resume.user}
+                    searchItem={searchItem}
+                    interCandidates={props.interCandidates}
+                    interReceivedRequests = {props.interReceivedRequests}
+                    getInterviewRequestsData = {props.getInterviewRequestsData}
+
                     //  image={candidate.image}
                   />
                 ))}

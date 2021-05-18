@@ -10,8 +10,10 @@ import { useParams } from "react-router-dom";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
-import Button from "@material-ui/core/Button";
+import { BiEdit } from "react-icons/bi";
 import UpdateCertificate from "../components/UpdateCertificate";
+import Grid from "@material-ui/core/Grid"
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
   GridStyle: {
@@ -31,8 +33,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   submit: {
-    float: "right",
-  },
+    textAlign: "center", 
+    marginTop: 10
+   },
 }));
 
 const ViewCertificate = (props) => {
@@ -122,18 +125,21 @@ const ViewCertificate = (props) => {
         ) : (
           <LoadingSpinner open={isLoading} />
         )}
-      
+      <Grid   className={classes.submit}>
         {disableField && hasEditAccess && (
           <Button
             onClick={EnableFieldsHandler}
             variant="contained"
             color="primary"
-            className={classes.submit}
+            startIcon={<BiEdit style={{ marginLeft: 6 }} />}
+            size="small"
+          
           >
             Edit Details
           </Button>
         )}
-        <Box mt={4}></Box>
+        </Grid>
+        {/* <Box mt={4}></Box> */}
       </Paper>
     </Container>
   );

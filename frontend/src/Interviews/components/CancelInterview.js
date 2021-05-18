@@ -1,4 +1,4 @@
-import React, { useState , useContext, useEffect} from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -24,7 +24,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const CancelInterview = (props) => {
-  const interviewId = props.selectedInterviewId
+  const interviewId = props.selectedInterviewId;
   const classes = useStyles();
   const [loadedInterview, setLoadedInterview] = useState();
   const [loadedField, setLoadedField] = useState();
@@ -34,12 +34,11 @@ const CancelInterview = (props) => {
 
   const clearSuccess = () => {
     setSuccess(false);
-   
   };
+
   useEffect(() => {
     setSuccess(status == 200);
   }, [status]);
-
 
   // Request to get sepcific Interview Details
   useEffect(() => {
@@ -57,9 +56,10 @@ const CancelInterview = (props) => {
         setLoadedInterview(responseData.interview);
       } catch (err) {}
     };
-    if (!loadedInterview) 
-    fetchInterview();
+    if (!loadedInterview) fetchInterview();
   }, []);
+
+
 
     // Request to get FieldTitle against FieldId from loadedInterviews
     useEffect(() => {
@@ -81,52 +81,45 @@ const CancelInterview = (props) => {
     }, [loadedField, loadedInterview]);
 
   const CancelInterviewHandler = async() => {
-   
      try {
       const responseData = await sendRequest(
         `http://localhost:5000/api/interviews/${interviewId}`,
         "PATCH",
         JSON.stringify({
-                title: loadedInterview.title,
-                description: loadedInterview.description,
-                fieldTitle: loadedField.title,
-                date: loadedInterview.date,
-                time: loadedInterview.time,
-                isCancelled: true
-              }),
+          title: loadedInterview.title,
+          description: loadedInterview.description,
+          fieldTitle: loadedField.title,
+          date: loadedInterview.date,
+          time: loadedInterview.time,
+          isCancelled: true,
+        }),
         {
           "Content-Type": "application/json",
           Authorization: "Bearer " + auth.token,
         }
-
       );
-       props.setOpenCancelDialog(false);
+      props.getData(auth.userId);
+      props.setOpenCancelDialog(false);
     } catch (err) {}
-  }
+  };
 
-  
   return (
- <>
- {/* {!loadedInterview && <LoadingSpinner open = {true} />} */}
-
-    
-    <Snackbar
-              open={success|| !!error}
-              autoHideDuration={6000}
-              onClose={status == "200" ? clearSuccess : clearError}
-            >
-              <MuiAlert
-                elevation={6}
-                variant="filled"
-                severity={status == "200" ? "success" : "error"}
-                onClose={status == "200" ? clearSuccess : clearError}
-              >
-                {status == "200" ? "Interview Cancelled Successfully!" : error}
-              </MuiAlert>
-            </Snackbar>
-
-   
-        <Dialog
+    <>
+      <Snackbar
+        open={success || !!error}
+        autoHideDuration={6000}
+        onClose={status == "200" ? clearSuccess : clearError}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity={status == "200" ? "success" : "error"}
+          onClose={status == "200" ? clearSuccess : clearError}
+        >
+          {status == "200" ? "Interview Cancelled Successfully!" : error}
+        </MuiAlert>
+      </Snackbar>
+      <Dialog
         open={props.OpenCancelDialog}
         onClose={props.CloseCancelDialogHandler}
         fullWidth
@@ -135,7 +128,7 @@ const CancelInterview = (props) => {
         maxWidth="sm"
       >
         <DialogTitle
-         onClose={props.CloseCancelDialogHandler}
+          onClose={props.CloseCancelDialogHandler}
           className={classes.dialogTitle}
         >
           Cancel Interview Confirmation
@@ -153,19 +146,18 @@ const CancelInterview = (props) => {
           >
             No
           </Button>
-          <LoadingSpinner open = {isLoading}/>
+          <LoadingSpinner open={isLoading} />
+
           <Button
             onClick={CancelInterviewHandler}
             variant="contained"
             color="primary"
-          //  disabled = {!(loadedInterview && loadedField)}
+            //  disabled = {!(loadedInterview && loadedField)}
           >
             Yes
           </Button>
         </DialogActions>
       </Dialog>
-    
-  
     </>
   );
 };

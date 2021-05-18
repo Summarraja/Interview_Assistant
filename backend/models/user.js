@@ -13,6 +13,7 @@ const userSchema = new Schema({
   password_reset_token:{type: String,default:''},
   reset_token_expired_at: { type: Date,default:null},
   createdInterviews: [{ type: mongoose.Types.ObjectId, required: true, ref: "Interview" }],
+  addedInterviews: [{ type: mongoose.Types.ObjectId, required: true, ref: "Interview" }],
   sentRequests: [{ type: mongoose.Types.ObjectId, required: true, ref: "Interview" }],
   receivedRequests: [{ type: mongoose.Types.ObjectId, required: true, ref: "Interview" }],
   resume: { type: mongoose.Types.ObjectId, default:null, ref: "Resume" },

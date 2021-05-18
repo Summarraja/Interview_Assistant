@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import InterviewItems from "./InterviewItems";
 import Container from "@material-ui/core/Container";
 
@@ -8,7 +8,14 @@ import bgInterview5 from "../../shared/components/UIElements/Images/bgInterview5
 import Typography from "@material-ui/core/Typography";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
-import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import MyInterviewCandidate from "./MyInterviewCandidate";
+import AppBar from "@material-ui/core/AppBar";
+import Tab from "@material-ui/core/Tab";
+import TabContext from "@material-ui/lab/TabContext";
+import Card from "@material-ui/core/Card";
+import TabList from "@material-ui/lab/TabList";
+import TabPanel from "@material-ui/lab/TabPanel";
 
 const useStyles = makeStyles((theme) => ({
   hero: {
@@ -37,64 +44,180 @@ const useStyles = makeStyles((theme) => ({
     margin: "30px auto",
     padding: "20px 50px",
   },
+  TabStyle: {
+    paddingTop: "13px",
+    fontSize: "1.4rem",
+  },
+  noRequests: {
+    width: "100%",
+    padding: "10px 17px",
+    color: "#004777",
+  },
+root:{
+  padding: "6px"
+}
 }));
 
 const InterviewList = (props) => {
   const classes = useStyles();
- 
-  const[resume, setResume] = useState([])
+
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
- 
+  const today = new Date();
+  const date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  const CurrentDate = new Date(date);
 
- 
-//  const fetchResume = async () => {
-   
-//    try {
-//     loadedCandidates.map(candidate =>( 
-//      const responseData = await sendRequest(
-//        `http://localhost:5000/api/resumes/user/${candidate.id}`,
-//        "GET",
-//        null,
-//        {
-//          "Content-Type": "application/json",
-//          Authorization: "Bearer " + auth.token,
-//        }
-//      );
-//     resume.push(responseData.resume)
-//    //  console.log(loadedCandidates)
-//    ));
-//   } catch (err) {}
- 
-//   }
+  const [value, setValue] = useState("1");
 
-//  fetchResume();
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
 
+  if (props.uid == auth.userId && auth.setting.role == "Candidate") {
 
+    const getCandidateRequestsData = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/users/${auth.userId}`,
+          "GET",
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        props.setUserSentRequests(responseData.sentRequests);
+        props.setUserReceivedRequests(responseData.receivedRequests);
+        props.setUserAddedInterviews(responseData.addedInterviews);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
+    
+    return (
+      <TabContext value={value}>
+        <AppBar position="static">
+          <TabList onChange={handleChange} aria-label="simple tabs example">
+            <Tab label="Sent Requests" value="1" />
+            <Tab label="Received Requests" value="2" />
+            <Tab label="My Interviews" value="3" />
+          </TabList>
+        </AppBar>
+        <TabPanel value = "1" className={classes.root}>
+        {props.userSentRequests.length === 0 ?  
+          ( <Card className={classes.noRequests}>
+            <Typography variant="h5" align="center">
+              "No requests are found"{" "}
+            </Typography>{" "}
+          </Card> ) : 
+         ( props.userSentRequests.map((sentReq) => (
+            <MyInterviewCandidate
+              getCandidateRequestsData = {getCandidateRequestsData}
+              key={sentReq.id}
+              InterID={sentReq.id}
+              InterTitle = {sentReq.title}
+              InterDate = {sentReq.date}
+              tabValue= {value}
+              userSentRequests = {props.userSentRequests}
+              InterStatus={
+                sentReq.isCancelled
+                  ? "CANCELLED"
+                  : new Date(sentReq.date) > CurrentDate
+                  ? "PENDING"
+                  : "TAKEN"
+              }
+              hasAccess={props.hasAccess}
+            />
+          )))}
+        </TabPanel>
+        <TabPanel value = "2" className={classes.root}>
+        {props.userReceivedRequests.length === 0 ?  
+          ( <Card className={classes.noRequests}>
+            <Typography variant="h5" align="center">
+              "No requests are found"{" "}
+            </Typography>{" "}
+          </Card> ) : 
+          (props.userReceivedRequests.map((receiveReq) => (
+            <MyInterviewCandidate
+            getCandidateRequestsData = {getCandidateRequestsData}
+              key={receiveReq.id}
+              InterID={receiveReq.id}
+              InterTitle = {receiveReq.title}
+              InterDate = {receiveReq.date}
+              hasAccess={props.hasAccess}
+              userReceivedRequests = {props.userReceivedRequests}
+              InterStatus={
+                "TAKEN"
+                // receiveReq.isCancelled
+                //   ? "CANCELLED"
+                //   : new Date(receiveReq.date) > CurrentDate
+                //   ? "PENDING"
+                //   : "TAKEN"
+              }
+              tabValue= {value}
+            />
+          )))}
+        </TabPanel>
+        <TabPanel value = "3" className={classes.root}>
+        {props.userAddedInterviews.length === 0 ?  
+          ( <Card className={classes.noRequests}>
+            <Typography variant="h5" align="center">
+              "No interviews Pending"{" "}
+            </Typography>{" "}
+          </Card> ) : 
+         ( props.userAddedInterviews.map((addedInter) => (
+            <MyInterviewCandidate
+            getCandidateRequestsData = {getCandidateRequestsData}
+              key={addedInter.id}
+              InterID={addedInter.id}
+              InterTitle = {addedInter.title}
+              InterDate = {addedInter.date}
+              userAddedInterviews = {props.userAddedInterviews}
+              InterStatus={
+                addedInter.isCancelled
+                  ? "CANCELLED"
+                  : new Date(addedInter.date) > CurrentDate
+                  ? "PENDING"
+                  : "TAKEN"
+              }
+              tabValue= {value}
+              hasAccess={props.hasAccess}
+            />
+          )))}
+        </TabPanel>
+      </TabContext>
+    );
+  }
 
   if (props.items.length === 0) {
     return (
       <Container maxWidth="md" component="main">
         <Paper elevation={5} className={classes.paper}>
           <Typography variant="h4" color="primary" align="center">
-            No Interviews found. Maybe create one?
+           {auth.setting.role == "Candidate" ? "No interview has been created by this User": "No Interviews found. Maybe create one?" } 
           </Typography>
         </Paper>
       </Container>
     );
   }
-  const today = new Date();
-
-  const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-  const CurrentDate = new Date(date);
-
 
   return (
-  
-      <>
-      {props.items.map(interview => (
+    <TabContext value={value}>
+      <AppBar position="static">
+   
+        <Tab
+          label="Created Interviews"
+          value="1"
+          className={classes.TabStyle}
+          selected={true}
+          disableRipple={false}
+        />
+       
+      </AppBar>
+      {props.items.map((interview) => (
         <InterviewItems
           key={interview.id}
           id={interview.id}
@@ -106,13 +229,25 @@ const InterviewList = (props) => {
           candidates={interview.candidates}
           sendRequests={interview.sendRequests}
           receiveRequests={interview.receiveRequests}
-          status = {interview.isCancelled? "CANCELLED" : (new Date(interview.date) > CurrentDate  ? "PENDING" : "TAKEN")}
+          status={
+            interview.isCancelled
+              ? "CANCELLED"
+              : new Date(interview.date) > CurrentDate
+              ? "PENDING"
+              : "TAKEN"
+          }
           creatorId={interview.creator}
-       //   users = {loadedCandidates.map(candidate => candidate.resume)}
-      //    onDelete = {props.onDeleteInterview}
+          role={props.role}
+          hasAccess={props.hasAccess}
+          setInterviews = {props.setInterviews}
+          // receivedRequests = {props.receivedRequests}
+          //   users = {loadedCandidates.map(candidate => candidate.resume)}
+          //    onDelete = {props.onDeleteInterview}
         />
       ))}
-</>
+
+    
+    </TabContext>
   );
 };
 

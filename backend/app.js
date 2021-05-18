@@ -31,9 +31,7 @@ const HttpError = require('./models/http-error');
 const users = {}
 
 io.on('connection', (socket) => {
-  //generate username against a socket connection and store it
   let userid = socket.request._query['id'];
-  //send back username
   console.log("connected")
 
   if (!users[userid]) {
@@ -68,12 +66,12 @@ io.on('connection', (socket) => {
     msgdata.append('time', data.message.time);
     msgdata.append('isRead', 'true');
     msgdata.append('chat', data.message.chat);
-    msgdata.append('image', data.file,{ filename : data.fileName });
+    msgdata.append('image', data.file, { filename: data.fileName });
     axios.post('http://localhost:5000/api/messages/',
       msgdata, {
       headers: {
         ...msgdata.getHeaders(),
-          'Authorization':data.token
+        'Authorization': data.token
       }
     })
       .then(function (response) {
@@ -109,19 +107,42 @@ io.on('connection', (socket) => {
       });
   })
   socket.on('callUser', (data) => {
-    io.to(users[data.userToCall]).emit('hey', { signal: data.signalData, from: data.from })
+    if (users[data.userToCall]) {
+      users[data.userToCall].forEach(soc => {
+        io.to(soc).emit('hey', { signal: data.signalData, fromId: data.fromId, fromName: data.fromName, fromImage:data.fromImage })
+      });
+    }
   })
-
   socket.on('acceptCall', (data) => {
-    io.to(users[data.to]).emit('callAccepted', data.signal)
+    if (users[data.to]) {
+      users[data.to].forEach(soc => {
+        io.to(soc).emit('callAccepted', data.signal)
+      });
+    }
   })
 
   socket.on('close', (data) => {
-    io.to(users[data.to]).emit('close')
+    if (users[data.to]) {
+      users[data.to].forEach(soc => {
+        io.to(soc).emit('close')
+      });
+    }
   })
 
   socket.on('rejected', (data) => {
-    io.to(users[data.to]).emit('rejected')
+    if (users[data.to]) {
+      users[data.to].forEach(soc => {
+        io.to(soc).emit('rejected')
+      });
+    }
+  })
+
+  socket.on('busy', (data) => {
+    if (users[data.to]) {
+      users[data.to].forEach(soc => {
+        io.to(soc).emit('busy')
+      });
+    }
   })
 })
 
@@ -175,7 +196,6 @@ mongoose
   .connect(
     // `mongodb://localhost:27017/smarthireDB`
     `mongodb+srv://Summar:H4NUsZcxzxv0fonF@cluster0.uzdlx.mongodb.net/mern?retryWrites=true&w=majority`
-
     , {
       useNewUrlParser: true,
       useUnifiedTopology: true,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { TiEdit } from "react-icons/ti";
 import BlockIcon from "@material-ui/icons/Block";
@@ -11,11 +11,28 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import DeleteInterview from "./DeleteInterview";
 import CancelInterview from "./CancelInterview";
 import { IoIosPeople } from "react-icons/io";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
+import CandidateRequestsList from "./CandidateRequestsList";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
 
 const InterviewMenu = (props) => {
- 
   const [OpenCancelDialog, setOpenCancelDialog] = useState(false);
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const auth = useContext(AuthContext);
   const [open, setOpen] = useState(true);
+  const [success, setSuccess] = useState(false);
+
+  const clearSuccess = () => {
+    setSuccess(false);
+    // props.setOpen(false);
+  };
+  useEffect(() => {
+    setSuccess(status == 200);
+  }, [status]);
+
 
   const OpenCancelDialogHandler = () => {
     setOpenCancelDialog(true);
@@ -24,24 +41,86 @@ const InterviewMenu = (props) => {
     setOpenCancelDialog(false);
   };
 
-  const [callComp, setCallComp] = useState(false);
-
-
-  const CallCompHandler = () => {
-    setCallComp(true);
-    setOpen(true);
-  };
-
-   
-
-
   const [OpenDeleteDialog, setOpenDeleteDialog] = useState(false);
   const OpenDeleteDialogHandler = () => {
     setOpenDeleteDialog(true);
   };
 
+
+  const [callComp, setCallComp] = useState(false);
+  const [callCandidateReq, setCallCandidateReq ] = useState(false);
+
+  const CallCompHandler = () => {
+    setCallComp(true);
+    setCallCandidateReq(false);
+    setOpen(true);
+  };
+
+  const callCandidateReqHandler = () => {
+    setCallCandidateReq(true);
+    setCallComp(false);
+    setOpen(true);
+  };
+
+
+  const getData = async (usID) => {
+    try {
+      const responseData = await sendRequest(
+        "http://localhost:5000/api/interviews/user/" + usID,
+        "GET",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      props.setInterviews(responseData.interviews);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getInterviewRequestsData = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/interviews/interviewreq/${props.intId}`,
+        "GET",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      props.setInterSentRequests(responseData.sentRequests);
+      
+      props.setInterReceivedRequests(responseData.receivedRequests);
+
+      props.setInterCandidates(responseData.candidates);
+      
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+   
+ 
   return (
     <>
+    {/* <Snackbar
+            open={success  || !!error}
+            autoHideDuration={6000}
+            onClose={ status == "200"? clearSuccess : clearError}
+          >
+            <MuiAlert
+              elevation={6}
+              variant="filled"
+              severity={status == "200"? "success" : "error"}
+              onClose={ status == "200" ? clearSuccess : clearError}
+            >
+              {status == "200" ? "Interview Cancelled Successfully!" : error}
+            </MuiAlert>
+          </Snackbar> */}
       {" "}
       {props.status === "PENDING" ? (
         <>
@@ -57,7 +136,7 @@ const InterviewMenu = (props) => {
             <Typography variant="subtitle1">Edit Details</Typography>
           </MenuItem>
           <Divider variant="middle" />
-          <MenuItem onClick={OpenCancelDialogHandler}  style={{ height: 40 }}>
+          <MenuItem onClick={OpenCancelDialogHandler} style={{ height: 40 }}>
             <IconButton color="primary">
               <BlockIcon />
             </IconButton>
@@ -66,11 +145,13 @@ const InterviewMenu = (props) => {
           {OpenCancelDialog && (
             <CancelInterview
               OpenCancelDialog={OpenCancelDialog}
-              CloseCancelDialogHandler = {CloseCancelDialogHandler}
-              setOpenCancelDialog = {setOpenCancelDialog}
-              selectedInterviewId = {props.intId}
+              CloseCancelDialogHandler={CloseCancelDialogHandler}
+              setOpenCancelDialog={setOpenCancelDialog}
+              selectedInterviewId={props.intId}
+              getData = {getData}
             />
           )}
+           
           <Divider variant="middle" />
           <MenuItem onClick={CallCompHandler} style={{ height: 40 }}>
             <IconButton color="primary">
@@ -78,14 +159,23 @@ const InterviewMenu = (props) => {
             </IconButton>
             <Typography variant="subtitle1">Candidates</Typography>
           </MenuItem>
-          {callComp && <CandidateList open={open} setOpen={setOpen} interId = {props.intId}/>}
+          {callComp &&(
+            <CandidateList
+              open={open}
+              setOpen={setOpen}
+              interId={props.intId}
+              interSentRequests={props.interSentRequests}
+              interReceivedRequests = {props.interReceivedRequests}
+              interCandidates={props.interCandidates}
+              getInterviewRequestsData = {getInterviewRequestsData}
+           
+            />
+          )}
 
           <Divider variant="middle" />
 
           <MenuItem
-            onClick={props.closeInterviewMenu}
-            component={Link}
-            to="/Faq"
+            onClick={callCandidateReqHandler} 
             style={{ height: 40 }}
           >
             <IconButton color="primary">
@@ -93,6 +183,17 @@ const InterviewMenu = (props) => {
             </IconButton>
             <Typography variant="subtitle1">Candidate Requests</Typography>
           </MenuItem>
+          { callCandidateReq && (
+            <CandidateRequestsList
+              open={open}
+              setOpen={setOpen}
+              interId={props.intId}
+              interSentRequests={props.interSentRequests}
+              interReceivedRequests = {props.interReceivedRequests}
+              getInterviewRequestsData = {getInterviewRequestsData}
+    
+            />
+          )}
         </>
       ) : (
         <>
@@ -107,22 +208,12 @@ const InterviewMenu = (props) => {
             <DeleteInterview
               OpenDeleteDialog={OpenDeleteDialog}
               setOpenDeleteDialog={setOpenDeleteDialog}
-              selectedInterviewId = {props.intId}
-             // onDelete = {props.onDelete}
+              selectedInterviewId={props.intId}
+              getData = {getData}
+              // onDelete = {props.onDelete}
             />
           )}
-          <Divider variant="middle" />
-          <MenuItem
-            onClick={props.closeInterviewMenu}
-            component={Link}
-            to="/Faq"
-            style={{ height: 40 }}
-          >
-            <IconButton color="primary">
-              <PersonAddIcon />
-            </IconButton>
-            <Typography variant="subtitle1">Candidate Requests</Typography>
-          </MenuItem>
+          
         </>
       )}
     </>

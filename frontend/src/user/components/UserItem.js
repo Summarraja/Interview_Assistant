@@ -24,6 +24,9 @@ import UploadPhoto from "./UploadPhoto";
 import { AuthContext } from '../../shared/context/auth-context';
 import { RiUserUnfollowFill } from "react-icons/ri";
 import { FaRegAddressCard } from "react-icons/fa";
+import EditProfile from "./EditProfile";
+
+
 
 const useStyles = makeStyles((theme) => ({
   Avatar: {
@@ -59,13 +62,25 @@ const useStyles = makeStyles((theme) => ({
 const UserItem = (props) => {
   const auth = useContext(AuthContext);
   const [open, setOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const handleOpenDialog = () => {
     setOpen(true);
   };
   const handleCloseDialog = () => {
-    console.log("close")
     setOpen(false);
   };
+
+  const OpenEditDialogComp = () => {
+    setOpenEdit(true);
+  };
+  const CloseEditDialogComp = () => {
+    setOpenEdit(false);
+  };
+
+  const BlockUserHandler = () =>{
+    console.log("Block button pressed")
+  }
+ 
   const classes = useStyles();
 
   const RTCiconStyle = {
@@ -109,6 +124,8 @@ const UserItem = (props) => {
     background:
       "linear-gradient( rgba(0, 27.8, 46.7, 1),rgba(78, 120, 160, 1))",
   };
+
+ 
   return (
     <>
       <Paper elevation={10} className={classes.paperStyle}>
@@ -129,9 +146,19 @@ const UserItem = (props) => {
             color="primary"
             startIcon={props.otherUser ? <RiUserUnfollowFill /> : <EditIcon />}
             size="small"
+            onClick = {props.otherUser? BlockUserHandler: OpenEditDialogComp}
           >
             {props.otherUser ? "Block User" : "Edit Profile"}
           </Button>
+{openEdit && (
+  <EditProfile
+    openEdit = {openEdit}
+    CloseEditDialogComp = {CloseEditDialogComp}
+    setOpenEdit = {setOpenEdit} 
+    userId = {auth.resume.user}
+    setMyResume = {props.setMyResume}
+  />
+)}
           {!props.otherUser && (
             <>
             <IconButton className={classes.cameraIcon} onClick={handleOpenDialog} >
@@ -172,11 +199,11 @@ const UserItem = (props) => {
 
         <div style={divstyle}>
           <Typography variant="subtitle1">
-            <WorkIcon style={divIconStyle} /> Frontend Developer
+            <WorkIcon style={divIconStyle} /> {props.resume.email}
           </Typography>
 
           <Typography variant="subtitle1">
-            <LocationOnIcon style={divIconStyle} /> From {props.resume.country}
+            <LocationOnIcon style={divIconStyle} /> From {props.resume.city + " " + props.resume.country}
           </Typography>
 
           <Typography variant="subtitle1">
@@ -186,7 +213,6 @@ const UserItem = (props) => {
 
         </div>
 
-        {props.userSett.role !== "Candidate" && (
           <Accordion style={accordStyle} expanded={true}>
             <AccordionSummary
               //expandIcon={<ExpandMoreIcon />} 
@@ -208,13 +234,12 @@ const UserItem = (props) => {
                 color="primary"
                 size="small"
                 component={Link}
-                to="/interviews"
+                to={`/interviews/${props.resume.user}`}
               >
                 View Interviews
               </Button>
             </AccordionDetails>
           </Accordion>
-        )}
         <Accordion style={accordStyle} expanded={true}>
           <AccordionSummary
             //   expandIcon={<ExpandMoreIcon />}
