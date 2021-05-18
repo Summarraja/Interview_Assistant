@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
 import "./App.css";
 import {
   BrowserRouter as Router,
@@ -35,11 +35,18 @@ import io from "socket.io-client";
 import AdminHome from "./Admin/pages/AdminHome";
 import Resume from './Resumes/Pages/Resume';
 import VideoCall from './Video Call/VideoCall';
+import CreateFaqs from "./Admin/Components/Faqs/CreateFaqs";
+import SignUp from "./user/pages/signUp";
+import SideBar from "./Admin/Components/SideBar";
+import ViewFaqs from "./Admin/Components/Faqs/ViewFaqs";
+import ReportProblem from "./ReportProblems/pages/ReportProblem";
+import ReportProblemAdmin from "./Admin/Components/ReportProblems/pages/ReportProblemAdmin";
 
 
 const App = () => {
   let location = useLocation();
   const { token, login, logout, userId, resume, setting } = useAuth();
+  const auth = useContext(AuthContext);
   const [socket,setSocket] = useState();
  
   let routes;
@@ -50,11 +57,11 @@ const App = () => {
        
         <Switch>
            {console.log("Role2" + setting.role)}
-          <Route path="/admin" exact component={AdminHome} />
+          <Route path="/admin/home" exact component={AdminHome} />
           <Route path="/admin/certificates" exact component={AdminHome} />
-          <Route path="/admin/faq" exact component={AdminHome} />
-          <Route path="/admin/respondProblem" exact component={AdminHome} />
-          <Redirect to="/admin"/>
+          <Route path="/admin/faq" exact component={ViewFaqs} />
+          <Route path="/admin/reportProblem" exact component={ReportProblemAdmin}/>
+          <Redirect to="/admin/home"/>
         </Switch>
 
       );
@@ -75,7 +82,7 @@ const App = () => {
           <Route path="/certificates/edit/:certId" exact component={ViewCertificate} />
           <Route path="/resume" exact component={Resume} />
           <Route path="/videocall" exact component={VideoCall} />
-
+          <Route path="/reportproblem" exact component={ReportProblem} />
           <Redirect to="/" />
         </Switch>
       );
@@ -128,10 +135,17 @@ setSocket(io.connect("http://localhost:5000", { query: "id=" + userId }));
             setting: setting
           }}
         >
-   
-            {location.pathname !== "/admin" && <MainNavigation />}
+            {console.log(location.pathname)}
+            {console.log(auth.isLoggedIn)}
+
+            {location.pathname == "/admin/home" || location.pathname == "/admin/faq" ||
+          location.pathname == "/admin/certificates" ||
+          location.pathname == "/admin/reportProblem"? <SideBar/> : location.pathname == "/videocall" ? "" : <MainNavigation/>}
+            {/* {(location.pathname == "/admin/home" || location.pathname == "/admin/faq" || location.pathname == "/admin/certificates" ||  location.pathname ==  "/admin/respondProblem"  ) ? <SideBar /> : <MainNavigation/>} */}
+
+          
             <main>{routes}</main>
-        
+
         </AuthContext.Provider>
       </SocketContext.Provider>
 

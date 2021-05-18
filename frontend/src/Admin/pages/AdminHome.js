@@ -3,7 +3,7 @@ import SideBar from "../Components/SideBar";
 
 const AdminHome = () => {
 return(
-<SideBar/>
+<h1 style={{margin:"200px"}}> hello jee</h1>
 );
 
 };

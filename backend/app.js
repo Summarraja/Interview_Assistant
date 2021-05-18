@@ -23,6 +23,7 @@ const resumesRoutes = require('./routes/resumes-routes');
 const certificatesRoutes = require('./routes/certificates-routes');
 const settingsRoutes = require('./routes/settings-routes')
 const faqsRoutes = require('./routes/faqs-routes');
+const ProblemRoutes = require('./routes/ReportProblem-routes');
 const chatsRoutes = require('./routes/chats-routes');
 const messagesRoutes = require('./routes/messages-routes');
 const HttpError = require('./models/http-error');
@@ -147,7 +148,8 @@ app.use('/api/skills', skillsRoutes);
 app.use('/api/resumes', resumesRoutes);
 app.use('/api/certificates', certificatesRoutes);
 app.use('/api/settings', settingsRoutes);
-app.use('/api/faqs', faqsRoutes);
+app.use('/api/faqs', faqsRoutes); 
+app.use('/api/problems', ProblemRoutes); 
 app.use('/api/chats', chatsRoutes);
 app.use('/api/messages', messagesRoutes);
 

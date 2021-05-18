@@ -6,6 +6,7 @@ import CallIcon from '@material-ui/icons/Call';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import './RightTopBar.css';
 import {AuthContext} from '../../shared/context/auth-context';
+import { Link } from "react-router-dom";
 
 function RightTopBar(props) {
   const auth = useContext(AuthContext);
@@ -25,11 +26,12 @@ function RightTopBar(props) {
       </div>
       <div style={{ float: "right" }}>
         <IconButton
-        >
+            >
           <CallIcon color="primary" />
         </IconButton>
         <IconButton
-        >
+        component={Link}
+        to="/videocall">
           <VideocamIcon color="primary" />
         </IconButton>
 

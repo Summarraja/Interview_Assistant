@@ -133,7 +133,7 @@ const Interview = () => {
                 open={open}
                 handleCloseDialog={handleCloseDialog}
                 setOpen={setOpen}
-              />
+              />              
             )}
             {
               (!isLoading)? (<InterviewList items={interviews} />) :
