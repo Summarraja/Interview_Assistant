@@ -1,9 +1,10 @@
 const express = require('express');
 const { check } = require('express-validator');
 const checkAuth = require('../middleware/check-auth');
+const checkAdmin = require('../middleware/check-admin');
 
 const usersController = require('../controllers/users-controllers');
- const fileUpload = require('../middleware/file-upload');
+const fileUpload = require('../middleware/file-upload');
 
 const router = express.Router();
 
@@ -46,13 +47,14 @@ router.post('/login', usersController.login);
 router.use(checkAuth);
 
 router.post('/uploadImage',
-   fileUpload.single('image'),
+  fileUpload.single('image'),
   [
     check('userId').isMongoId(),
   ],
   usersController.uploadImage
 );
 
+router.use(checkAdmin);
 router.delete('/:uid', usersController.deleteuser);
 
 module.exports = router;

@@ -4,11 +4,19 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
-
 const HttpError = require("../models/http-error");
+
 const User = require("../models/user");
 const Resume = require("../models/resume");
 const Setting = require("../models/setting");
+const EmotionStats = require("../models/emotionstats");
+const Chat = require("../models/chat");
+const Certificate = require("../models/certificate");
+const ReportedProblem = require("../models/ReportProblem");
+const Call = require("../models/call");
+const Notification = require("../models/notification");
+const Interview = require("../models/interview");
+const Message = require("../models/message");
 
 const getUsers = async (req, res, next) => {
   let users;
@@ -26,11 +34,11 @@ const getUsers = async (req, res, next) => {
 
 const getUserData = async (req, res, next) => {
   let userid = req.params.uid;
-  
+
   let userRequests;
   try {
     userRequests = await User.findById(userid).populate('sentRequests').populate('receivedRequests').populate('addedInterviews')
-    
+
   } catch (err) {
     const error = new HttpError(
       "Fetching user sent and received requests failed, please try again later.",
@@ -46,9 +54,11 @@ const getUserData = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ sentRequests: userRequests.sentRequests.map(inter=> inter.toObject({getters: true})),
-     receivedRequests: userRequests.receivedRequests.map(inter=> inter.toObject({getters:true})),
-     addedInterviews: userRequests.addedInterviews.map(inter=> inter.toObject({getters:true}))});
+  res.json({
+    sentRequests: userRequests.sentRequests.map(inter => inter.toObject({ getters: true })),
+    receivedRequests: userRequests.receivedRequests.map(inter => inter.toObject({ getters: true })),
+    addedInterviews: userRequests.addedInterviews.map(inter => inter.toObject({ getters: true }))
+  });
 
 };
 
@@ -176,7 +186,7 @@ const verifyCode = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ isVerified: true, userId: user.id, token: token, resume: user.resume , setting:user.setting});
+  res.status(200).json({ isVerified: true, userId: user.id, token: token, resume: user.resume, setting: user.setting });
 };
 
 const uploadImage = async (req, res, next) => {
@@ -437,22 +447,60 @@ const deleteuser = async (req, res, next) => {
 
   let user;
   try {
-    user = await User.findById(userid);
+    user = await User.findById(userid)
+      .populate({ path: 'resume', model: Resume })
+      .populate({ path: 'setting', model: Setting })
+      .populate({ path: 'createdInterviews', model: Interview })
+      .populate({ path: 'problems', model: ReportedProblem })
+      .populate({ path: 'certificates', model: Certificate })
+      .populate({ path: 'stats', model: EmotionStats })
+      .populate({ path: 'chats', model: Chat })
+      .populate({ path: 'calls', model: Call })
+      .populate({ path: 'notifications', model: Notification });
   } catch (err) {
-      const error = new HttpError(
-          'Something went wrong, could not delete a user.',
-          500
-      );
-      return next(error);
+    console.log(err)
+    const error = new HttpError(
+      'Something went wrong, could not delete a user.',
+      500
+    );
+    return next(error);
   }
 
   if (!user) {
-      const error = new HttpError('Could not find user for this id.', 404);
-      return next(error);
+    const error = new HttpError('Could not find user for this id.', 404);
+    return next(error);
   }
 
   try {
-      await user.remove();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await user.remove();
+    await user.resume.remove();
+    await user.setting.remove();
+    user.createdInterviews.map(async (interview)=>{
+      await interview.remove();
+    })
+    user.problems.map(async(problem)=>{
+      await problem.remove();
+    })
+    user.certificates.map(async(certificate)=>{
+      await certificate.remove();
+    })
+    user.stats.map(async(stat)=>{
+      await stat.remove();
+    })
+    user.chats.map(async(chat)=>{
+      await chat.remove();
+    })
+    user.calls.map(async(call)=>{
+      await call.remove();
+    })
+    user.notifications.map(async(notification)=>{
+      await notification.remove();
+    })
+    await Message.remove({sender:user.id})
+    await Message.remove({receiver:user.id})
+    await sess.commitTransaction();
   } catch (err) {
       const error = new HttpError(
           'Something went wrong, could not delete user.',
@@ -461,12 +509,8 @@ const deleteuser = async (req, res, next) => {
       return next(error);
   }
 
-  res.status(200).json({ message: 'Deleted user.' });
+  res.status(200).json({message:"deleted user account"});
 };
-
-
-
-
 
 function random4Digit() {
   return shuffle("0123456789".split("")).join("").substring(0, 4);
