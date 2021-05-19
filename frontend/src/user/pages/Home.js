@@ -8,6 +8,7 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import UserSearchedResumes from "../components/UserSearchedResumes";
+import { GiConsoleController } from "react-icons/gi";
 
 const useStyles = makeStyles((theme) => ({
   bgCard: {
@@ -49,6 +50,7 @@ export default function Home(props) {
   const [searchItem, setSearchItem] = useState("");
   const [resume, setResume] = useState([]);
   const [closeIcon, setCloseIcon] = useState(false);
+  const [blockedUsers, setBlockedUsers] = useState([]);
 
   useEffect(() => {
     setResume("");
@@ -60,6 +62,29 @@ export default function Home(props) {
     setSearchItem("");
     setCloseIcon(false);
   };
+
+  // useEffect(()=>{
+  //   const GetBlockedUsersHandler= async () => {
+  //     console.log("kuch")
+  //     try {
+  //       const responseData = await sendRequest(
+  //         `http://localhost:5000/api/settings/blockedUsers/${auth.userId}`,
+  //         "GET",
+  //         null,
+  //         {
+  //           "Content-Type": "application/json",
+  //           Authorization: "Bearer " + auth.token,
+  //         }
+  //       );
+  //       console.log("block: "+responseData.blockedUsers.length)
+  //       setBlockedUsers(responseData.blockedUsers);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   GetBlockedUsersHandler();
+  // }, [resume]);
+  
 
   const getSearchItem = () => {
     setCloseIcon(!closeIcon);
@@ -79,13 +104,25 @@ export default function Home(props) {
         console.log(err);
       }
     };
-    fetchSearchedResumes();
+    fetchSearchedResumes(); 
+    // if(resume)
+    //    findBlockedUsers(blockedUsers, resume)
   };
+
+  // function findBlockedUsers(block, res) {
+  //   if(blockedUsers && blockedUsers.length !== 0){
+  //     if(status == 200 && resume){
+  //        let newarr= res.some(b=> block.includes(res._id));
+  //         console.log("new array will be: " + newarr)
+  //   }}
+   
+   
+  // }
 
   return (
     <Container>
       <Toolbar />
-      <LoadingSpinner open={isLoading} />
+    
       <Card className={classes.bgCard}>
         <SearchCandidates
           className={classes.searchBar}

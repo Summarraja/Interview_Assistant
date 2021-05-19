@@ -1,9 +1,8 @@
-import React, { Fragment, useState, useContext } from "react";
+import React, { Fragment, useContext } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import DvrIcon from "@material-ui/icons/Dvr";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
@@ -31,16 +30,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EditProfile = (props) => {
-    const paperStyle = {
-        width: 400,
-        padding: 20,
-        margin: "100px auto",
-      };
       const avatarStyle = {
         backgroundColor: "primary",
       };
       const classes = useStyles();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+
   const auth = useContext(AuthContext);
 
   const initialValues = {

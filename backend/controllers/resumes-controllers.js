@@ -5,6 +5,8 @@ const HttpError = require("../models/http-error");
 const Resume = require("../models/resume");
 const Field = require("../models/field");
 const User = require("../models/user");
+const Setting = require("../models/setting");
+const resume = require("../models/resume");
 
 const getResumeById = async (req, res, next) => {
   const resumeId = req.params.rid;
@@ -58,6 +60,10 @@ const getResumeByUserId = async (req, res, next) => {
 
 const getResumeByUserName = async (req, res, next) => {
   const userName = req.params.name;
+  let resumeIDs = [];
+  let blockIDs = [];
+  let blockMeIDs = [];
+  let displayedResumes = [];
 
   let userWithResume;
   try {
@@ -71,6 +77,53 @@ const getResumeByUserName = async (req, res, next) => {
     );
     return next(error);
   }
+
+   // userWithResume.map((resume) => resumeIDs.push(resume._id));
+
+  let userWithSetting;
+  try {
+    userWithSetting = await User.findById(req.userData.userId).populate(
+      "setting"
+    );
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching user setting failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+  if (!userWithSetting || !userWithSetting.setting) {
+    return next(
+      new HttpError("Could not find setting for the provided user id.", 404)
+    );
+  }
+  try {
+    SettingWithBlockedUsers = await Setting.findById(
+      userWithSetting.setting._id
+    )
+      .populate("blockedUsers")
+      .populate("OthersBlockedMe");
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching blocked Users failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  SettingWithBlockedUsers.blockedUsers.map((block) => blockIDs.push(block._id));
+
+  SettingWithBlockedUsers.OthersBlockedMe.map((otherBlockMe) =>
+    blockMeIDs.push(otherBlockMe._id)
+  );
+
+  console.log("blockIDs: " + blockIDs);
+  console.log("blockMeIDs: " + blockMeIDs);
+  displayedResumes = userWithResume.filter(
+    (resume) =>
+      !blockIDs.includes(resume.user) && !blockMeIDs.includes(resume.user)
+  );
+  // console.log(displayedResumes);
 
   res.json({
     resumes: userWithResume.map((resume) => resume.toObject({ getters: true })),

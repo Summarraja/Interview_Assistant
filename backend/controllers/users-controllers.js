@@ -304,6 +304,7 @@ const signup = async (req, res, next) => {
     status: "available",
     role: "Candidate",
     blockedUsers: [],
+    OthersBlockedMe:[]
   });
 
   const code = random4Digit();

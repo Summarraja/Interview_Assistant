@@ -8,6 +8,26 @@ const Users = (props) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
  const [myResume, setMyResume] = useState(auth.resume);
+ const [setting, setSetting] = useState("");
+ useEffect(()=>{
+  const BlockUser = async () => {
+    try {
+      const responseData = await sendRequest(
+        "http://localhost:5000/api/settings/" + auth.setting._id,
+        'GET',
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setSetting(responseData.setting);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  BlockUser();
+},[])
 
   return (
     <>
@@ -19,6 +39,7 @@ const Users = (props) => {
           userSett = {props.userSetting}
           otherUser = {props.otherUser}
           setMyResume = {setMyResume}
+          setting = {setting}
         />
       ) : (
         <LoadingSpinner open={isLoading} />

@@ -34,6 +34,8 @@ import LoadingSpinner from "../UIElements/LoadingSpinner";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { SocketContext } from "../../../shared/context/socket-context";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import UserBlockedListDialog from "../../../user/components/UserBlockedListDialog";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -69,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
   MainLogo: {
     flexGrow: 1,
-    color: "#fff"
+    color: "#fff",
   },
   switchControl: {
     marginRight: "0px",
@@ -109,65 +111,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Navbar(props) {
-
   const [NavSignUp, setNavSignup] = useState(true);
   const auth = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
-  const { login} = useAuth();
+  const { login } = useAuth();
 
   const history = useHistory();
   const [success, setSuccess] = useState(false);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const [role, setRole] = useState("Candidate");
+  const [switchResMsg, setSwitchResMsg] = useState("");
+  const [callblockedDialog, setCallblockedDialog] = useState(false);
+  const [openBlockedDialog, setOpenBlockedDialog] = useState(false);
+  const [blockedUsers, setBlockedUsers] =useState([]);
+
+  const CallCompHandler = () => {
+    setCallblockedDialog(true);
+    setOpenBlockedDialog(true);
+  };
 
   const clearSuccess = () => {
     setSuccess(false);
   };
-  const logout=()=>{
+  const logout = () => {
     auth.logout();
     socket.disconnect();
-  }
+  };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status == 200 && switchResMsg);
   }, [status]);
 
   useEffect(() => {
-    if (auth.setting)
-      setRole(auth.setting.role);
+    if (auth.setting) setRole(auth.setting.role);
   }, [auth.setting]);
-
-  const switchRole = () => {
-    const SetRole = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/api/settings/role/${auth.setting._id}`,
-          "PATCH",
-          JSON.stringify({
-            role: (role == 'Candidate') ? "Interviewer" : "Candidate",
-          }),
-          {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + auth.token,
-          }
-        );
-        if (responseData.setting){
-          const storedData = JSON.parse(localStorage.getItem('userData'));
-          login(storedData.userId, storedData.token, storedData.resume, responseData.setting);
-        }
-        history.go(0);
-      } catch (err) {
-       }
-    };
-    SetRole();
-  };
 
   const NavsignUpBtnHandler = () => {
     setNavSignup(!NavSignUp);
   };
 
   const ProfileMenuItem = {
-    //  width: "100%",
     marginRight: "10px",
   };
 
@@ -177,6 +160,8 @@ export default function Navbar(props) {
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
   const [desktopMenuAnchorEl, setDesktopMenuAnchorEl] = useState(false);
   const isNavMenuOpen = Boolean(desktopMenuAnchorEl);
+  const [settingMenuAnchorEl, setSettingMenuAnchorEl] = useState(false);
+  const isSettingMenuOpen = Boolean(settingMenuAnchorEl);
   const [open, setOpen] = useState(false);
 
   const handleOpenDialog = () => {
@@ -198,14 +183,128 @@ export default function Navbar(props) {
   }
 
   const CloseNavbarMenu = () => {
-    setDesktopMenuAnchorEl(null);
+    if (settingMenuAnchorEl) {
+      return;
+    } else setDesktopMenuAnchorEl(null);
   };
 
+  function OpenSettingMenu(event) {
+    setSettingMenuAnchorEl(event.currentTarget);
+  }
+
+  const CloseSettingMenu = () => {
+    setSettingMenuAnchorEl(null);
+  };
+
+  const Reporthandler = () => {
+    console.log("report");
+  };
   const matches = useMediaQuery("(min-width:960px)");
 
   useEffect(() => {
     if (matches) setMobileMenuAnchorEl(null);
   }, [matches]);
+
+  const switchRole = () => {
+    const SetRole = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/settings/role/${auth.setting._id}`,
+          "PATCH",
+          JSON.stringify({
+            role: role == "Candidate" ? "Interviewer" : "Candidate",
+          }),
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setSwitchResMsg(responseData.responseMessage)
+        if (responseData.setting) {
+          const storedData = JSON.parse(localStorage.getItem("userData"));
+          login(
+            storedData.userId,
+            storedData.token,
+            storedData.resume,
+            responseData.setting
+          );
+        }
+        history.go(0);
+      } catch (err) {}
+    };
+    SetRole();
+  };
+
+ 
+
+      const GetBlockedUsersHandler= async () => {
+        try {
+          const responseData = await sendRequest(
+            `http://localhost:5000/api/settings/blockedUsers/${auth.userId}`,
+            "GET",
+            null,
+            {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + auth.token,
+            }
+          );
+          setBlockedUsers(responseData.blockedUsers);
+        } catch (err) {
+          console.log(err);
+        }
+        CallCompHandler();
+      };
+      
+
+
+
+  
+
+
+  const settingMenu = (
+    <Menu
+      anchorEl={settingMenuAnchorEl}
+      id="mobile-menu"
+      keepMounted
+      open={isSettingMenuOpen}
+      // anchorOrigin={{
+      //   vertical: 'center',
+      //   horizontal: 'left',
+      // }}
+      transformOrigin={{
+        vertical: -15,
+        horizontal: -200,
+      }}
+      // className={classes.MoreIconButton}
+    >
+      <MenuItem
+        onClick={Reporthandler}
+        // component={Link}
+        // to={NavSignUp ? "/signup" : "/auth"}
+      >
+        <IconButton color="primary">
+          <AiFillLock />
+        </IconButton>
+        <Typography variant="subtitle1">Report Problem</Typography>
+      </MenuItem>
+     
+
+      <Divider variant="middle" />
+      <MenuItem onClick={GetBlockedUsersHandler} >
+        <IconButton color="primary">
+          <FaQuestionCircle />
+        </IconButton>
+        <Typography variant="subtitle1">View Blocked Users</Typography>
+      </MenuItem>
+      {callblockedDialog &&(
+            <UserBlockedListDialog
+            openBlockedDialog={openBlockedDialog}
+            setOpenBlockedDialog={setOpenBlockedDialog}
+            blockedUsers= {blockedUsers}
+            />
+          )}
+    </Menu>
+  );
 
   const mobileMenuBeforeLogin = (
     <Menu
@@ -243,7 +342,7 @@ export default function Navbar(props) {
       </MenuItem>
       
     </Menu>
-  )
+  );
 
   const desktopMenu = (
     <Menu
@@ -252,7 +351,15 @@ export default function Navbar(props) {
       keepMounted
       anchorOrigin={{
         vertical: "bottom",
-        horizontal: "center",
+        horizontal: "left",
+      }}
+      // anchorOrigin={{
+      //   vertical: 'top',
+      //   horizontal: 'left',
+      // }}
+      transformOrigin={{
+        vertical: -10,
+        horizontal: 230,
       }}
       getContentAnchorEl={null}
     >
@@ -262,11 +369,13 @@ export default function Navbar(props) {
         component={Link}
         to="/profile"
       >
-        {auth.resume &&(<Avatar
-          src={"http://localhost:5000/" + auth.resume.image}
-          alt={null}
-          style={{ height: "70px", width: "70px", marginRight: 10 }}
-        />)}
+        {auth.resume && (
+          <Avatar
+            src={"http://localhost:5000/" + auth.resume.image}
+            alt={null}
+            style={{ height: "70px", width: "70px", marginRight: 10 }}
+          />
+        )}
         <div>
           <Typography variant="h6">
             {auth.resume && auth.resume.fullname}
@@ -302,24 +411,22 @@ export default function Navbar(props) {
             <IoIosSwitch />
           </IconButton>
           <Typography variant="subtitle1">
-            Switch to{" "}
-            {role == "Candidate"? "Interviewer" : "Candidate"}
+            Switch to {role == "Candidate" ? "Interviewer" : "Candidate"}
           </Typography>
         </MenuItem>
         <Divider variant="middle" />
       </Hidden>
 
-      <MenuItem
-        className={classes.root}
-        component={Link}
-        to="/Faq"
-        onClick={CloseNavbarMenu}
-      >
-        <IconButton color="primary">
-          <SettingsIcon />
-        </IconButton>
-        <Typography variant="subtitle1">Settings</Typography>
-      </MenuItem>
+      <OutsideClickHandler onOutsideClick={CloseSettingMenu}>
+        <MenuItem className={classes.root} onClick={OpenSettingMenu}>
+          <IconButton color="primary">
+            <SettingsIcon />
+          </IconButton>
+          <Typography variant="subtitle1">Settings</Typography>
+        </MenuItem>
+      </OutsideClickHandler>
+      {settingMenu}
+
       <Divider variant="middle" />
       <MenuItem className={classes.root} onClick={logout}>
         <IconButton color="primary">
@@ -345,8 +452,10 @@ export default function Navbar(props) {
           severity={status == "200" ? "success" : "error"}
           onClose={status == "200" ? clearSuccess : clearError}
         >
-          {status == "200"
-            ? `Your role has been swtiched to ${role == "Candidate" ? "Interviewer" : "Candidate"}`
+          {status == "200" && switchResMsg
+            ? `Your role has been swtiched to ${
+                role == "Candidate" ? "Interviewer" : "Candidate"
+              }`
             : error}
         </MuiAlert>
       </Snackbar>
@@ -368,7 +477,7 @@ export default function Navbar(props) {
           <Typography variant="h4" className={classes.MainLogo}>
             SmartHire
           </Typography>
-      
+
           <div className={classes.sectionDesktop}>
             {!auth.isLoggedIn && (
               <>
@@ -415,7 +524,7 @@ export default function Navbar(props) {
                   className={classes.switchControl}
                   control={
                     <Switch
-                      checked={role == 'Candidate'}
+                      checked={role == "Candidate"}
                       onChange={switchRole}
                       name="checked"
                       classes={{
@@ -426,16 +535,17 @@ export default function Navbar(props) {
                       }}
                     />
                   }
-                  label={
-                    role
-                  }
+                  label={role}
                 />
               </FormGroup>
-              <OutsideClickHandler onOutsideClick={CloseNavbarMenu}>
+              {/* <OutsideClickHandler onOutsideClick={CloseNavbarMenu}> */}
+              <ClickAwayListener onClickAway={CloseNavbarMenu}>
                 <IconButton color="inherit" onClick={OpenNavbarMenu}>
                   <MdArrowDropDownCircle />
                 </IconButton>
-              </OutsideClickHandler>
+              </ClickAwayListener>
+              {/* </OutsideClickHandler> */}
+
               {desktopMenu}
             </>
           )}

@@ -14,6 +14,8 @@ router.get('/user/:uid', settingsControllers.getSettingByUserId);
 
 router.get('/notifications/:uid', settingsControllers.getNotifications);
 
+router.get('/blockedUsers/:uid', settingsControllers.getBlockedListByUserId )
+
 router.post(
   '/',
   [
@@ -37,6 +39,22 @@ router.patch(
   '/openChat/:uid',
 
   settingsControllers.openChat
+);
+
+router.patch(
+  '/blockUser/:sid',
+  [
+    check('uid').isMongoId()
+  ],
+  settingsControllers.blockUser
+);
+
+router.patch(
+  '/UnblockUser/:sid',
+  [
+    check('uid').isMongoId()
+  ],
+  settingsControllers.UnblockUser
 );
 
 // router.patch(
