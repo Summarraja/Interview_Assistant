@@ -129,7 +129,7 @@ const verifyCode = async (req, res, next) => {
 
   let user;
   try {
-    user = await (await User.findOne({ email: email }).populate("resume")).populated('setting');
+    user = await User.findOne({ email: email }).populate("resume").populate('setting');
   } catch (err) {
     const error = new HttpError(
       "Fetching user failed, please try again later.",
@@ -176,7 +176,7 @@ const verifyCode = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ isVerified: true, userId: user.id, token: token, resume: user.resume });
+  res.status(200).json({ isVerified: true, userId: user.id, token: token, resume: user.resume , setting:user.setting});
 };
 
 const uploadImage = async (req, res, next) => {
@@ -294,6 +294,7 @@ const signup = async (req, res, next) => {
     status: "available",
     role: "Candidate",
     blockedUsers: [],
+    OthersBlockedMe:[]
   });
 
   const code = random4Digit();

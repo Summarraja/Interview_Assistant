@@ -15,19 +15,19 @@ import Button from "@material-ui/core/Button";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
-import { BsFillPersonCheckFill } from "react-icons/bs";
+import { BsUnlockFill } from "react-icons/bs";
 import Typography from "@material-ui/core/Typography";
 import { FaUserCheck, FaUserTimes } from "react-icons/fa";
-import { ImUserPlus } from "react-icons/im";
+import { AiFillUnlock } from "react-icons/ai";
 
 const useStyles = makeStyles((theme) => ({
   ActionButton: {
     height: "32px",
     marginTop: "12px ",
     marginRight: "10px",
-    // [theme.breakpoints.up("sm")]: {
-    //   float: "left",
-    // },
+    [theme.breakpoints.up("sm")]: {
+      float: "right",
+    },
     [theme.breakpoints.down("xs")]: {
       height: "32px",
       width: "90px",
@@ -61,63 +61,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-const CandidateRequestsDialogItems = (props) => {
+const UserBlockedListDialogItems = (props) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-
-  const Users = [];
-  Users.push(props.userId);
 
   const classes = useStyles();
   const [responseStatus, setResponseStatus] = useState();
   const [success, setSuccess] = useState(false);
-
-  const AcceptCandidateReqHandler = () => {
-    const AcceptCandRequest = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/acceptcandidatereq/${props.interId}`,
-          "PATCH",
-          JSON.stringify({
-            uid: props.userId,
-          }),
-          {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + auth.token,
-          }
-        );
-       
-        setResponseStatus(responseData.responseDone);
-        props.getInterviewRequestsData();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    AcceptCandRequest();
-  };
-  const RejectCandidateReqHandler = () => {
-    const RejectCandRequest = async () => {
-      try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/rejectcandidatereq/${props.interId}`,
-          "PATCH",
-          JSON.stringify({
-            uid: props.userId,
-          }),
-          {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + auth.token,
-          }
-        );
-     
-        setResponseStatus(responseData.responseDone);
-        props.getInterviewRequestsData();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    RejectCandRequest();
-  };
 
   const clearSuccess = () => {
     setSuccess(false);
@@ -125,6 +75,32 @@ const CandidateRequestsDialogItems = (props) => {
   useEffect(() => {
     setSuccess(status == 200);
   }, [status]);
+
+  const UnblockUserHandler = () =>{
+    const UnblockUser = async () => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/settings/UnblockUser/" + auth.setting._id,
+          'PATCH',
+          JSON.stringify({
+           uid: props.userId
+          }),
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        if(responseData.responseMessage == "Unblocked"){
+            setResponseStatus(responseData.responseMessage)
+          
+        }
+      } catch (err) {
+        console.log(err);
+      }
+  }
+  UnblockUser();
+  }
+
   return (
     <>
       {
@@ -139,24 +115,18 @@ const CandidateRequestsDialogItems = (props) => {
             severity={status == "200" ? "success" : "error"}
             onClose={status == "200 " ? clearSuccess : clearError}
           >
-            {status == "200" && responseStatus == "accepted"
-              ? "Candidate Request has been accepted successfully!"
-              : responseStatus == "rejected"
-              ? "Candidate Request has been rejected successfully!"
+            {status == "200" && responseStatus == "Unblocked"
+              ? "User has unblocked successfully!"
               : error}
           </MuiAlert>
         </Snackbar>
       }
 
-      {props.userId != auth.userId && (
         <List className={classes.list}>
           <Grid container>
-            <Grid item sm={6} xs={6} className={classes.responsive}>
+            <Grid item xs={8} className={classes.responsive}>
               <ListItem
                 className={classes.listItem}
-                button
-                component={Link}
-                to={`/profile/${props.userId}`}
               >
                 <ListItemAvatar>
                   <Avatar
@@ -173,48 +143,32 @@ const CandidateRequestsDialogItems = (props) => {
             </Grid>
             {isLoading && <LoadingSpinner open={isLoading} />}
 
-            <Grid item sm={6} xs={6} align="center">
-              {status == "200" ? (
+            <Grid item  xs={4} >
+               {status == "200" && responseStatus == "Unblocked"? (
                 <Typography variant="subtitle2" className={classes.statusStyle}>
-                  {responseStatus == "accepted" ? (
-                    <FaUserCheck className={classes.statusIconStyle} />
-                  ) : (
-                    <FaUserTimes className={classes.statusIconStyle} />
-                  )}
-
-                  {responseStatus == "accepted" ? "ACCEPTED" : "REJECTED"}
-                </Typography>
-              ) : (
-                <>
+                    <AiFillUnlock className={classes.statusIconStyle} />
+                    Unblocked
+                </Typography> 
+              ) : (  
                   <Button
                     variant="contained"
                     color="primary"
                     size="small"
                     className={classes.ActionButton}
-                    startIcon={<FaUserCheck style={{ marginLeft: 6 }} />}
-                    onClick={AcceptCandidateReqHandler}
+                    startIcon={<AiFillUnlock style={{ marginLeft: 6 }} />}
+                    onClick={UnblockUserHandler}
                   >
-                    Accept
+                    Unblock
                   </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    className={classes.ActionButton}
-                    startIcon={<FaUserTimes style={{ marginLeft: 6 }} />}
-                    onClick={RejectCandidateReqHandler}
-                  >
-                    Reject
-                  </Button>
-                </>
-              )}
+                 
+            
+               )} 
             </Grid>
 
           </Grid>
         </List>
-      )}
     </>
   );
 };
 
-export default CandidateRequestsDialogItems;
+export default UserBlockedListDialogItems;

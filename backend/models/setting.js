@@ -9,6 +9,7 @@ const settingSchema = new Schema({
   status: { type: String, enum: ['busy', 'available','away'], default: 'available' },
   role: { type: String, enum: ['Admin', 'Interviewer','Candidate'], default: 'Candidate' },
   blockedUsers: [{ type: mongoose.Types.ObjectId, required: true , ref:'User'}],
+  OthersBlockedMe: [{ type: mongoose.Types.ObjectId, required: true , ref:'User'}],
   user: { type: mongoose.Types.ObjectId, required: true, ref: 'User' }
 });
 

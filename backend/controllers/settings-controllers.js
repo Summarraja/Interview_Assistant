@@ -7,8 +7,7 @@ const Field = require("../models/field");
 const User = require("../models/user");
 
 const getSettingById = async (req, res, next) => {
-  const settingId = req.params.sid;
-
+  const settingId = req.params.iid;
   let setting;
   try {
     setting = await Setting.findById(settingId);
@@ -55,6 +54,39 @@ const getSettingByUserId = async (req, res, next) => {
   });
 };
 
+const getBlockedListByUserId = async (req, res, next) => {
+  const userId = req.params.uid;
+
+  let userWithSetting;
+  try {
+    userWithSetting = await User.findById(userId).populate('setting');
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching setting failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+  if (!userWithSetting || !userWithSetting.setting) {
+    return next(
+      new HttpError("Could not find setting for the provided user id.", 404)
+    );
+  }
+  try {
+    SettingWithBlockedUsers = await Setting.findById(userWithSetting.setting._id).populate('blockedUsers');
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching blocked Users failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({
+    blockedUsers: SettingWithBlockedUsers.blockedUsers.toObject({ getters: true }),
+  });
+};
+
 const createSettings = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -70,6 +102,7 @@ const createSettings = async (req, res, next) => {
     status,
     role,
     blockedUsers: [],
+    OthersBlockedMe: [],
     user: req.userData.userId
   });
 
@@ -151,7 +184,7 @@ const SwitchRole = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ setting: setting.toObject({ getters: true }) });
+  res.status(200).json({ setting: setting.toObject({ getters: true }) , responseMessage: "roleSwitched"});
 };
 
 const deleteSettings = async (req, res, next) => {
@@ -262,11 +295,143 @@ const openChat = async (req, res, next) => {
   }
   res.status(200).json({ unreadChats: userWithSetting.setting.unreadChats });
 };
+const blockUser = async (req, res, next) => {
+  const settingId = req.params.sid;
+  let setting;
+  try {
+    setting = await Setting.findById(settingId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find setting.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!setting) {
+    const error = new HttpError(
+      "Could not find setting for the provided id.",
+      404
+    );
+    return next(error);
+  }
+  const { uid } = req.body;
+
+  let OtherCandidate;
+  try {
+    OtherCandidate = await User.findById(uid).populate('setting');
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a User.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!OtherCandidate) {
+    const error = new HttpError(
+      "Could not find candidate for the provided id.",
+      404
+    );
+    return next(error);
+  }
+ 
+  
+  setting.blockedUsers.addToSet(OtherCandidate.id);
+  OtherCandidate.setting.OthersBlockedMe.addToSet(setting.user);
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await setting.save({ session: sess });
+    await OtherCandidate.setting.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not delete setting.',
+      500
+    );
+    return next(error);
+  }
+
+
+
+  res.json({ setting: setting.toObject({ getters: true }), responseMessage: "blocked" });
+};
+
+
+const UnblockUser = async (req, res, next) => {
+  const settingId = req.params.sid;
+  let setting;
+  try {
+    setting = await Setting.findById(settingId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find setting.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!setting) {
+    const error = new HttpError(
+      "Could not find setting for the provided id.",
+      404
+    );
+    return next(error);
+  }
+  const { uid } = req.body;
+
+  let OtherCandidate;
+  try {
+    OtherCandidate = await User.findById(uid).populate('setting');
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a User.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!OtherCandidate) {
+    const error = new HttpError(
+      "Could not find candidate for the provided id.",
+      404
+    );
+    return next(error);
+  }
+ 
+  
+  setting.blockedUsers.pull(OtherCandidate.id);
+  OtherCandidate.setting.OthersBlockedMe.pull(setting.user);
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await setting.save({ session: sess });
+    await OtherCandidate.setting.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not delete setting.',
+      500
+    );
+    return next(error);
+  }
+
+
+
+  res.json({ setting: setting.toObject({ getters: true }), responseMessage: "Unblocked" });
+};
+
 exports.getSettingById = getSettingById;
 exports.getSettingByUserId = getSettingByUserId;
+exports.getBlockedListByUserId = getBlockedListByUserId;
 exports.createSettings = createSettings;
 exports.SwitchRole = SwitchRole;
 exports.deleteSettings = deleteSettings;
 exports.getNotifications = getNotifications;
 exports.openChat = openChat;
+exports.blockUser = blockUser;
+exports.UnblockUser = UnblockUser;
 

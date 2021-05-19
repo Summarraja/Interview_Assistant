@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { IconButton, makeStyles } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -25,7 +25,11 @@ import { AuthContext } from '../../shared/context/auth-context';
 import { RiUserUnfollowFill } from "react-icons/ri";
 import { FaRegAddressCard } from "react-icons/fa";
 import EditProfile from "./EditProfile";
-
+import {useHttpClient} from '../../shared/hooks/http-hook';
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import { setNestedObjectValues } from "formik";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -63,6 +67,23 @@ const UserItem = (props) => {
   const auth = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const {isLoading, error, status, sendRequest, clearError} = useHttpClient();
+  const [success, setSuccess] = useState(false);
+  
+  const [resMsg, setResMsg] = useState("");
+  const [showBlockBtn, setShowBlockBtn] = useState(false);
+
+
+
+  const clearSuccess = () => {
+    setSuccess(status != 200);
+    
+  };
+  useEffect(() => {
+    setSuccess(status == 200);
+  }, [status, showBlockBtn]);
+
+
   const handleOpenDialog = () => {
     setOpen(true);
   };
@@ -77,10 +98,38 @@ const UserItem = (props) => {
     setOpenEdit(false);
   };
 
+
+
   const BlockUserHandler = () =>{
-    console.log("Block button pressed")
+    const BlockUser = async () => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/settings/blockUser/" + auth.setting._id,
+          'PATCH',
+          JSON.stringify({
+           uid: props.resume.user
+          }),
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        if(responseData.responseMessage == "blocked"){
+         setResMsg(responseData.responseMessage)
+         setShowBlockBtn(true);
+        }
+      } catch (err) {
+        console.log(err);
+      }
   }
- 
+  BlockUser();
+}
+
+function findBlockedUsers(arr1, arr2) {
+  return arr1.some((item) => arr2 == item);
+}
+
+
   const classes = useStyles();
 
   const RTCiconStyle = {
@@ -128,6 +177,25 @@ const UserItem = (props) => {
  
   return (
     <>
+    {isLoading && <LoadingSpinner open = {isLoading}/>}
+    {!isLoading && (
+        <Snackbar
+         open={success || !!error}
+         autoHideDuration={3000}
+         onClose={status == 200 ? clearSuccess : clearError}
+       >
+         <MuiAlert
+           elevation={6}
+           variant="filled"
+           severity={status == 200? "success" : "error"}
+           onClose={status == 200 ? clearSuccess : clearError}
+         >
+           {(status == 200 && resMsg == "blocked") ? "User has blocked successfully!" : error}
+         </MuiAlert>
+       </Snackbar>
+   
+    )}
+ 
       <Paper elevation={10} className={classes.paperStyle}>
         <div style={topBorder}>
           <Avatar
@@ -139,6 +207,7 @@ const UserItem = (props) => {
             alt={null}
           />
 
+          {props.setting && !((findBlockedUsers(props.setting.blockedUsers, props.resume.user)) ||  showBlockBtn) &&  ( 
           <Button
             style={{ float: "right", margin: 10 }}
             type="submit"
@@ -148,8 +217,11 @@ const UserItem = (props) => {
             size="small"
             onClick = {props.otherUser? BlockUserHandler: OpenEditDialogComp}
           >
-            {props.otherUser ? "Block User" : "Edit Profile"}
+            {props.otherUser  ? "Block User" : "Edit Profile"}
           </Button>
+        )} 
+       
+        
 {openEdit && (
   <EditProfile
     openEdit = {openEdit}
