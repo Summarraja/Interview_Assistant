@@ -68,7 +68,7 @@ const EditProblemAdmin= (props) => {
   console.log("props problem id is "+props.problemid)
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/problems/${props.problemid}`,
+        `http://localhost:5000/api/problems/admin/${props.problemid}`,
         "PATCH",
         JSON.stringify({
           title: values.title,

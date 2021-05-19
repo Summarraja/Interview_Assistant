@@ -7,10 +7,11 @@ const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
 router.get('/unanswer', ReportProblemsControllers.getunansweredProblems )
+router.get('/user/:uid', ReportProblemsControllers.getProblemByUserId);
 router.get('/:pid', ReportProblemsControllers.getProblemById);
 router.get('/', ReportProblemsControllers.getAllProblems);
 
-// router.use(checkAuth);
+ router.use(checkAuth);
 
 router.post(
     '/',
@@ -29,6 +30,16 @@ router.patch(
         check('description').isLength({ min: 10 })
     ],
     ReportProblemsControllers.updateProblem
+);
+
+
+router.patch(
+    '/admin/:pid',
+    [
+        check('title').isLength({ min: 10 }),
+        check('description').isLength({ min: 10 })
+    ],
+    ReportProblemsControllers.updateProblemAdmin
 );
 
 router.delete('/:pid', ReportProblemsControllers.deleteProblem);

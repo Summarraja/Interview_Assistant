@@ -4,10 +4,12 @@ import Typography from "@material-ui/core/Typography";
 import { Button, Card, Grid } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { AuthContext } from '../../shared/context/auth-context';
+
 import { useHttpClient } from '../../shared/hooks/http-hook';
 import UpdateProblem from './UpdateProblem';
 import DeleteProblem from './DeleteProblem';
+import { AuthContext } from '../../shared/context/auth-context';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -45,9 +47,12 @@ const useStyles = makeStyles((theme) => ({
 
     }));
 const ProblemListItems = (props) =>{
-  const auth = useContext(AuthContext);
+  
+
+
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
     const classes = useStyles();
+    const auth = useContext(AuthContext);
     const [loadedFaqs, setLoadedFaqs]= useState();
     const [open, setOpen] = useState(false);
   
@@ -67,8 +72,9 @@ const ProblemListItems = (props) =>{
     const getData = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/api/problems'
+          'http://localhost:5000/api/problems/user/'+ auth.userId
         );
+        console.log(responseData.problems)
         props.setFaqs(responseData.problems);
       } catch (err) {
         console.log(err)
@@ -105,13 +111,13 @@ return (
       <div className={classes.header}>
         
         <Typography variant="h5" align="justify" style={{fontFamily:"Times New Roman"}} color="primary">
-        {props.title}
+        Title: {props.title}
         </Typography>
-        <Typography variant="h6">
-        {props.description}
+        <Typography variant="subtitle1"  style={{ color: "grey" }}>
+        Description: {props.description}
         </Typography>
-        <Typography variant="subtitle1" style={{ color: "grey" }}>
-        {props.answer}
+        <Typography variant="h6" style={{ color: "green" }}>
+         {props.answer}
         </Typography>
       </div>
     </Grid>
