@@ -40,7 +40,7 @@ import ViewFaqs from "./Admin/Components/Faqs/ViewFaqs";
 
 const App = () => {
   let location = useLocation();
-  const { token, login, logout, userId, resume, setting } = useAuth();
+  const { token, login, logout, userId, resume, setting,updateResume,updateSetting } = useAuth();
   const auth = useContext(AuthContext);
   const [socket, setSocket] = useState();
 
@@ -132,7 +132,9 @@ const App = () => {
             login: login,
             logout: logout,
             resume: resume,
+            setResume:updateResume,
             setting: setting,
+            setSetting:updateSetting,
           }}
         >
 

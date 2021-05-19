@@ -256,10 +256,12 @@ const updateResume = async (req, res, next) => {
     maxEducation,
     experience,
     fieldId,
+    professional,
+    education,
+    additional,
   } = req.body;
 
   if (fieldId) {
-    console.log("field");
     let field;
     try {
       field = await Field.findById(fieldId);
@@ -300,6 +302,9 @@ const updateResume = async (req, res, next) => {
   resume.maxEducation = maxEducation;
   resume.experience = experience;
   resume.field = fieldId && field.id;
+  resume.professional=professional;
+  resume.education=education;
+  resume.additional=additional;
 
   try {
     await resume.save();
