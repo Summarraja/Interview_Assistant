@@ -204,95 +204,100 @@ const InterviewItems = (props) => {
       </Snackbar>
 
  
+{/* {console.log("HEELO: "+(props.InterStatus == "CANCELLED" || props.InterStatus == "TAKEN") && (props.userReceivedRequests || props.userSentRequests))} */}
+{/* {(props.userSentRequests || props.userReceivedRequests ) && props.InterStatus == "PENDING" ||() ( */}
+  <Card className={classes.card}>
+  <Grid container spacing={5}>
+    <Grid item sm={6} lg={7} style={{ flexGrow: 1 }}>
+      <div className={classes.header}>
+        <Typography variant="h5" align="justify">
+          {props.InterTitle}
+        </Typography>
+        <Typography variant="subtitle1" style={{ color: grey[900] }}>
+          {props.InterDate}
+        </Typography>
+      </div>
+    </Grid>
+  
+    <Grid item sm={6} lg={5}>
+      {props.tabValue == "3" && (
+        <Typography variant="subtitle2" className={classes.statusStyle}>
+          {(props.InterStatus === "PENDING" && (
+            <FaRegClock className={classes.statusIconStyle} />
+          )) ||
+            (props.InterStatus === "TAKEN" && (
+              <FaRegCheckCircle className={classes.statusIconStyle} />
+            )) ||
+            (props.InterStatus === "CANCELLED" && (
+              <BlockIcon className={classes.statusIconStyle} />
+            ))}
+          {props.InterStatus}
+        </Typography>
+      )}
+  
+  {/* {console.log("Status: "+props.InterStatus)} */}
+      {props.tabValue == "1" && status != "201" && (
+        <Button
+          variant="contained"
+          color="secondary"
+          size="small"
+          className={classes.ViewButton}
+          onClick={CancelInterviewRequestHandler}
+          startIcon={<BlockIcon style={{ marginLeft: 6 }} />}
+        >
+          Cancel Request
+        </Button>
+      )}
+      {props.tabValue == "2" && (
+        <>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="small"
+            className={classes.ViewButton}
+            onClick={RejectReceiveRequestHandler}
+            startIcon={
+              <MdEventBusy
+                style={{ marginLeft: 5, fontSize: "1.3rem" }}
+              />
+            }
+          >
+            Reject
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="small"
+            className={classes.ViewButton}
+            onClick={AcceptReceiveRequestHandler}
+            startIcon={
+              <MdEventAvailable
+                style={{ marginLeft: 5, fontSize: "1.3rem" }}
+              />
+            }
+          >
+            Accept
+          </Button>
+        </>
+      )}
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        className={classes.ViewButton}
+        startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
+        component={Link}
+        to={`/interviews/view/${props.InterID}`}
+      >
+        View Details
+      </Button>
+    </Grid>
+  </Grid>
+  </Card>
+  
+{/* )} */}
 
-      <Card className={classes.card}>
-        <Grid container spacing={5}>
-          <Grid item sm={6} lg={7} style={{ flexGrow: 1 }}>
-            <div className={classes.header}>
-              <Typography variant="h5" align="justify">
-                {props.InterTitle}
-              </Typography>
-              <Typography variant="subtitle1" style={{ color: grey[900] }}>
-                {props.InterDate}
-              </Typography>
-            </div>
-          </Grid>
-
-          <Grid item sm={6} lg={5}>
-            {props.tabValue == "3" && (
-              <Typography variant="subtitle2" className={classes.statusStyle}>
-                {(props.InterStatus === "PENDING" && (
-                  <FaRegClock className={classes.statusIconStyle} />
-                )) ||
-                  (props.InterStatus === "TAKEN" && (
-                    <FaRegCheckCircle className={classes.statusIconStyle} />
-                  )) ||
-                  (props.InterStatus === "CANCELLED" && (
-                    <BlockIcon className={classes.statusIconStyle} />
-                  ))}
-                {props.InterStatus}
-              </Typography>
-            )}
-
-
-            {props.tabValue == "1" && status != "201" && (
-              <Button
-                variant="contained"
-                color="secondary"
-                size="small"
-                className={classes.ViewButton}
-                onClick={CancelInterviewRequestHandler}
-                startIcon={<BlockIcon style={{ marginLeft: 6 }} />}
-              >
-                Cancel Request
-              </Button>
-            )}
-            {props.tabValue == "2" && (
-              <>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="small"
-                  className={classes.ViewButton}
-                  onClick={RejectReceiveRequestHandler}
-                  startIcon={
-                    <MdEventBusy
-                      style={{ marginLeft: 5, fontSize: "1.3rem" }}
-                    />
-                  }
-                >
-                  Reject
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="small"
-                  className={classes.ViewButton}
-                  onClick={AcceptReceiveRequestHandler}
-                  startIcon={
-                    <MdEventAvailable
-                      style={{ marginLeft: 5, fontSize: "1.3rem" }}
-                    />
-                  }
-                >
-                  Accept
-                </Button>
-              </>
-            )}
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              className={classes.ViewButton}
-              startIcon={<IoMdEye style={{ marginLeft: 6 }} />}
-              component={Link}
-              to={`/interviews/view/${props.InterID}`}
-            >
-              View Details
-            </Button>
-          </Grid>
-        </Grid>
-      </Card>
+    
     </>
   );
 };

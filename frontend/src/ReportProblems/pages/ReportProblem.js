@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import Toolbar from '@material-ui/core/Toolbar';
-import FaqCollectionAdmin from "./FaqCollectionAdmin";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles, fade } from "@material-ui/core/styles";
 import { Button, Grid } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import CreateFaq from "./CreateFaqs";
+import CreateProblem from "../Components/CreateProblem";
+import ProblemCollection from "../Components/ProblemCollection";
+
 
 
 const useStyles = makeStyles((theme) => ({
 
     root: {
-        paddingLeft: 250,
+        paddingLeft: 120,
         [theme.breakpoints.down("xs")]: {
             paddingLeft: 0,
         },
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function ViewFaqs() {
+export default function ReportProblem() {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
 
@@ -62,7 +62,7 @@ export default function ViewFaqs() {
                         align="center"
                         style={{ margin: "20px", color: "#004777" }}
                     >
-                        Frequently Asked Questions
+                        Reported Problems
                     </Typography>
 
 
@@ -75,11 +75,11 @@ export default function ViewFaqs() {
                         className={classes.button}
                         startIcon={<AddIcon />}
                     >
-                        Create Faqs
+                        Report Problem
             </Button>
-
-                    {open && (
-                        <CreateFaq
+            
+            {open && (
+                        <CreateProblem
                             open={open}
                             handleCloseDialog={handleCloseDialog}
                             setOpen={setOpen}
@@ -91,7 +91,7 @@ export default function ViewFaqs() {
                 <div>
                     <Paper elevation={10} className={classes.paper}>
                         <div className={classes.collapse}>
-                            <FaqCollectionAdmin />
+                          <ProblemCollection/>
                         </div>
                     </Paper>
                 </div>

@@ -129,7 +129,7 @@ const verifyCode = async (req, res, next) => {
 
   let user;
   try {
-    user = await (await User.findOne({ email: email }).populate("resume")).populated('setting');
+    user = await User.findOne({ email: email }).populate("resume").populate('setting');
   } catch (err) {
     const error = new HttpError(
       "Fetching user failed, please try again later.",
@@ -176,7 +176,7 @@ const verifyCode = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ isVerified: true, userId: user.id, token: token, resume: user.resume });
+  res.status(200).json({ isVerified: true, userId: user.id, token: token, resume: user.resume , setting:user.setting});
 };
 
 const uploadImage = async (req, res, next) => {
@@ -432,6 +432,42 @@ const login = async (req, res, next) => {
   });
 };
 
+const deleteuser = async (req, res, next) => {
+  const userid = req.params.uid;
+
+  let user;
+  try {
+    user = await User.findById(userid);
+  } catch (err) {
+      const error = new HttpError(
+          'Something went wrong, could not delete a user.',
+          500
+      );
+      return next(error);
+  }
+
+  if (!user) {
+      const error = new HttpError('Could not find user for this id.', 404);
+      return next(error);
+  }
+
+  try {
+      await user.remove();
+  } catch (err) {
+      const error = new HttpError(
+          'Something went wrong, could not delete user.',
+          500
+      );
+      return next(error);
+  }
+
+  res.status(200).json({ message: 'Deleted user.' });
+};
+
+
+
+
+
 function random4Digit() {
   return shuffle("0123456789".split("")).join("").substring(0, 4);
 }
@@ -448,7 +484,10 @@ function shuffle(o) {
 exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;
+exports.deleteuser = deleteuser;
 exports.sendCode = sendCode;
 exports.verifyCode = verifyCode;
 exports.getUserData = getUserData;
 exports.uploadImage = uploadImage;
+
+
