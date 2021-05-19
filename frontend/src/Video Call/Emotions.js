@@ -1,74 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core";
 import LinearProgress from '@material-ui/core/LinearProgress';
-
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '80%',
         height: 15
     },
-    emotions: {
-        maxWidth: '15rem',
-        maxHeight: '15rem',
-        height: '15rem',
-        width: '10rem',
-        position: 'absolute',
-        bottom: '50%',
-        right: 30,
-        zIndex: 3,
-        color: 'white',
-    },
 }));
-const Emotions = () => {
-    const [progress, setProgress] = useState(0);
-    const [buffer, setBuffer] = useState(10);
+const Emotions = (props) => {
+    const [buffer, setBuffer] = useState([10,10,10,10,10,10,10]);
 
     const classes = useStyles();
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            if (progress > 100) {
-                setProgress(0);
-                setBuffer(10);
-            } else {
-                const emotion = Math.random() * 100;
-                const diff2 = Math.random() * 10;
-                setBuffer(emotion +diff2);
+        const getBuffer=()=>{
+            return Math.random() * 20;
+        }
+        setBuffer([getBuffer(),getBuffer(),getBuffer(),getBuffer(),getBuffer(),getBuffer(),getBuffer()]);
 
-                setProgress(emotion);
-            }
-        }, 1000);
-
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+    }, [props.progress]);
 
     return (
 
-        <div className={classes.emotions}>
+        <>
             <div >
-                Happy <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={progress}  valueBuffer={buffer} />
+                Angry <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[0]} valueBuffer={buffer[0]} />
             </div >
             <div >
-                Sad <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={progress}  valueBuffer={buffer} />
+                Disgusted <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[1]} valueBuffer={buffer[1]} />
             </div >
             <div >
-                Neutral <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={progress} valueBuffer={buffer} />
+                Fearful <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[2]} valueBuffer={buffer[2]} />
             </div >
             <div >
-                Disgust <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={progress}  valueBuffer={buffer} />
+                Happy <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[3]} valueBuffer={buffer[3]} />
             </div >
             <div >
-                Surprise <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={progress} valueBuffer={buffer} />
+                Neutral <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[4]} valueBuffer={buffer[4]} />
             </div >
             <div >
-                Fear <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={progress} valueBuffer={buffer} />
+                Sad <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[5]} valueBuffer={buffer[5]} />
             </div >
             <div >
-                Angry <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={progress} valueBuffer={buffer} />
+                Surprised <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[6]} valueBuffer={buffer[6]} />
             </div >
-        </div>
+
+        </>
 
     );
 };
