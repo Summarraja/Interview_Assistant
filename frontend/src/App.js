@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
 import "./App.css";
 import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 
@@ -27,6 +27,10 @@ import ViewCertificate from "./certificates/pages/ViewCertificate";
 import io from "socket.io-client";
 
 import AdminHome from "./Admin/pages/AdminHome";
+
+import ReportProblem from "./ReportProblems/pages/ReportProblem";
+import ReportProblemAdmin from "./Admin/Components/ReportProblems/pages/ReportProblemAdmin";
+
 import RTC from './RTC';
 import Resume from "./Resumes/Pages/Resume";
 import VideoCall from "./Video Call/VideoCall";
@@ -45,13 +49,15 @@ const App = () => {
     if (setting && setting.role == "Admin") {
       routes = (
         <Switch>
+           {console.log("Role2" + setting.role)}
           <Route path="/admin/home" exact component={AdminHome} />
           <Route path="/admin/certificates" exact component={AdminHome} />
           <Route path="/admin/faq" exact component={ViewFaqs} />
-          <Route path="/admin/respondProblem" exact component={AdminHome} />
-
-          <Redirect to="/admin/home" />
+          <Route path="/admin/reportProblem" exact component={ReportProblemAdmin}/>
+          <Redirect to="/admin/home"/>
         </Switch>
+
+         
       );
 
     } else {
@@ -78,6 +84,7 @@ const App = () => {
           />
           <Route path="/resume" exact component={Resume} />
           <Route path="/videocall" exact component={VideoCall} />
+          <Route path="/reportproblem" exact component={ReportProblem} />
           <Redirect to="/" />
         </Switch>
       );
@@ -129,13 +136,14 @@ const App = () => {
           }}
         >
 
-          {location.pathname !== "/admin" && location.pathname !== "/videocall" && <MainNavigation />}
-          <RTC />
+            {location.pathname == "/admin/home" || location.pathname == "/admin/faq" ||
+          location.pathname == "/admin/certificates" ||
+          location.pathname == "/admin/reportProblem"? <SideBar/> : location.pathname == "/videocall" ? "" : <MainNavigation/>}
+            {/* {(location.pathname == "/admin/home" || location.pathname == "/admin/faq" || location.pathname == "/admin/certificates" ||  location.pathname ==  "/admin/respondProblem"  ) ? <SideBar /> : <MainNavigation/>} */}
 
-          {location.pathname == "/admin/home" || location.pathname == "/admin/faq" ||
-            location.pathname == "/admin/certificates" ||
-            location.pathname == "/admin/respondProblem" ? <SideBar /> : location.pathname == "/videocall" ? "" : <MainNavigation />}
-          <main>{routes}</main>
+          
+            <main>{routes}</main>
+
         </AuthContext.Provider>
       </SocketContext.Provider>
     </React.Fragment>

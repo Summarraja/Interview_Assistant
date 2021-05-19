@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -14,11 +14,9 @@ import HomeRoundedIcon from '@material-ui/icons/HomeRounded';
 import LiveHelpIcon from '@material-ui/icons/LiveHelp';
 import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
-import InputBase from '@material-ui/core/InputBase';
-import SearchIcon from "@material-ui/icons/Search";
-import { AuthContext } from "../../shared/context/auth-context";
-import Button from "@material-ui/core/Button";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { AuthContext } from '../../shared/context/auth-context';
+import { Button } from '@material-ui/core';
 
 const drawerWidth = 240;
 
@@ -94,6 +92,11 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  listicon:{
+minWidth:"40px",
+
+  },
+
   list: {
      padding:0 
   }
@@ -136,9 +139,11 @@ export default function ClippedDrawer() {
         <Toolbar />
         <div className={classes.drawerContainer}>
           <List className={classes.list}>        
-              <ListItem button  >
-                <ListItemIcon>
-                <HomeRoundedIcon/>
+              <ListItem button style={{margin:"0px"}}
+              component={Link}
+              to="/admin/home" >
+                <ListItemIcon className={classes.listicon}>
+                <HomeRoundedIcon color="primary"/>
                 </ListItemIcon>
                 <ListItemText primary="Home" />
               </ListItem>
@@ -147,9 +152,12 @@ export default function ClippedDrawer() {
           <Divider />
 
           <List className={classes.list}>        
-              <ListItem button >
-                <ListItemIcon>
-                <VerifiedUserIcon/>
+              <ListItem
+              button
+              component={Link}
+              to="/admin/home" > 
+                <ListItemIcon  className={classes.listicon}>
+                <VerifiedUserIcon color="primary"/>
                 </ListItemIcon>
                 <ListItemText primary="Approve Certificates" />
               </ListItem>
@@ -158,23 +166,24 @@ export default function ClippedDrawer() {
           <Divider />
 
           <List className={classes.list}>        
-              <ListItem button >
-                <ListItemIcon>
-        <ReportProblemIcon/>
+              <ListItem button 
+              component={Link}
+              to="/admin/reportProblem">
+                <ListItemIcon  className={classes.listicon}>
+        <ReportProblemIcon color="primary"/>
                 </ListItemIcon>
-                <ListItemText primary="Respond a Problem" />
+                <ListItemText primary="Reported Problems" />
               </ListItem>
           </List>
 
           <Divider />
-
+        
           <List className={classes.list}>        
-              <ListItem button 
-              component={Link}
-              to ="/admin/faq"
-              >
-                <ListItemIcon>
-                <LiveHelpIcon/>
+              <ListItem button
+                 component={Link}
+                 to=  "/admin/faq" >
+                <ListItemIcon  className={classes.listicon}>
+                <LiveHelpIcon color="primary"/>
                 </ListItemIcon>
                 <ListItemText primary="FAQS" />
               </ListItem>
@@ -183,7 +192,7 @@ export default function ClippedDrawer() {
         
         </div>
       </Drawer>
-      <main className={classes.content}>
+      {/* <main className={classes.content}>
         <Toolbar />
         <div className={classes.search}>
           <div className={classes.searchIcon}>
@@ -197,7 +206,7 @@ export default function ClippedDrawer() {
             }}
           />
         </div>
-      </main>
+      </main> */}
     </div>
   );
 }

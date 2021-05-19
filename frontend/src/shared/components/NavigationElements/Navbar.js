@@ -162,6 +162,14 @@ export default function Navbar(props) {
   const isNavMenuOpen = Boolean(desktopMenuAnchorEl);
   const [settingMenuAnchorEl, setSettingMenuAnchorEl] = useState(false);
   const isSettingMenuOpen = Boolean(settingMenuAnchorEl);
+  const [open, setOpen] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
 
   const openMobileMenu = (event) => {
     setMobileMenuAnchorEl(event.currentTarget);
@@ -319,12 +327,20 @@ export default function Navbar(props) {
           {NavSignUp ? "Sign Up" : "Sign In"}{" "}
         </Typography>
       </MenuItem>
-      <MenuItem onClick={closeMobileMenu} component={Link} to="/Faq">
+      <MenuItem  component={Link} to="/Faq">
         <IconButton color="primary">
           <FaQuestionCircle />
         </IconButton>
         <Typography variant="subtitle1">Help & Support</Typography>
       </MenuItem>
+
+      <MenuItem  component={Link} to="/reportproblem">
+        <IconButton color="primary">
+          <FaQuestionCircle />
+        </IconButton>
+        <Typography variant="subtitle1">Report a Problem</Typography>
+      </MenuItem>
+      
     </Menu>
   );
 
@@ -379,6 +395,15 @@ export default function Navbar(props) {
         <Typography variant="subtitle1">Help & Support</Typography>
       </MenuItem>
 
+      <MenuItem
+        className={classes.root}
+        component={Link} to="/reportproblem">
+        <IconButton color="primary">
+          <FaQuestionCircle />
+        </IconButton>
+        <Typography variant="subtitle1">Report a Problem </Typography>
+      </MenuItem>
+
       <Divider variant="middle" />
       <Hidden smUp implementation="css">
         <MenuItem className={classes.root} onClick={switchRole}>
@@ -422,7 +447,7 @@ export default function Navbar(props) {
         onClose={status == "200" ? clearSuccess : clearError}
       >
         <MuiAlert
-          elevation={6}
+          elevation={6}s
           variant="filled"
           severity={status == "200" ? "success" : "error"}
           onClose={status == "200" ? clearSuccess : clearError}

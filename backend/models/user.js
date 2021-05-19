@@ -18,6 +18,7 @@ const userSchema = new Schema({
   receivedRequests: [{ type: mongoose.Types.ObjectId, required: true, ref: "Interview" }],
   resume: { type: mongoose.Types.ObjectId, default:null, ref: "Resume" },
   setting: { type: mongoose.Types.ObjectId, default:null, ref: "Setting"},
+  problem: [{ type: mongoose.Types.ObjectId, default:null, ref: "ReportProblem"}],
   certificates: [{ type: mongoose.Types.ObjectId, required: true, ref: "Certificate" }],
   stats: [{ type: mongoose.Types.ObjectId, required: true, ref: "EmotionStats" }],
   chats: [{ type: mongoose.Types.ObjectId, required: true, ref: "Chat" }],

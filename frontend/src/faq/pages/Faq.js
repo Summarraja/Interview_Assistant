@@ -10,12 +10,6 @@ import { Fragment } from "react";
 import FaqCollection from "../components/FaqCollection";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    paddingLeft: 60,
-    [theme.breakpoints.down("xs")]: {
-      paddingLeft: 0,
-    },
-  },
   paper: {
     backgroundColor: "#4E78A0",
     [theme.breakpoints.up("xs")]: {
@@ -32,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
 
- 
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -68,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
     color: "inherit",
     height: "100%",
   },
+
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
@@ -81,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
 
 export default function FAQ(props) {
   const MainHeading = {

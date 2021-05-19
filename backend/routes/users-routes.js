@@ -53,4 +53,6 @@ router.post('/uploadImage',
   usersController.uploadImage
 );
 
+router.delete('/:uid', usersController.deleteuser);
+
 module.exports = router;

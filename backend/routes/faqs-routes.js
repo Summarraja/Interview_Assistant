@@ -18,7 +18,6 @@ router.post(
     ],
     faqsControllers.createFaq
 );
-
 router.patch(
     '/:fid',
     [

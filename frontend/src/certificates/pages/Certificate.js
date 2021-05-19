@@ -92,7 +92,7 @@ const Certificate = () => {
     };
     if (uid) fetchCertificates(uid);
     else fetchCertificates(auth.userId);
-  }, [uid]);
+  }, [uid]);  
 
 
 

@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import Toolbar from '@material-ui/core/Toolbar';
-import FaqCollectionAdmin from "./FaqCollectionAdmin";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import DeleteIcon from '@material-ui/icons/Delete';
-import { makeStyles, fade } from "@material-ui/core/styles";
-import { Button, Grid } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import CreateFaq from "./CreateFaqs";
+import { makeStyles} from "@material-ui/core/styles";
+import ProblemCollectionAdmin from "../Components/ProblemCollectionAdmin";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,16 +37,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function ViewFaqs() {
+export default function ReportProblemAdmin() {
     const classes = useStyles();
-    const [open, setOpen] = useState(false);
-
-    const handleOpenDialog = () => {
-      setOpen(true);
-    };
-    const handleCloseDialog = () => {
-      setOpen(false);
-    };
 
     return (
         <>
@@ -62,36 +50,14 @@ export default function ViewFaqs() {
                         align="center"
                         style={{ margin: "20px", color: "#004777" }}
                     >
-                        Frequently Asked Questions
+                        Reported Problems
                     </Typography>
-
-
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => {
-                            handleOpenDialog();
-                        }}
-                        className={classes.button}
-                        startIcon={<AddIcon />}
-                    >
-                        Create Faqs
-            </Button>
-
-                    {open && (
-                        <CreateFaq
-                            open={open}
-                            handleCloseDialog={handleCloseDialog}
-                            setOpen={setOpen}
-                        />
-                    )}
-
 
                 </div>
                 <div>
                     <Paper elevation={10} className={classes.paper}>
                         <div className={classes.collapse}>
-                            <FaqCollectionAdmin />
+                          <ProblemCollectionAdmin/>
                         </div>
                     </Paper>
                 </div>
