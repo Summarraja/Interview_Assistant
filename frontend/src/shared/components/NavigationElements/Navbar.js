@@ -114,6 +114,7 @@ export default function Navbar(props) {
   const [NavSignUp, setNavSignup] = useState(true);
   const auth = useContext(AuthContext);
   const socket = useContext(SocketContext);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   const { login } = useAuth();
 
@@ -138,6 +139,35 @@ export default function Navbar(props) {
     auth.logout();
     socket.disconnect();
   };
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("notification", (data) => {
+      setUnreadNotifications(unreadNotifications + 1);
+    });
+
+    return () => {
+      socket.off("notification");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!auth.userId) return;
+    getBadges();
+  }, [auth.userId]);
+  const getBadges = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/settings/notifications/${auth.userId}`,
+        "GET",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setUnreadNotifications(responseData.unreadChats);
+    } catch (err) {}
+  }
   useEffect(() => {
     setSuccess(status == 200 && switchResMsg);
   }, [status]);
@@ -514,7 +544,7 @@ export default function Navbar(props) {
           {auth.isLoggedIn && (
             <>
               <IconButton color="inherit">
-                <Badge badgeContent={4} color="error">
+                <Badge badgeContent={unreadNotifications} color="error">
                   <FaBell />
                 </Badge>
               </IconButton>

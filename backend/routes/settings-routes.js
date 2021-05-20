@@ -40,6 +40,11 @@ router.patch(
 
   settingsControllers.openChat
 );
+router.patch(
+  '/openNotifications/:uid',
+
+  settingsControllers.openNotifications
+);
 
 router.patch(
   '/blockUser/:sid',
