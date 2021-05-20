@@ -19,7 +19,6 @@ const ResumeContextProvider = (props) => {
         country:auth.resume.country,
         city:auth.resume.city,
         phone:auth.resume.phone,
-
       },
       professional: auth.resume.professional||{},
       education:auth.resume.education||{},
@@ -35,7 +34,6 @@ const ResumeContextProvider = (props) => {
   function updateHeaderData(data) {
     setContent({ ...content, 
       header: data });
-  console.log("Content: "+ data.firstname);
   }
 
   function updateProfessionalData(data) {

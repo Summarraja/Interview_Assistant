@@ -12,6 +12,7 @@ router.use(checkAuth);
 
 router.get('/:cid', certificatesControllers.getCertificateById);
 router.get('/user/:uid', certificatesControllers.getCertificatesByUserId);
+router.get('/', certificatesControllers.getAllCertificates);
 
 router.post(
     '/',
@@ -46,12 +47,12 @@ router.delete('/:cid', certificatesControllers.deleteCertificate);
 router.use(checkAdmin);
 
 router.patch(
-    '/:cid/accept',
+    '/accept/:cid',
     certificatesControllers.acceptCertificate
 );
 
 router.patch(
-    '/:cid/reject',
+    '/reject/:cid',
     certificatesControllers.rejectCertificate
 );
 // router.post('/uploadImage',

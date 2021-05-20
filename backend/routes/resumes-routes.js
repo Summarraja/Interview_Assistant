@@ -11,6 +11,7 @@ router.use(checkAuth);
 router.get("/:rid", resumesControllers.getResumeById);
 router.get("/user/:uid", resumesControllers.getResumeByUserId);
 router.get("/resume/:name", resumesControllers.getResumeByUserName);
+router.get("/admin/:name", resumesControllers.getAllResumesByUsername)
 
 router.post(
   "/",

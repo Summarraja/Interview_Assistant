@@ -17,7 +17,7 @@ const resumeSchema = new Schema({
   experience: { type: Number },
   professional:{type:Object, default:{}},
   education: {type:Object, default:{}},
-  additional: [{type:String}],
+  additional: [{type:String, default:null}],
   user: { type: mongoose.Types.ObjectId,  ref: 'User' },
   field: { type: mongoose.Types.ObjectId,  ref: 'Field' }
 });

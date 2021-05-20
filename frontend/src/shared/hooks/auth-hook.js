@@ -35,6 +35,7 @@ export const useAuth = () => {
     setTokenExpirationDate(null);
     setUserId(null);
     localStorage.removeItem('userData');
+    localStorage.removeItem('dataLocal');
   }, []);
 
   useEffect(() => {
@@ -57,5 +58,11 @@ export const useAuth = () => {
     }
   }, [login]);
 
-  return { token, login, logout, userId, resume, setting };
+  const updateResume = (data)=>{
+    setResume(data);
+  }
+  const updateSetting = (data)=>{
+    setSetting(data);
+  }
+  return { token, login, logout, userId, resume, setting ,updateResume,updateSetting};
 };

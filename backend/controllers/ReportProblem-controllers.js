@@ -91,9 +91,9 @@ console.log("UNANSWER: ")
             "answer": { "$exists": true },
             "$expr": { "$lt": [ { "$strLenCP": "$answer" }, 1 ] } 
         });
-console.log("PROBLEMSL: "+unanswerdproblems)
+
     } catch (err) {
-        console.log("error is"+ err)
+  
         const error = new HttpError(
             'Something went wrong, could not find all Reported Problems.',
             500
