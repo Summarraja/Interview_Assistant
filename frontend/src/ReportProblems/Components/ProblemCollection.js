@@ -18,7 +18,7 @@ const ProblemCollection = () => {
         const responseData = await sendRequest(
           'http://localhost:5000/api/problems/user/'+ auth.userId
         );
-        console.log(responseData.problems)
+        console.log(responseData)
         setFaqs(responseData.problems);
       } catch (err) {
         console.log(err)
