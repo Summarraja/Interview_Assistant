@@ -2,12 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import SearchCandidates from "../../Interviews/components/SearchCandidates";
 import { Card, Toolbar, Typography } from "@material-ui/core";
 import { AuthContext } from "../../shared/context/auth-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import SearchedResumes from "../Components/SearchedResumes";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import SearchCandidates from "../../Interviews/components/SearchCandidates";
 
 const useStyles = makeStyles((theme) => ({
   bgCard: {

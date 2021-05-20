@@ -38,6 +38,7 @@ import Home from "./user/pages/Home";
 import SideBar from "./Admin/Components/SideBar"
 import ViewFaqs from "./Admin/Components/Faqs/ViewFaqs";
 
+
 const App = () => {
   let location = useLocation();
   const { token, login, logout, userId, resume, setting } = useAuth();
@@ -71,6 +72,7 @@ const App = () => {
           <Route path="/chat" exact component={Chat} />
           <Route path="/interviews/new" exact component={CreateInterview} />
           <Route path="/interview/candidates" exact component={CandidateList} />
+      
           <Route
             path="/interviews/view/:interId"
             exact
