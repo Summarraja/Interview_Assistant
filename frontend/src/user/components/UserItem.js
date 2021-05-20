@@ -216,6 +216,7 @@ function findBlockedUsers(arr1, arr2) {
             startIcon={props.otherUser ? <RiUserUnfollowFill /> : <EditIcon />}
             size="small"
             onClick = {props.otherUser? BlockUserHandler: OpenEditDialogComp}
+           
           >
             {props.otherUser  ? "Block User" : "Edit Profile"}
           </Button>

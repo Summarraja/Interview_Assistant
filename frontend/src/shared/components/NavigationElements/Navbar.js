@@ -13,12 +13,13 @@ import {
 } from "@material-ui/core";
 import OutsideClickHandler from "react-outside-click-handler";
 import MenuIcon from "@material-ui/icons/Menu";
+import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import IconButton from "@material-ui/core/IconButton";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import { Link, Redirect, useHistory } from "react-router-dom";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Badge from "@material-ui/core/Badge";
-import { FaQuestionCircle, FaBell } from "react-icons/fa";
+import { FaQuestionCircle, FaBell, FaUserLock } from "react-icons/fa";
 import { IoLogOut } from "react-icons/io5";
 import { MdArrowDropDownCircle } from "react-icons/md";
 import { AiFillLock, AiOutlineUserSwitch } from "react-icons/ai";
@@ -124,7 +125,7 @@ export default function Navbar(props) {
   const [switchResMsg, setSwitchResMsg] = useState("");
   const [callblockedDialog, setCallblockedDialog] = useState(false);
   const [openBlockedDialog, setOpenBlockedDialog] = useState(false);
-  const [blockedUsers, setBlockedUsers] =useState([]);
+  const [blockedUsers, setBlockedUsers] = useState([]);
 
   const CallCompHandler = () => {
     setCallblockedDialog(true);
@@ -219,7 +220,7 @@ export default function Navbar(props) {
             Authorization: "Bearer " + auth.token,
           }
         );
-        setSwitchResMsg(responseData.responseMessage)
+        setSwitchResMsg(responseData.responseMessage);
         if (responseData.setting) {
           const storedData = JSON.parse(localStorage.getItem("userData"));
           login(
@@ -235,31 +236,23 @@ export default function Navbar(props) {
     SetRole();
   };
 
- 
-
-      const GetBlockedUsersHandler= async () => {
-        try {
-          const responseData = await sendRequest(
-            `http://localhost:5000/api/settings/blockedUsers/${auth.userId}`,
-            "GET",
-            null,
-            {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + auth.token,
-            }
-          );
-          setBlockedUsers(responseData.blockedUsers);
-        } catch (err) {
-          console.log(err);
+  const GetBlockedUsersHandler = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/settings/blockedUsers/${auth.userId}`,
+        "GET",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
         }
-        CallCompHandler();
-      };
-      
-
-
-
-  
-
+      );
+      setBlockedUsers(responseData.blockedUsers);
+    } catch (err) {
+      console.log(err);
+    }
+    CallCompHandler();
+  };
 
   const settingMenu = (
     <Menu
@@ -267,42 +260,38 @@ export default function Navbar(props) {
       id="mobile-menu"
       keepMounted
       open={isSettingMenuOpen}
-      // anchorOrigin={{
-      //   vertical: 'center',
-      //   horizontal: 'left',
-      // }}
       transformOrigin={{
         vertical: -15,
         horizontal: -200,
       }}
-      // className={classes.MoreIconButton}
     >
       <MenuItem
         onClick={Reporthandler}
+        component={Link}
+        to="/reportproblem"
         // component={Link}
         // to={NavSignUp ? "/signup" : "/auth"}
       >
         <IconButton color="primary">
-          <AiFillLock />
+          <ReportProblemIcon />
         </IconButton>
-        <Typography variant="subtitle1">Report Problem</Typography>
+        <Typography variant="subtitle1">Report a Problem</Typography>
       </MenuItem>
-     
 
       <Divider variant="middle" />
-      <MenuItem onClick={GetBlockedUsersHandler} >
+      <MenuItem onClick={GetBlockedUsersHandler}>
         <IconButton color="primary">
-          <FaQuestionCircle />
+          <FaUserLock />
         </IconButton>
         <Typography variant="subtitle1">View Blocked Users</Typography>
       </MenuItem>
-      {callblockedDialog &&(
-            <UserBlockedListDialog
-            openBlockedDialog={openBlockedDialog}
-            setOpenBlockedDialog={setOpenBlockedDialog}
-            blockedUsers= {blockedUsers}
-            />
-          )}
+      {callblockedDialog && (
+        <UserBlockedListDialog
+          openBlockedDialog={openBlockedDialog}
+          setOpenBlockedDialog={setOpenBlockedDialog}
+          blockedUsers={blockedUsers}
+        />
+      )}
     </Menu>
   );
 
@@ -327,20 +316,19 @@ export default function Navbar(props) {
           {NavSignUp ? "Sign Up" : "Sign In"}{" "}
         </Typography>
       </MenuItem>
-      <MenuItem  component={Link} to="/Faq">
+      <MenuItem component={Link} to="/Faq">
         <IconButton color="primary">
           <FaQuestionCircle />
         </IconButton>
         <Typography variant="subtitle1">Help & Support</Typography>
       </MenuItem>
 
-      <MenuItem  component={Link} to="/reportproblem">
+      <MenuItem>
         <IconButton color="primary">
           <FaQuestionCircle />
         </IconButton>
         <Typography variant="subtitle1">Report a Problem</Typography>
       </MenuItem>
-      
     </Menu>
   );
 
@@ -395,15 +383,6 @@ export default function Navbar(props) {
         <Typography variant="subtitle1">Help & Support</Typography>
       </MenuItem>
 
-      <MenuItem
-        className={classes.root}
-        component={Link} to="/reportproblem">
-        <IconButton color="primary">
-          <FaQuestionCircle />
-        </IconButton>
-        <Typography variant="subtitle1">Report a Problem </Typography>
-      </MenuItem>
-
       <Divider variant="middle" />
       <Hidden smUp implementation="css">
         <MenuItem className={classes.root} onClick={switchRole}>
@@ -447,7 +426,8 @@ export default function Navbar(props) {
         onClose={status == "200" ? clearSuccess : clearError}
       >
         <MuiAlert
-          elevation={6}s
+          elevation={6}
+          s
           variant="filled"
           severity={status == "200" ? "success" : "error"}
           onClose={status == "200" ? clearSuccess : clearError}

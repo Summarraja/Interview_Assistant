@@ -1,102 +1,90 @@
 import React, { useState } from "react";
-import Toolbar from '@material-ui/core/Toolbar';
+import Toolbar from "@material-ui/core/Toolbar";
 import FaqCollectionAdmin from "./FaqCollectionAdmin";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import DeleteIcon from '@material-ui/icons/Delete';
+import Container from "@material-ui/core/Container";
 import { makeStyles, fade } from "@material-ui/core/styles";
-import { Button, Grid } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { Button, Grid } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
 import CreateFaq from "./CreateFaqs";
 
-
 const useStyles = makeStyles((theme) => ({
-
-    root: {
-        paddingLeft: 250,
-        [theme.breakpoints.down("xs")]: {
-            paddingLeft: 0,
-        },
+  root: {
+    paddingLeft: 250,
+    [theme.breakpoints.down("xs")]: {
+      paddingLeft: 0,
     },
+  },
 
-    button: {
-        float: "right",
-        marginBottom: 10,
-      },
+  button: {
+    float: "right",
+    margin: "10px auto",
+    marginRight: "5rem"
+  },
 
-    paper: {
-        //   backgroundColor: "#4E78A0",
-        [theme.breakpoints.up("xs")]: {
-            margin: theme.spacing(3, 7),
-            //  padding: theme.spacing(3),
-            width: "auto",
-        },
-        [theme.breakpoints.up("md")]: {
-            margin: theme.spacing(3, 20),
-            width: "auto",
-        },
+  paper: {
+
+    [theme.breakpoints.down("sm")]: {
+      margin: theme.spacing(1, 1),
+
+      width: "auto",
     },
-    collapse: {
-        width: "100%",
+    [theme.breakpoints.up("md")]: {
+      margin: theme.spacing(5, 8),
+      width: "auto",
     },
+  },
+
 }));
 
 export default function ViewFaqs() {
-    const classes = useStyles();
-    const [open, setOpen] = useState(false);
+  const classes = useStyles();
+  const [open, setOpen] = useState(false);
 
-    const handleOpenDialog = () => {
-      setOpen(true);
-    };
-    const handleCloseDialog = () => {
-      setOpen(false);
-    };
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
 
-    return (
-        <>
-            <Toolbar />
-            <div className={classes.root}>
-                <div style={{ marginBottom: "80px", marginRight: "150px" }}>
-                    <Typography
-                        variant="h4"
-                        align="center"
-                        style={{ margin: "20px", color: "#004777" }}
-                    >
-                        Frequently Asked Questions
-                    </Typography>
+  return (
+    <>
+      <Toolbar />
 
+      <div className={classes.root}>
+        <Container maxWidth="lg" component="main">
+        
 
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => {
-                            handleOpenDialog();
-                        }}
-                        className={classes.button}
-                        startIcon={<AddIcon />}
-                    >
-                        Create Faqs
-            </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              handleOpenDialog();
+            }}
+            className={classes.button}
+            startIcon={<AddIcon />}
+          >
+            Create Faqs
+          </Button>
 
-                    {open && (
-                        <CreateFaq
-                            open={open}
-                            handleCloseDialog={handleCloseDialog}
-                            setOpen={setOpen}
-                        />
-                    )}
+          {open && (
+            <CreateFaq
+              open={open}
+              handleCloseDialog={handleCloseDialog}
+              setOpen={setOpen}
+            />
+          )}
 
-
-                </div>
-                <div>
-                    <Paper elevation={10} className={classes.paper}>
-                        <div className={classes.collapse}>
-                            <FaqCollectionAdmin />
-                        </div>
-                    </Paper>
-                </div>
+          <Paper elevation={10} className={classes.paper}>
+            <div className={classes.collapse}>
+              <FaqCollectionAdmin />
             </div>
-        </>
-    );
-
+          </Paper>
+          {/* </Paper> */}
+        </Container>
+      </div>
+    </>
+  );
 }

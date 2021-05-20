@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
   ViewButton: {
     height: "35px",
-    marginRight: "10px",
+    margin: "10px 20px",
     [theme.breakpoints.up("sm")]: {
       float: "right",
     },
@@ -53,10 +53,10 @@ return(
 props.userId != auth.userId && (
   <List className={classes.list}>
   <Grid container>
-    <Grid item xs={12} className={classes.responsive}>
+    <Grid item xs={9} className={classes.responsive}>
       <ListItem
         className={classes.listItem}
-        button
+      //  button
       >
         <ListItemAvatar>
           <Avatar
@@ -70,9 +70,12 @@ props.userId != auth.userId && (
         </ListItemAvatar>
         <ListItemText>
           {props.name} 
-        
+          </ListItemText>
+          </ListItem>
+          </Grid>
+          <Grid item xs={3} className={classes.responsive}>
           <Button
-          variant="contained"
+          button = "true"
           color="primary"
           className={classes.ViewButton}
           startIcon={<DeleteIcon style={{ marginLeft: 6 }} />}
@@ -91,9 +94,9 @@ props.userId != auth.userId && (
                         />
                     )}
 
-          </ListItemText>
-      </ListItem>
-    </Grid>
+     </Grid>
+   
+
   </Grid>
 </List>
 )

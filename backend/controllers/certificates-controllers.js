@@ -57,6 +57,36 @@ const getCertificatesByUserId = async (req, res, next) => {
             certificate.toObject({ getters: true })
         )
     });
+
+};
+
+const getAllCertificates = async (req, res, next) => {
+
+    let certificates;
+    try {
+        certificates = await Certificate.find({isApproved: false});
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not find all Certificates.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!certificates) {
+        const error = new HttpError(
+            'Could not find Certificates.',
+            404
+        );
+        return next(error);
+    }
+
+    console.log(certificates)
+    res.json({
+        certificates: certificates.map(certificate =>
+            certificate.toObject({ getters: true })
+        )
+    });
 };
 
 const createCertificate = async (req, res, next) => {
@@ -248,7 +278,7 @@ const acceptCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    res.status(200).json({ certificate: certificate.toObject({ getters: true }) });
+    res.status(200).json({ certificate: certificate.toObject({ getters: true }), responseMsg: "approved" });
 };
 const rejectCertificate = async (req, res, next) => {
     const errors = validationResult(req);
@@ -279,7 +309,42 @@ const rejectCertificate = async (req, res, next) => {
         return next(error);
     }
     certificate.isApproved = false;
+   
+    let certificateWithCreator;
+    try {
+        certificateWithCreator = await Certificate.findById(certificateId).populate('creator');
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not delete certificate after rejecting.',
+            500
+        );
+        return next(error);
+    }
 
+    if (!certificateWithCreator) {
+        const error = new HttpError(
+            'Could not find certificate for the provided id for rejection.',
+            404
+        );
+        return next(error);
+    }
+
+    console.log("certy : " + certificate.id)
+
+    try {
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await certificate.remove({ session: sess });
+        certificateWithCreator.creator.certificates.pull(certificate.id);
+        await certificateWithCreator.creator.save({ session: sess });
+        await sess.commitTransaction();
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not delete certificate after rejection.',
+            500
+        );
+        return next(error);
+    }
     try {
         await certificate.save();
     } catch (err) {
@@ -290,7 +355,7 @@ const rejectCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    res.status(200).json({ certificate: certificate.toObject({ getters: true }) });
+    res.status(200).json({ certificate: certificate.toObject({ getters: true }), responseMsg: "rejected" });
 };
 const deleteCertificate = async (req, res, next) => {
     const certificateId = req.params.cid;
@@ -347,6 +412,7 @@ const deleteCertificate = async (req, res, next) => {
 
 exports.getCertificateById = getCertificateById;
 exports.getCertificatesByUserId = getCertificatesByUserId;
+exports.getAllCertificates = getAllCertificates;
 exports.createCertificate = createCertificate;
 exports.updateCertificate = updateCertificate;
 exports.deleteCertificate = deleteCertificate;
