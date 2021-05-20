@@ -1,5 +1,6 @@
 const User = require('.././models/user');
 const HttpError = require('../models/http-error');
+const Setting = require('../models/setting');
 
 module.exports = async (req, res, next) => {
     if(req.method === 'OPTIONS'){
@@ -8,9 +9,9 @@ module.exports = async (req, res, next) => {
   
     let user;
     try {
-        user = await User.findById(req.userData.userId);
+        user = await User.findById(req.userData.userId).populate({path:'setting',model:Setting});
 
-        if (!user.isAdmin) {
+        if (!user.setting.role=='Admin') {
             throw new Error('Admin Authentication failed!');
         }
         next();

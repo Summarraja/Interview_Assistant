@@ -300,11 +300,10 @@ const EditProfileForm = (props) => {
           Authorization: "Bearer " + auth.token,
         }
       );
-      console.log(responseData.resume);
       if (responseData.resume) {
         const storedData = JSON.parse(localStorage.getItem("userData"));
         storedData.resume = responseData.resume;
-        auth.resume = responseData.resume;
+        auth.setResume (responseData.resume);
         props.setMyResume(responseData.resume);
 
         localStorage.setItem("userData", JSON.stringify(storedData));

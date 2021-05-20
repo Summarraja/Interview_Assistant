@@ -5,6 +5,7 @@ import CallEndIcon from '@material-ui/icons/CallEnd';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import SentimentVerySatisfiedIcon from '@material-ui/icons/SentimentVerySatisfied';
+import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
 import { Grid, IconButton, makeStyles } from "@material-ui/core";
 import { AuthContext } from "../shared/context/auth-context";
 import { SocketContext } from "../shared/context/socket-context";
@@ -12,6 +13,9 @@ import { useHistory } from 'react-router-dom';
 import Peer from "simple-peer";
 import Black from './black.png';
 import Emotions from './Emotions';
+import FacialEmotionsExtractor from './FacialEmotionsExtractor';
+import VocalEmotionsExtractor from './VocalEmotionsExtractor';
+
 const useStyles = makeStyles((theme) => ({
 
     bottomDiv: {
@@ -85,7 +89,29 @@ const useStyles = makeStyles((theme) => ({
         height: '100px',
         color: 'white',
         fontSize: 30,
-    }
+    },
+    showFaceEmotions: {
+        maxWidth: '15rem',
+        maxHeight: '15rem',
+        height: '15rem',
+        width: '10rem',
+        position: 'absolute',
+        bottom: '50%',
+        right: 30,
+        zIndex: 3,
+        color: 'white',
+    },
+    showVoiceEmotions: {
+        maxWidth: '15rem',
+        maxHeight: '15rem',
+        height: '15rem',
+        width: '10rem',
+        position: 'absolute',
+        bottom: '50%',
+        left: 30,
+        zIndex: 3,
+        color: 'white',
+    },
 
 }));
 
@@ -101,7 +127,11 @@ function VideoCall(props) {
     const [callAccepted, setCallAccepted] = useState(false);
     const [message, setMessage] = useState('');
     const [mediaMessage, setMediaMessage] = useState('');
-    const [faceEmotions, setFaceEmotions] = useState(false);
+    const [showFaceEmotions, setShowFaceEmotions] = useState(false);
+    const [showVoiceEmotions, setShowVoiceEmotions] = useState(false);
+    const [partnerStream, setPartnerSstream] = useState(false);
+    const [facialEmotionState, setFacialEmotionState] = useState([0, 0, 0, 0, 0, 0, 0]);
+    const [vocalEmotionState, setVocalEmotionState] = useState([0, 0, 0, 0, 0, 0, 0]);
 
     const socket = useContext(SocketContext);
     const auth = useContext(AuthContext);
@@ -238,6 +268,7 @@ function VideoCall(props) {
                     setMessage("");
                     if (partnerVideo.current) {
                         partnerVideo.current.srcObject = stream;
+                        setPartnerSstream(true);
                     }
                 });
 
@@ -318,6 +349,7 @@ function VideoCall(props) {
             peer.on("stream", stream => {
                 console.log('stream got', stream)
                 partnerVideo.current.srcObject = stream;
+                setPartnerSstream(true);
             });
 
             peer.on('error', (err) => {
@@ -361,8 +393,11 @@ function VideoCall(props) {
             history.goBack();
         }, 2000);
     }
-    function showFaceEmotions(){
-        setFaceEmotions(!faceEmotions);
+    function showFaceEmotionsHandler() {
+        setShowFaceEmotions(!showFaceEmotions);
+    }
+    function showVoiceEmotionsHandler() {
+        setShowVoiceEmotions(!showVoiceEmotions);
     }
     function toggleMuteAudio() {
         if (stream) {
@@ -379,15 +414,25 @@ function VideoCall(props) {
     return (
         <>
             <div className={classes.topdiv}>
+                {showFaceEmotions && (
+                    <>
+                        <FacialEmotionsExtractor setProgress={setFacialEmotionState} />
+                        <div className={classes.showFaceEmotions}>Facail Emotions<br/><Emotions progress={facialEmotionState} /></div>
+                    </>
+                )}
+                {showVoiceEmotions && (
+                    <>
+                        <VocalEmotionsExtractor setProgress={setVocalEmotionState} />
+                        <div className={classes.showVoiceEmotions}>Vocal Emotions<br/><Emotions progress={vocalEmotionState} /></div>
+                    </>
+                )}
                 <div className={classes.message}>{message}</div>
                 <div className={classes.mediaMessage}>{mediaMessage}</div>
                 <div className={classes.partnerVideoStyles}>
                     {callAccepted && (<video width='100%' height='100%' playsInline ref={partnerVideo} poster={Black} autoPlay />)}
                 </div>
-                {faceEmotions&&(<Emotions />)}
-
                 <div className={classes.userVideoStyles}>
-                    {stream && (<video className={classes.userVideo} playsInline muted ref={userVideo} poster={Black} autoPlay />)}
+                    {stream && (<video id="userVideo" className={classes.userVideo} playsInline muted ref={userVideo} poster={Black} autoPlay />)}
                 </div>
                 <div className={classes.bottomDiv}>
                     <Grid align="center">
@@ -400,9 +445,16 @@ function VideoCall(props) {
                         <IconButton className={classes.IconStyles} onClick={() => endCall()}>
                             <CallEndIcon color="primary" style={{ fontSize: "2rem" }} />
                         </IconButton>
-                        <IconButton className={classes.IconStyles} onClick={() => showFaceEmotions()}>
-                            <SentimentVerySatisfiedIcon color="primary" style={{ fontSize: "2rem" }} />
-                        </IconButton>
+                        {true && (
+                            <IconButton className={classes.IconStyles} onClick={() => showFaceEmotionsHandler()}>
+                                <SentimentVerySatisfiedIcon color="primary" style={{ fontSize: "2rem" }} />
+                            </IconButton>
+                        )}
+                        {true && (
+                            <IconButton className={classes.IconStyles} onClick={() => showVoiceEmotionsHandler()}>
+                                <RecordVoiceOverIcon color="primary" style={{ fontSize: "2rem" }} />
+                            </IconButton>
+                        )}
                     </Grid>
                 </div>
             </div>

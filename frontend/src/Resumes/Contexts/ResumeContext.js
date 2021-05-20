@@ -1,16 +1,28 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect,useContext } from "react";
 import fakeData from "./fake_data";
+import { AuthContext } from "../../shared/context/auth-context";
 
 export const ResumeContext = createContext();
 
 const ResumeContextProvider = (props) => {
+  const auth = useContext(AuthContext);
+
   //If there is no data stored in localStorage, then use the default object.
   const [content, setContent] = useState(
-    JSON.parse(localStorage.getItem("dataLocal")) || {
-      header: {},
-      professional: {},
-      education: {},
-      additional: [],
+    // JSON.parse(localStorage.getItem("dataLocal")) || 
+    {
+      header: {
+        firstname:auth.resume.firstname,
+        lastname:auth.resume.lastname,
+        address:auth.resume.address,
+        email:auth.resume.email,
+        country:auth.resume.country,
+        city:auth.resume.city,
+        phone:auth.resume.phone,
+      },
+      professional: auth.resume.professional||{},
+      education:auth.resume.education||{},
+      additional: auth.resume.additional||[],
     }
   );
 
@@ -22,7 +34,6 @@ const ResumeContextProvider = (props) => {
   function updateHeaderData(data) {
     setContent({ ...content, 
       header: data });
-  console.log("Content: "+ data.firstname);
   }
 
   function updateProfessionalData(data) {
