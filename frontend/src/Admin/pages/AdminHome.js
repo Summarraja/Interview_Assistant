@@ -2,14 +2,17 @@ import React, { useState, useEffect, useContext } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import SearchCandidates from "../../Interviews/components/SearchCandidates";
 import { Card, Toolbar, Typography } from "@material-ui/core";
 import { AuthContext } from "../../shared/context/auth-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import SearchedResumes from "../Components/SearchedResumes";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import SearchCandidates from "../../Interviews/components/SearchCandidates";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    paddingLeft: 200
+  },
   bgCard: {
     marginTop: "50px",
     width: "60%",
@@ -20,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: "10%",
     },
   },
+  
   searchBar: {
     width: "100%",
   },
@@ -66,7 +70,7 @@ export default function AdminHome(props) {
     const fetchSearchedResumes = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/resumes/resume/${searchItem}`,
+          `http://localhost:5000/api/resumes/admin/${searchItem}`,
           "GET",
           null,
           {
@@ -74,6 +78,7 @@ export default function AdminHome(props) {
             Authorization: "Bearer " + auth.token,
           }
         );
+        console.log(responseData.resumes)
         setResume(responseData.resumes);
       } catch (err) {
         console.log(err);
@@ -83,8 +88,10 @@ export default function AdminHome(props) {
   };
 
   return (
+
     <Container>
       <Toolbar />
+      <div className={classes.root}>
       <LoadingSpinner open={isLoading} />
       <Card className={classes.bgCard}>
         <SearchCandidates
@@ -112,6 +119,7 @@ export default function AdminHome(props) {
         ) }
       
       </Card>
+      </div>
 
       <CssBaseline />
     </Container>

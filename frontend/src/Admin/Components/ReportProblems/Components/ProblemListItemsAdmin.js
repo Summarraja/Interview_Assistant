@@ -90,7 +90,7 @@ return (
 
   <Card className={classes.card}>
   <Grid container >
-    <Grid item sm={6} lg={11} style={{ flexGrow: 1 }}>
+    <Grid item sm={11} lg={11} style={{ flexGrow: 1 }}>
       <div className={classes.header}>
         
         <Typography variant="h5" align="justify" style={{fontFamily:"Times New Roman"}} color="primary">

@@ -2,12 +2,14 @@ import React, { useEffect, useState, useContext} from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { Button, Card, Grid } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
+import { TiEdit } from "react-icons/ti";
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateFaq from './UpdateFaq';
 import { AuthContext } from "../../../shared/context/auth-context";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import DeleteFaqs from './DeleteFaqs';
+import { RiDeleteBin6Line } from "react-icons/ri";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -101,7 +103,7 @@ return (
 
   <Card className={classes.card}>
   <Grid container >
-    <Grid item sm={6} lg={11} style={{ flexGrow: 1 }}>
+    <Grid item sm={11} lg={11} style={{ flexGrow: 1 }}>
       <div className={classes.header}>
         <Typography variant="h5" align="justify">
         {props.question}
@@ -118,7 +120,7 @@ return (
             color="primary"
             size="large"
             className={classes.ViewButton}
-            startIcon={<EditIcon style={{ marginLeft: 6 }} />}
+            startIcon={<TiEdit style={{ marginLeft: 6 }} />}
             onClick={() => {
               handleOpenDialog();
           }}
@@ -141,7 +143,7 @@ return (
           variant="contained"
           color="primary"
           className={classes.ViewButton}
-          startIcon={<DeleteIcon style={{ marginLeft: 6 }} />}
+          startIcon={<RiDeleteBin6Line style={{ marginLeft: 6 }} />}
           onClick={() => {
             OpenDeleteDialogHandler();
           }}

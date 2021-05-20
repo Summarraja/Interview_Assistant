@@ -60,10 +60,8 @@ const getResumeByUserId = async (req, res, next) => {
 
 const getResumeByUserName = async (req, res, next) => {
   const userName = req.params.name;
-  let resumeIDs = [];
   let blockIDs = [];
   let blockMeIDs = [];
-  let displayedResumes = [];
 
   let userWithResume;
   try {
@@ -78,7 +76,7 @@ const getResumeByUserName = async (req, res, next) => {
     return next(error);
   }
 
-   // userWithResume.map((resume) => resumeIDs.push(resume._id));
+  // userWithResume.map((resume) => resumeIDs.push(resume._id));
 
   let userWithSetting;
   try {
@@ -117,16 +115,50 @@ const getResumeByUserName = async (req, res, next) => {
     blockMeIDs.push(otherBlockMe._id)
   );
 
-  console.log("blockIDs: " + blockIDs);
-  console.log("blockMeIDs: " + blockMeIDs);
-  displayedResumes = userWithResume.filter(
-    (resume) =>
-      !blockIDs.includes(resume.user) && !blockMeIDs.includes(resume.user)
+  let Blocked = SettingWithBlockedUsers.blockedUsers.map((blkUsr) => {
+    return blkUsr._id;
+  });
+  let userBlockedMe = SettingWithBlockedUsers.OthersBlockedMe.map(
+    (OtherblkMe) => {
+      return OtherblkMe._id;
+    }
   );
-  // console.log(displayedResumes);
+
+  let filteredResumes = userWithResume.filter(
+    (ResUsr) =>
+      !Blocked.includes(ResUsr.user) && !userBlockedMe.includes(ResUsr.user)
+  );
 
   res.json({
-    resumes: userWithResume.map((resume) => resume.toObject({ getters: true })),
+    resumes: filteredResumes.map((resume) =>
+      resume.toObject({ getters: true })
+    ),
+  });
+};
+
+
+const getAllResumesByUsername = async (req, res, next) => {
+  const userName = req.params.name;
+
+  let userWithResume;
+  try {
+    userWithResume = await Resume.find({
+      $or: [{ fullname: new RegExp(userName, "i") }],
+    }).exec();
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching resume failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  
+  
+  res.json({
+    resumes: userWithResume.map((resume) =>
+      resume.toObject({ getters: true })
+    ),
   });
 };
 
@@ -367,6 +399,7 @@ const deleteResume = async (req, res, next) => {
 
 exports.getResumeById = getResumeById;
 exports.getResumeByUserId = getResumeByUserId;
+exports.getAllResumesByUsername = getAllResumesByUsername;
 exports.getResumeByUserName = getResumeByUserName;
 exports.createResume = createResume;
 exports.updateResume = updateResume;

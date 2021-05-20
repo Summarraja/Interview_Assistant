@@ -226,6 +226,7 @@ const uploadImage = async (req, res, next) => {
     await existingUser.resume.save();
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err)
     const error = new HttpError(
       "Image Upload failed, please try again later.",
       500

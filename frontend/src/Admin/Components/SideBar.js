@@ -26,10 +26,13 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: "auto 8px",
+     [theme.breakpoints.up("xs")]: {
+      display: "flex",
+    }
   },
+
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    flexDirection:"row"
   },
   drawer: {
     width: drawerWidth,
@@ -99,7 +102,11 @@ minWidth:"40px",
 
   list: {
      padding:0 
-  }
+  },
+  MainLogo: {
+    flexGrow: 1,
+    color: "#fff",
+  },
 
 }));
 
@@ -116,10 +123,10 @@ export default function ClippedDrawer() {
       <CssBaseline />
       <AppBar position="fixed"className={classes.appBar}>
         <Toolbar>
-          <Typography variant="h5" noWrap style ={{float:"left"}}>
+          <Typography variant="h4" className = {classes.MainLogo}>
            Admin 
           </Typography>
-          <Button style={{float:"right", flexDirection:"column"}}
+          <Button 
                   variant="contained"
                   color="secondary"
                   className={classes.button}
@@ -155,7 +162,7 @@ export default function ClippedDrawer() {
               <ListItem
               button
               component={Link}
-              to="/admin/home" > 
+              to="/admin/certificates" > 
                 <ListItemIcon  className={classes.listicon}>
                 <VerifiedUserIcon color="primary"/>
                 </ListItemIcon>

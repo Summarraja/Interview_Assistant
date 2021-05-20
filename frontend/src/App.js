@@ -37,6 +37,8 @@ import VideoCall from "./Video Call/VideoCall";
 import Home from "./user/pages/Home";
 import SideBar from "./Admin/Components/SideBar"
 import ViewFaqs from "./Admin/Components/Faqs/ViewFaqs";
+import ApproveCertificate from "./Admin/Components/ApproveCertificates/pages/ApproveCertificate";
+
 
 const App = () => {
   let location = useLocation();
@@ -51,7 +53,12 @@ const App = () => {
         <Switch>
            {console.log("Role2" + setting.role)}
           <Route path="/admin/home" exact component={AdminHome} />
-          <Route path="/admin/certificates" exact component={AdminHome} />
+          <Route path="/admin/certificates" exact component={ApproveCertificate} />
+          <Route
+            path="/certificates/edit/:certId"
+            exact
+            component={ViewCertificate}
+          />
           <Route path="/admin/faq" exact component={ViewFaqs} />
           <Route path="/admin/reportProblem" exact component={ReportProblemAdmin}/>
           <Redirect to="/admin/home"/>
@@ -71,6 +78,7 @@ const App = () => {
           <Route path="/chat" exact component={Chat} />
           <Route path="/interviews/new" exact component={CreateInterview} />
           <Route path="/interview/candidates" exact component={CandidateList} />
+      
           <Route
             path="/interviews/view/:interId"
             exact

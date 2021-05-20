@@ -78,7 +78,7 @@ const UploadPhoto = (props) => {
 
                 const storedData = JSON.parse(localStorage.getItem('userData'));
                 storedData.resume.image = responseData.image;
-                auth.resume.image=responseData.image;
+                auth.resume.image = responseData.image;
                 localStorage.setItem('userData', JSON.stringify(storedData));
                 props.handleCloseDialog();
             }

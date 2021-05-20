@@ -10,15 +10,18 @@ import {
   Divider,
   Avatar,
   Hidden,
+  Card,
+  Grid,
 } from "@material-ui/core";
 import OutsideClickHandler from "react-outside-click-handler";
 import MenuIcon from "@material-ui/icons/Menu";
+import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import IconButton from "@material-ui/core/IconButton";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import { Link, Redirect, useHistory } from "react-router-dom";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Badge from "@material-ui/core/Badge";
-import { FaQuestionCircle, FaBell } from "react-icons/fa";
+import { FaQuestionCircle, FaBell, FaUserLock } from "react-icons/fa";
 import { IoLogOut } from "react-icons/io5";
 import { MdArrowDropDownCircle } from "react-icons/md";
 import { AiFillLock, AiOutlineUserSwitch } from "react-icons/ai";
@@ -36,6 +39,8 @@ import MuiAlert from "@material-ui/lab/Alert";
 import { SocketContext } from "../../../shared/context/socket-context";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import UserBlockedListDialog from "../../../user/components/UserBlockedListDialog";
+import { VscClearAll } from "react-icons/vsc";
+import { AiFillCloseSquare } from "react-icons/ai";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -53,6 +58,18 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
+
+
+
+    customWidth: {
+    
+          '& li': {
+           
+            maxWidth: '400px',
+          }
+      },
+
+  
   navbar: {
     zIndex: theme.zIndex.drawer + 1,
     flexGrow: 1,
@@ -108,8 +125,101 @@ const useStyles = makeStyles((theme) => ({
   track: {
     backgroundColor: "#fff",
   },
+  NotiTitle:{
+    [theme.breakpoints.up("xs")]: {
+      flexGrow: 1,
+    },
+  }
 }));
 
+
+const notifications = [
+  {
+
+  id: 1,
+  message: "Your request for an interview has been accepted by the Intervier",
+  time: "12:22",
+  isRead: true,
+  uid: 1
+},
+{
+  id: 1,
+  message: "Your request for an interview has been accepted by the Intervier",
+  time: "12:22",
+  isRead: false,
+  uid: 1
+},
+{
+  id: 1,
+  message: "Your request for an interview has been accepted by the Intervier",
+  time: "12:22",
+  isRead: true,
+  uid: 2
+},
+
+{
+  id: 1,
+  message:"Your request for an interview has been accepted by the Intervier" ,
+  time: "12:22",
+  isRead: false,
+  uid: 5
+},
+{
+  id: 1,
+  message:"Your request for an interview has been accepted by the Intervier",
+  time: "12:22",
+  isRead: true,
+  uid: 5
+},
+
+{
+  id: 1,
+  message:"Your request for an interview has been accepted by the Intervier",
+  time: "12:22",
+  isRead: true,
+  uid: 5
+},
+
+{
+  id: 1,
+  message:"Your request for an interview has been accepted by the Intervier",
+  time: "12:22",
+  isRead: true,
+  uid: 5
+},
+
+{
+  id: 1,
+  message:"Your certificate has been approved by Admin",
+  time: "12:22",
+  isRead: true,
+  uid: 5
+},
+{
+  id: 1,
+  message:"Your request for an interview has been accepted by the Intervier",
+  time: "12:22",
+  isRead: true,
+  uid: 5
+},
+
+{
+  id: 1,
+  message:"Your request for an interview has been accepted by the Intervier",
+  time: "12:22",
+  isRead: true,
+  uid: 5
+},
+
+{
+  id: 1,
+  message:"Your certificate has been approved by Admin",
+  time: "12:22",
+  isRead: true,
+  uid: 5
+},
+
+]
 export default function Navbar(props) {
   const [NavSignUp, setNavSignup] = useState(true);
   const auth = useContext(AuthContext);
@@ -125,7 +235,7 @@ export default function Navbar(props) {
   const [switchResMsg, setSwitchResMsg] = useState("");
   const [callblockedDialog, setCallblockedDialog] = useState(false);
   const [openBlockedDialog, setOpenBlockedDialog] = useState(false);
-  const [blockedUsers, setBlockedUsers] =useState([]);
+  const [blockedUsers, setBlockedUsers] = useState([]);
 
   const CallCompHandler = () => {
     setCallblockedDialog(true);
@@ -184,6 +294,11 @@ export default function Navbar(props) {
     marginRight: "10px",
   };
 
+  const paper = {
+    width: "1000px", 
+    height: "800px"
+};
+
   const classes = useStyles();
 
   const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(false);
@@ -192,14 +307,18 @@ export default function Navbar(props) {
   const isNavMenuOpen = Boolean(desktopMenuAnchorEl);
   const [settingMenuAnchorEl, setSettingMenuAnchorEl] = useState(false);
   const isSettingMenuOpen = Boolean(settingMenuAnchorEl);
+  const [notiMenuAnchorEl, setNotiMenuAnchorEl] = useState(false);
+  const isNotiMenuOpen = Boolean(notiMenuAnchorEl);
   const [open, setOpen] = useState(false);
 
-  const handleOpenDialog = () => {
-    setOpen(true);
+  const openNotiMenu = (event) => {
+    setNotiMenuAnchorEl(event.currentTarget);
   };
-  const handleCloseDialog = () => {
-    setOpen(false);
+  const closeNotiMenu = () => {
+  
+    setNotiMenuAnchorEl(null);
   };
+
 
   const openMobileMenu = (event) => {
     setMobileMenuAnchorEl(event.currentTarget);
@@ -207,6 +326,9 @@ export default function Navbar(props) {
   const closeMobileMenu = () => {
     setMobileMenuAnchorEl(null);
   };
+
+
+
 
   function OpenNavbarMenu(event) {
     setDesktopMenuAnchorEl(event.currentTarget);
@@ -249,7 +371,7 @@ export default function Navbar(props) {
             Authorization: "Bearer " + auth.token,
           }
         );
-        setSwitchResMsg(responseData.responseMessage)
+        setSwitchResMsg(responseData.responseMessage);
         if (responseData.setting) {
           const storedData = JSON.parse(localStorage.getItem("userData"));
           login(
@@ -260,35 +382,90 @@ export default function Navbar(props) {
           );
         }
         history.go(0);
-      } catch (err) {}
+      } catch (err) { }
     };
     SetRole();
   };
 
- 
-
-      const GetBlockedUsersHandler= async () => {
-        try {
-          const responseData = await sendRequest(
-            `http://localhost:5000/api/settings/blockedUsers/${auth.userId}`,
-            "GET",
-            null,
-            {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + auth.token,
-            }
-          );
-          setBlockedUsers(responseData.blockedUsers);
-        } catch (err) {
-          console.log(err);
+  const GetBlockedUsersHandler = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/settings/blockedUsers/${auth.userId}`,
+        "GET",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
         }
-        CallCompHandler();
-      };
-      
+      );
+      setBlockedUsers(responseData.blockedUsers);
+    } catch (err) {
+      console.log(err);
+    }
+    CallCompHandler();
+  };
 
 
+  const ITEM_HEIGHT = 130;
 
+  const NotificationMenu = (
+    <Menu
+      anchorEl={notiMenuAnchorEl}
+      id="notification-menu"
+      keepMounted
+      open={isNotiMenuOpen}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      PaperProps={{
+        style: {
+          maxHeight: ITEM_HEIGHT * 4.5,
+          width: '50ch',
+        },
+      }}
+    
+      transformOrigin={{
+        vertical: -60,
+        horizontal: 180,
+      }}
   
+    >
+
+ <Grid container>
+    <Grid item  sm={7}className={classes.NotiTitle}  >
+        <Typography variant="h5"   style={{padding: "10px"}}>Notifications</Typography>
+        </Grid>
+        <Grid item  sm={4} align="right"  >
+        <IconButton color="primary">
+          <VscClearAll />
+        </IconButton>
+        <IconButton color="primary" float="left" onClick={closeNotiMenu}>
+          <AiFillCloseSquare />
+        </IconButton>
+</Grid>
+</Grid>
+     
+      <Divider variant="middle" />
+      {notifications.map((noti) => (
+      <MenuItem key={noti} >
+      
+        <Grid item sm = {9} className = {classes.NotiTitle}>
+        <Typography variant="subtitle1" >{noti.message}</Typography>
+     
+       
+        </Grid>
+      <Grid item sm = {3} align="center"  style={{marginBottom: "20px" }}>
+        <Typography variant="subtitle1">{noti.time}</Typography>
+        </Grid>
+        
+        </MenuItem>
+    ) )}
+   
+
+    </Menu>
+  );
+
 
 
   const settingMenu = (
@@ -297,42 +474,38 @@ export default function Navbar(props) {
       id="mobile-menu"
       keepMounted
       open={isSettingMenuOpen}
-      // anchorOrigin={{
-      //   vertical: 'center',
-      //   horizontal: 'left',
-      // }}
       transformOrigin={{
         vertical: -15,
         horizontal: -200,
       }}
-      // className={classes.MoreIconButton}
     >
       <MenuItem
         onClick={Reporthandler}
+        component={Link}
+        to="/reportproblem"
         // component={Link}
         // to={NavSignUp ? "/signup" : "/auth"}
       >
         <IconButton color="primary">
-          <AiFillLock />
+          <ReportProblemIcon />
         </IconButton>
-        <Typography variant="subtitle1">Report Problem</Typography>
+        <Typography variant="subtitle1">Report a Problem</Typography>
       </MenuItem>
-     
 
       <Divider variant="middle" />
-      <MenuItem onClick={GetBlockedUsersHandler} >
+      <MenuItem onClick={GetBlockedUsersHandler}>
         <IconButton color="primary">
-          <FaQuestionCircle />
+          <FaUserLock />
         </IconButton>
         <Typography variant="subtitle1">View Blocked Users</Typography>
       </MenuItem>
-      {callblockedDialog &&(
-            <UserBlockedListDialog
-            openBlockedDialog={openBlockedDialog}
-            setOpenBlockedDialog={setOpenBlockedDialog}
-            blockedUsers= {blockedUsers}
-            />
-          )}
+      {callblockedDialog && (
+        <UserBlockedListDialog
+          openBlockedDialog={openBlockedDialog}
+          setOpenBlockedDialog={setOpenBlockedDialog}
+          blockedUsers={blockedUsers}
+        />
+      )}
     </Menu>
   );
 
@@ -357,20 +530,19 @@ export default function Navbar(props) {
           {NavSignUp ? "Sign Up" : "Sign In"}{" "}
         </Typography>
       </MenuItem>
-      <MenuItem  component={Link} to="/Faq">
+      <MenuItem component={Link} to="/Faq">
         <IconButton color="primary">
           <FaQuestionCircle />
         </IconButton>
         <Typography variant="subtitle1">Help & Support</Typography>
       </MenuItem>
 
-      <MenuItem  component={Link} to="/reportproblem">
+      <MenuItem>
         <IconButton color="primary">
           <FaQuestionCircle />
         </IconButton>
         <Typography variant="subtitle1">Report a Problem</Typography>
       </MenuItem>
-      
     </Menu>
   );
 
@@ -425,15 +597,6 @@ export default function Navbar(props) {
         <Typography variant="subtitle1">Help & Support</Typography>
       </MenuItem>
 
-      <MenuItem
-        className={classes.root}
-        component={Link} to="/reportproblem">
-        <IconButton color="primary">
-          <FaQuestionCircle />
-        </IconButton>
-        <Typography variant="subtitle1">Report a Problem </Typography>
-      </MenuItem>
-
       <Divider variant="middle" />
       <Hidden smUp implementation="css">
         <MenuItem className={classes.root} onClick={switchRole}>
@@ -477,15 +640,15 @@ export default function Navbar(props) {
         onClose={status == "200" ? clearSuccess : clearError}
       >
         <MuiAlert
-          elevation={6}s
+          elevation={6}
+          
           variant="filled"
           severity={status == "200" ? "success" : "error"}
           onClose={status == "200" ? clearSuccess : clearError}
         >
           {status == "200" && switchResMsg
-            ? `Your role has been swtiched to ${
-                role == "Candidate" ? "Interviewer" : "Candidate"
-              }`
+            ? `Your role has been swtiched to ${role == "Candidate" ? "Interviewer" : "Candidate"
+            }`
             : error}
         </MuiAlert>
       </Snackbar>
@@ -545,9 +708,12 @@ export default function Navbar(props) {
             <>
               <IconButton color="inherit">
                 <Badge badgeContent={unreadNotifications} color="error">
+            
                   <FaBell />
                 </Badge>
               </IconButton>
+            
+              {NotificationMenu}
 
               <FormGroup row>
                 <FormControlLabel
