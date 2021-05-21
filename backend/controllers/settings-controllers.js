@@ -295,6 +295,45 @@ const openChat = async (req, res, next) => {
   }
   res.status(200).json({ unreadChats: userWithSetting.setting.unreadChats });
 };
+const openNotifications = async (req, res, next) => {
+
+  const userId = req.params.uid;
+  
+  let userWithSetting;
+  try {
+    userWithSetting = await User.findById(userId).populate("setting");
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching setting failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+    if (!userWithSetting) {
+    const error = new HttpError(
+      'Could not find setting for the provided id.',
+      404
+    );
+    return next(error);
+  }
+
+  if (userWithSetting.id.toString() !== req.userData.userId) {
+    const error = new HttpError('You are not allowed to edit current users role', 401);
+    return next(error);
+  }
+
+  try {
+    userWithSetting.setting.unreadNotis=0;
+    await userWithSetting.setting.save();
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not update role of user.',
+      500
+    );
+    return next(error);
+  }
+  res.status(200).json({ unreadNotis: userWithSetting.setting.unreadNotis });
+};
 const blockUser = async (req, res, next) => {
   const settingId = req.params.sid;
   let setting;
@@ -432,6 +471,7 @@ exports.SwitchRole = SwitchRole;
 exports.deleteSettings = deleteSettings;
 exports.getNotifications = getNotifications;
 exports.openChat = openChat;
+exports.openNotifications = openNotifications;
 exports.blockUser = blockUser;
 exports.UnblockUser = UnblockUser;
 

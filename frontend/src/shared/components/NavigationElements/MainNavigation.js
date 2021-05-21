@@ -89,16 +89,11 @@ const MainNavigation = () => {
   useEffect(() => {
     if (!socket) return;
     socket.on("message", (data) => {
-      console.log("msg  noti");
       setUnreadChats(unreadChats + 1);
-    });
-    socket.on("notification", (data) => {
-      console.log("noti");
     });
 
     return () => {
       socket.off("message");
-      socket.off("notification");
     };
   }, [socket]);
 

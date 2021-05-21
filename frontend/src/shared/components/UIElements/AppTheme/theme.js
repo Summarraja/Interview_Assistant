@@ -57,6 +57,11 @@ const theme = createMuiTheme({
         fontFamily:"Serif, Open Sans, Arial",
         fontSize: "0.9rem"
       }
+    }, 
+    MuiMenuItem:{
+      root:{
+        whiteSpace: "none"
+      }
     }
   }, 
 

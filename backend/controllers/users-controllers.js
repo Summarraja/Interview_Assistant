@@ -226,6 +226,7 @@ const uploadImage = async (req, res, next) => {
     await existingUser.resume.save();
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err)
     const error = new HttpError(
       "Image Upload failed, please try again later.",
       500
@@ -315,8 +316,10 @@ const signup = async (req, res, next) => {
     email_verify_token: code,
     reset_token_expired_at: Date.now() + 3600000,
     createdInterviews: [],
+    addedInterviews:[],
     sentRRequests: [],
     receivedRequests: [],
+    problems:[],
     certificates: [],
     stats: [],
     chats: [],

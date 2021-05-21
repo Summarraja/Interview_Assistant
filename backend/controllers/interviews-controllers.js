@@ -598,10 +598,11 @@ const AcceptCandidateReq = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    await interview.save({ session: sess });
-    await candidate.save({ session: sess });
+    await interview.save();
+    await candidate.save();
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err)
     const error = new HttpError(
       "Something went wrong, could not add candidate to interview.",
       500

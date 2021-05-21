@@ -39,6 +39,7 @@ import SideBar from "./Admin/Components/SideBar";
 import ViewFaqs from "./Admin/Components/Faqs/ViewFaqs";
 import ApproveCertificate from "./Admin/Components/ApproveCertificates/pages/ApproveCertificate";
 
+
 const App = () => {
   let location = useLocation();
   const {
@@ -90,6 +91,7 @@ const App = () => {
           <Route path="/chat" exact component={Chat} />
           <Route path="/interviews/new" exact component={CreateInterview} />
           <Route path="/interview/candidates" exact component={CandidateList} />
+      
           <Route
             path="/interviews/view/:interId"
             exact

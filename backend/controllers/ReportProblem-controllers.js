@@ -72,7 +72,7 @@ const getProblemByUserId = async (req, res, next) => {
     );
     return next(error);
   }
-  if (!userWithProblem || !userWithProblem.problems) {
+  if (!userWithProblem || userWithProblem.problems.length==0) {
     return next(
       new HttpError("Could not find problem for the provided user id.", 404)
     );
