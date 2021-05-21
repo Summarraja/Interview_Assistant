@@ -26,7 +26,7 @@ const ProblemCollectionAdmin = () => {
 
   }, [problems])
 
-console.log("hello")
+
 
   return (
   <React.Fragment>

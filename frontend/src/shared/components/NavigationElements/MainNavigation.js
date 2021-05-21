@@ -138,7 +138,9 @@ const MainNavigation = () => {
     SetOpenDrawer(!OpenDrawer);
   };
 
+ // console.log("GO: "+history.goBack())
   const drawerItems = (
+
     <List >
       <Tooltip
         title="Back"

@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
@@ -124,7 +125,7 @@ const createCertificate = async (req, res, next) => {
         institute,
         isApproved: false,
         field: field.id,
-        image: req.file.path,
+        file: req.file.path,
         creator: req.userData.userId
     });
 
@@ -329,7 +330,6 @@ const rejectCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    console.log("certy : " + certificate.id)
 
     try {
         const sess = await mongoose.startSession();
@@ -341,15 +341,6 @@ const rejectCertificate = async (req, res, next) => {
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not delete certificate after rejection.',
-            500
-        );
-        return next(error);
-    }
-    try {
-        await certificate.save();
-    } catch (err) {
-        const error = new HttpError(
-            'Something went wrong, could not disapprove certificate.',
             500
         );
         return next(error);
@@ -384,7 +375,7 @@ const deleteCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    // const imagePath = certificate.image;
+    const imagePath = certificate.file;
 
     try {
         const sess = await mongoose.startSession();
@@ -401,9 +392,9 @@ const deleteCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    // fs.unlink(imagePath, err => {
-    //     console.log(err);
-    // });
+    fs.unlink(imagePath, err => {
+        console.log(err);
+    });
 
     res.status(200).json({ message: 'Deleted certificate.' });
 };

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import SelectBox from "../../shared/components/UIElements/FormElements/SelectBox";
 import TextField from "@material-ui/core/TextField";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -27,6 +28,15 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginTop: 8,
   },
+  content: {
+    margin:" 0% 21%"
+  },
+  preview: {
+  textAlign: "center",
+       width: "100%",
+       height: "90%"
+  },
+
 }));
 
 const fields = [
@@ -89,6 +99,7 @@ const UpdateCertificate = (props) => {
           institute: values.institute,
           fieldTitle: field,
         }),
+
         {
           "Content-Type": "application/json",
           Authorization: "Bearer " + auth.token,
@@ -216,14 +227,18 @@ const UpdateCertificate = (props) => {
                   />
                 </Grid>
               </Grid>
-              {/* <Grid item xs={12} sm={6}>
-                <div className={classes.content}>
-                  <img className={classes.preview} src={`http://localhost:5000/${props.loadedCertificate.image}`} alt={props.loadedCertificate.title}/>
-                  <br />
-                </div>
-              </Grid> */}
+              <Grid className={classes.content}>
+                <img
+                  className={classes.preview}
+                  src={"http://localhost:5000/" + props.loadedCertificate.file}
+                  alt="Certificate Image"
+                />
+
+                <br />
+              </Grid>
             </Grid>
-            <Grid className={classes.submit}>
+
+            {/* <Grid className={classes.submit}>
               {!props.disableField && props.hasEditAccess && (
                 <Button
                   type="submit"
@@ -236,7 +251,7 @@ const UpdateCertificate = (props) => {
                   Save Changes
                 </Button>
               )}
-            </Grid>
+            </Grid> */}
           </Form>
         )}
       </Formik>

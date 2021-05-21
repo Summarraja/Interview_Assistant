@@ -1,24 +1,46 @@
-import React from "react";
+import React,{useContext, useEffect, useState} from "react";
 import "./Faq.css";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
 import { makeStyles, fade } from "@material-ui/core/styles";
-import InputBase from "@material-ui/core/InputBase";
-import SearchIcon from "@material-ui/icons/Search";
+import Container from "@material-ui/core/Container";
+import SearchCandidates from "../../Interviews/components/SearchCandidates";
+import { Card, Toolbar } from "@material-ui/core";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
 import { Fragment } from "react";
 import FaqCollection from "../components/FaqCollection";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    paddingLeft: 60,
+    [theme.breakpoints.down("xs")]: {
+      paddingLeft: 0,
+    },
+  },
   paper: {
     backgroundColor: "#4E78A0",
-    [theme.breakpoints.up("xs")]: {
-      margin: theme.spacing(3, 7),
-      //  padding: theme.spacing(3),
+    [theme.breakpoints.down("sm")]: {
+      margin: theme.spacing(1, 1),
+
       width: "auto",
     },
     [theme.breakpoints.up("md")]: {
-      margin: theme.spacing(3, 20),
+      margin: theme.spacing(3, 10),
+      width: "auto",
+    },
+  },
+  whitePaper: {
+    backgroundColor: "white",
+    [theme.breakpoints.down("sm")]: {
+      margin: theme.spacing(1, 1),
+
+      width: "auto",
+    },
+    [theme.breakpoints.up("md")]: {
+      margin: theme.spacing(3, 10),
       width: "auto",
     },
   },
@@ -26,98 +48,123 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
 
-  search: {
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 1),
-    "&:hover": {
-      backgroundColor: fade(theme.palette.common.white, 0.75),
-    },
-    width: "400px",
-    height: "40px",
-    margin: theme.spacing(0, 6),
-    [theme.breakpoints.up("sm")]: {
-     // margin: theme.spacing(0, 15),
-      width: "auto",
-    },
-    [theme.breakpoints.up("md")]: {
-    //  margin: theme.spacing(0, 25),
-      width: "auto",
-    },
-    [theme.breakpoints.up("lg")]: {
-      margin: theme.spacing(0, 40),
-      width: "auto",
-    },
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
+  bgCard: {
+    height: "48px",
+    backgroundColor: "#d3d3d3",
+    width: "60%",
     alignItems: "center",
-  },
-  inputRoot: {
-    color: "inherit",
-    height: "100%",
-  },
-
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      width: "auto",
-      "&:focus": {
-        width: "auto",
-      },
+    marginLeft: "20%",
+    [theme.breakpoints.down("xs")]: {
+      width: "80%",
+      marginLeft: "10%",
     },
+  },
+  searchBar: {
+    width: "100%",
+  },
+  searchedItems: {
+    backgroundColor: "white",
+    padding: 10
+
+  },
+  list: {
+    padding: 0,
+  },
+  responsive: {
+    [theme.breakpoints.down("xs")]: {
+      flexGrow: 1,
+    },
+  },
+  listItem: {
+    padding: "4px 8px",
   },
 }));
 
 
 export default function FAQ(props) {
+  const [closeIcon, setCloseIcon] = useState(false);
+  const [searchItem, setSearchItem] = useState("");
+  const auth = useContext(AuthContext);
+  const [faqs, setFaqs] = useState();
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  useEffect(() => {
+    setCloseIcon(false);
+  }, [searchItem]);
+
   const MainHeading = {
     color: "white",
-    padding: "60px 20px 30px 20px",
-    width: "100%"
+    padding: " 0px 30px 20px",
+    width: "100%", 
+    fontSize: "2.5rem"
   };
 
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const responseData = await sendRequest(
+          'http://localhost:5000/api/faqs/'
+        );
+        setFaqs(responseData.faqs);
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    if (!faqs || closeIcon == false)
+      getData();
+
+  }, [faqs, closeIcon])
+
+  const getSearchItem = () => {
+    setCloseIcon(!closeIcon);
+    const fetchSearchedFaqs = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/faqs/faq/${searchItem}`,
+          "GET",
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setFaqs(responseData.searchedFaq);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchSearchedFaqs(); 
+  };
 
   const classes = useStyles();
   return (
 <Fragment>
-      <div className={classes.root} >
+ 
+
+      <div className={auth.isLoggedIn ?classes.root : ""} >
       <div className="TopHeader"  >
+      <Toolbar/>
         <Typography variant="h4" align="center" style={MainHeading}>
           How can we help you?
         </Typography>
-        <div className={classes.search}>
-          <div className={classes.searchIcon}>
-            <SearchIcon />
-          </div>
-          <InputBase
-            placeholder="Type keywords to find answers"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-            }}
-          />
-        </div>
-
+        <Card className={classes.bgCard}>
+        <SearchCandidates
+          className={classes.searchBar}
+          setSearchItem={setSearchItem}
+          searchItem={searchItem}
+          getSearchItem={getSearchItem}
+          closeIcon={closeIcon}
+          setCloseIcon={setCloseIcon}
+        />
+      
+      </Card>
       </div>
      
-      <Typography
-        variant="h4"
-        align="center"
-        style={{ margin: "20px", color: "#004777" }}
-      >
-        Frequently Asked Questions
-      </Typography>
-      <Paper elevation={10} className={classes.paper}>
+      <Paper elevation={10} className={(faqs && faqs.length === 0) ? classes.whitePaper : classes.paper}>
        <div className={classes.collapse}>
-      <FaqCollection/>
+   {faqs &&  <FaqCollection
+         faqs = {faqs}
+      />
+   }
       </div>
       </Paper>
       </div>

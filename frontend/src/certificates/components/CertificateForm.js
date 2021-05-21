@@ -132,7 +132,7 @@ const CertificateForm = (props) => {
       .string()
       .min(10, "Institute must be atleast 10 characters long")
       .required("Institute is required"),
-    //  CertificateImage: yup.mixed().required("A Certificate Image is required"),
+     //CertificateImage: yup.mixed().required("A Certificate Image is required"),
     //   .test(
     //     "fileSize",
     //     "File too large",
@@ -153,7 +153,7 @@ const CertificateForm = (props) => {
       formData.append( 'description', values.description);
       formData.append( 'institute', values.institute);
       formData.append( 'fieldTitle', props.field);
-      formData.append('image', file);
+      formData.append('file', file);
       const responseData = await sendRequest(
         "http://localhost:5000/api/certificates/",
         "POST",

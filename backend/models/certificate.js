@@ -7,7 +7,7 @@ const certificateSchema = new Schema({
   description: { type: String, required: true },
   institute: { type: String, required: true },
   isApproved: {type: Boolean,default: false},
-  file: { type: String, required: true },
+  file: { type: String},
   field: { type: mongoose.Types.ObjectId, required: true ,ref: 'Field'},
   creator: { type: mongoose.Types.ObjectId, required: true, ref: 'User' }
 });
