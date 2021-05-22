@@ -1,5 +1,7 @@
-const socketHandler = (socket) => {
-    const users = {}
+var FormData = require('form-data');
+const axios = require('axios');
+
+const socketHandler = (users, socket,io) => {
 
     let userid = socket.request._query['id'];
     console.log("connected")

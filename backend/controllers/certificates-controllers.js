@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
 const Certificate = require('../models/certificate');
+const Setting = require('../models/setting');
 const Field = require('../models/field');
 const User = require('../models/user');
+const Notification = require('../models/notification');
 
 const getCertificateById = async (req, res, next) => {
     const certificateId = req.params.cid;
@@ -250,7 +252,7 @@ const acceptCertificate = async (req, res, next) => {
 
     let certificate;
     try {
-        certificate = await Certificate.findById(certificateId);
+        certificate = await Certificate.findById(certificateId).populate({path:'creator',model:User});
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not update certificate.',
@@ -266,10 +268,40 @@ const acceptCertificate = async (req, res, next) => {
         );
         return next(error);
     }
-    certificate.isApproved = true;
-
+    let setting;
     try {
+        setting = await Certificate.findById(certificate.creator.setting);
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not update setting.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!setting) {
+        const error = new HttpError(
+            'Could not find setting for the provided id.',
+            404
+        );
+        return next(error);
+    }
+    certificate.isApproved = true;
+    const newNotification = new Notification({
+        message: "Congratulations! your certificate is just approve by the administrator. Now, people are able to view it in your profile.",
+        to: certificate.creator,
+    });
+    certificate.creator.notifications.push(newNotification);
+    setting.unreadNotis = setting.unreadNotis+1;
+    try {
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
         await certificate.save();
+        await newNotification.save();
+        await certificate.creator.save();
+        await setting.save();
+        await sess.commitTransaction();
+
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not approve certificate.',
@@ -328,8 +360,6 @@ const rejectCertificate = async (req, res, next) => {
         );
         return next(error);
     }
-
-    console.log("certy : " + certificate.id)
 
     try {
         const sess = await mongoose.startSession();

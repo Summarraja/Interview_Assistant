@@ -95,7 +95,7 @@ const MainNavigation = () => {
     return () => {
       socket.off("message");
     };
-  }, [socket]);
+  }, [socket,unreadChats]);
 
   useEffect(() => {
     if (!auth.userId) return;
@@ -129,6 +129,7 @@ const MainNavigation = () => {
       setUnreadChats(responseData.unreadChats);
     } catch (err) {}
   };
+
   const HandleDrawer = () => {
     SetOpenDrawer(!OpenDrawer);
   };

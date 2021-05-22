@@ -8,30 +8,30 @@ const router = express.Router();
 
 router.use(checkAuth);
 
-router.get('/:nid', notificationsControllers.getNotificationById);
-router.get('/', notificationsControllers.getAllNotifications);
+router.get('/:uid', notificationsControllers.getNotificationsByUserId);
+router.get('/clear/:uid', notificationsControllers.clearNotificationsByUserId);
 
-router.post(
-    '/',
-    [
-        check('message').isLength({ min: 10 }),
-        check('time').isDate(),
-        check('to').isMongoId()
-    ],
-    notificationsControllers.createNotification
-);
+// router.post(
+//     '/',
+//     [
+//         check('message').isLength({ min: 10 }),
+//         check('time').isDate(),
+//         check('to').isMongoId()
+//     ],
+//     notificationsControllers.createNotification
+// );
 
-router.patch(
-    '/:nid',
-    [
-        check('message').isLength({ min: 10 }),
-        check('time').isDate(),
-        check('to').isMongoId()
-    ],
-    notificationsControllers.markAsRead
-);
+// router.patch(
+//     '/:nid',
+//     [
+//         check('message').isLength({ min: 10 }),
+//         check('time').isDate(),
+//         check('to').isMongoId()
+//     ],
+//     notificationsControllers.markAsRead
+// );
 
-router.delete('/:nid', notificationsControllers.deleteNotification);
+// router.delete('/:nid', notificationsControllers.deleteNotification);
 
 
 module.exports = router;
