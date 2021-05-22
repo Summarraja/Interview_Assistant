@@ -84,7 +84,6 @@ const getProblemByUserId = async (req, res, next) => {
 }; 
 
 const getunansweredProblems = async (req, res, next) => {
-console.log("UNANSWER: ")
     let unanswerdproblems;
     try {
         unanswerdproblems = await ReportProblem.find({ 

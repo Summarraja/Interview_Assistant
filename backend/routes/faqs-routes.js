@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.get('/:fid', faqsControllers.getFaqById);
 router.get('/', faqsControllers.getAllFaqs);
+router.get('/faq/:word', faqsControllers.getSearchedFaqs);
 
 // router.use(checkAuth);
 router.post(

@@ -2,14 +2,12 @@ import React, { useEffect, useState, useContext} from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { Button, Card, Grid } from '@material-ui/core';
-import { TiEdit } from "react-icons/ti";
-import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateFaq from './UpdateFaq';
 import { AuthContext } from "../../../shared/context/auth-context";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import DeleteFaqs from './DeleteFaqs';
 import { RiDeleteBin6Line } from "react-icons/ri";
-
+import { TiEdit } from "react-icons/ti";
 
 
 const useStyles = makeStyles((theme) => ({

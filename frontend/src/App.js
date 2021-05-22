@@ -31,18 +31,27 @@ import AdminHome from "./Admin/pages/AdminHome";
 import ReportProblem from "./ReportProblems/pages/ReportProblem";
 import ReportProblemAdmin from "./Admin/Components/ReportProblems/pages/ReportProblemAdmin";
 
-import RTC from './RTC';
+import RTC from "./RTC";
 import Resume from "./Resumes/Pages/Resume";
 import VideoCall from "./Video Call/VideoCall";
 import Home from "./user/pages/Home";
-import SideBar from "./Admin/Components/SideBar"
+import SideBar from "./Admin/Components/SideBar";
 import ViewFaqs from "./Admin/Components/Faqs/ViewFaqs";
 import ApproveCertificate from "./Admin/Components/ApproveCertificates/pages/ApproveCertificate";
 
 
 const App = () => {
   let location = useLocation();
-  const { token, login, logout, userId, resume, setting,updateResume,updateSetting } = useAuth();
+  const {
+    token,
+    login,
+    logout,
+    userId,
+    resume,
+    setting,
+    updateResume,
+    updateSetting,
+  } = useAuth();
   const auth = useContext(AuthContext);
   const [socket, setSocket] = useState();
 
@@ -51,22 +60,26 @@ const App = () => {
     if (setting && setting.role == "Admin") {
       routes = (
         <Switch>
-           {console.log("Role2" + setting.role)}
           <Route path="/admin/home" exact component={AdminHome} />
-          <Route path="/admin/certificates" exact component={ApproveCertificate} />
+          <Route
+            path="/admin/certificates"
+            exact
+            component={ApproveCertificate}
+          />
           <Route
             path="/certificates/edit/:certId"
             exact
             component={ViewCertificate}
           />
           <Route path="/admin/faq" exact component={ViewFaqs} />
-          <Route path="/admin/reportProblem" exact component={ReportProblemAdmin}/>
-          <Redirect to="/admin/home"/>
+          <Route
+            path="/admin/reportProblem"
+            exact
+            component={ReportProblemAdmin}
+          />
+          <Redirect to="/admin/home" />
         </Switch>
-
-         
       );
-
     } else {
       routes = (
         <Switch>
@@ -140,20 +153,25 @@ const App = () => {
             login: login,
             logout: logout,
             resume: resume,
-            setResume:updateResume,
+            setResume: updateResume,
             setting: setting,
-            setSetting:updateSetting,
+            setSetting: updateSetting,
           }}
         >
+          {location.pathname == "/videocall" ? (
+            ""
+          ) : setting &&
+            !auth.isLoggedIn &&
+            setting.role == "Admin" &&
+            location.pathname !== "/auth" &&
+            location.pathname !== "/Faq" && 
+            location.pathname !== "/signup"? (
+            <SideBar />
+          ) : (
+            <MainNavigation />
+          )}
 
-            {location.pathname == "/admin/home" || location.pathname == "/admin/faq" ||
-          location.pathname == "/admin/certificates" ||
-          location.pathname == "/admin/reportProblem"? <SideBar/> : location.pathname == "/videocall" ? "" : <MainNavigation/>}
-            {/* {(location.pathname == "/admin/home" || location.pathname == "/admin/faq" || location.pathname == "/admin/certificates" ||  location.pathname ==  "/admin/respondProblem"  ) ? <SideBar /> : <MainNavigation/>} */}
-
-          
-            <main>{routes}</main>
-
+          <main>{routes}</main>
         </AuthContext.Provider>
       </SocketContext.Provider>
     </React.Fragment>

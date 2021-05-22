@@ -56,6 +56,38 @@ const getAllFaqs = async (req, res, next) => {
     });
 };
 
+const getSearchedFaqs = async (req, res, next) => {
+
+    const searchItem = req.params.word;
+
+  let searchedFaq;
+  try {
+    searchedFaq = await Faq.find({
+      $or: [{ question: new RegExp(searchItem, "i")  }],
+    }).exec();
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching searched Faqs failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+    if (!searchedFaq) {
+        const error = new HttpError(
+            'Could not find searched faqs.',
+            404
+        );
+        return next(error);
+    }
+
+    res.json({
+        searchedFaq: searchedFaq.map(faq =>
+            faq.toObject({ getters: true })
+        )
+    });
+};
+
 const createFaq = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -157,6 +189,7 @@ const deleteFaq = async (req, res, next) => {
 
 exports.getFaqById = getFaqById;
 exports.getAllFaqs = getAllFaqs;
+exports.getSearchedFaqs = getSearchedFaqs;
 exports.createFaq = createFaq;
 exports.updateFaq = updateFaq;
 exports.deleteFaq = deleteFaq;

@@ -64,7 +64,6 @@ const EditProblem= (props) => {
   };
 
   const onSubmitHandler = async (values) => {
-  console.log("props problem id is "+props.problemid)
     try {
       const responseData = await sendRequest(
         `http://localhost:5000/api/problems/${props.problemid}`,

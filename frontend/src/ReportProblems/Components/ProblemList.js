@@ -1,7 +1,10 @@
-import {  Paper, Typography } from '@material-ui/core';
-import React from 'react';
+import { Paper, Typography } from "@material-ui/core";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import ProblemListItems from './ProblemListItems';
+import ProblemListItems from "./ProblemListItems";
+import AppBar from "@material-ui/core/AppBar";
+
+import Container from "@material-ui/core/Container";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -10,37 +13,50 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProblemList = props => {
-   const classes = useStyles();
+const ProblemList = (props) => {
 
+  const classes = useStyles();
+
+  const heading = {
+    paddingTop: "16px",
+    fontSize: "1.2rem",
+  };
   if (props.items.length === 0) {
     return (
-   
-        <Paper elevation={5} className={classes.paper}>
-          <Typography variant="h4" color="primary" align="center">
-           No Problem has been reported by User
+      <>
+        <AppBar position="static">
+          <Typography style={heading}>REPORTED PROBLEMS</Typography>
+        </AppBar>
+        <Container maxWidth="md" component="main">
+          <Typography
+            variant="h4"
+            color="primary"
+            align="center"
+            style={{ padding: "20px 0px" }}
+          >
+            {"No Problems are reported by any user"}
           </Typography>
-        </Paper>
-     
+        </Container>
+      </>
     );
   }
 
- 
   return (
-
-<>  
-      {props.items.map(problem => (
+    <>
+      <AppBar position="static">
+        <Typography style={heading}>REPORTED PROBLEMS</Typography>
+      </AppBar>
+      {props.items.map((problem) => (
         <ProblemListItems
           key={problem._id}
           id={problem._id}
-          title = {problem.title}
-          answer = {problem.answer}   
-          description = {problem.description} 
-          setFaqs ={props.setFaqs}    
+          title={problem.title}
+          answer={problem.answer}
+          description={problem.description}
+          setFaqs={props.setFaqs}
         />
       ))}
-      </>
+    </>
   );
-
 };
 export default ProblemList;

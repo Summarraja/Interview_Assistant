@@ -41,7 +41,7 @@ const CertificateMenu = (props) => {
     <>
     {props.hasDeleteAccess && (
       <>
-        <MenuItem
+        {/* <MenuItem
         onClick={props.closeCertificateMenu}
         component={Link}
         to={`/certificates/edit/${props.certId}`}
@@ -53,7 +53,7 @@ const CertificateMenu = (props) => {
         <Typography variant="subtitle1">Edit Details</Typography>
       </MenuItem>
 
-      <Divider variant="middle" />
+      <Divider variant="middle" /> */}
 
       <MenuItem onClick={OpenDeleteDialogHandler} style={{ height: 40 }}>
         <IconButton color="primary">

@@ -14,6 +14,7 @@ import { BiEdit } from "react-icons/bi";
 import UpdateCertificate from "../components/UpdateCertificate";
 import Grid from "@material-ui/core/Grid"
 import Button from "@material-ui/core/Button";
+import { Toolbar } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   GridStyle: {
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     textAlign: "center", 
-    marginTop: 10
+    marginTop: 5
    },
 }));
 
@@ -63,6 +64,7 @@ const ViewCertificate = (props) => {
             Authorization: "Bearer " + auth.token,
           }
         );
+  
         setLoadedCertificate(responseData.certificate);
       } catch (err) {}
     };
@@ -94,8 +96,14 @@ const ViewCertificate = (props) => {
   const paperStyle = {
     width: "100%",
     padding: 20,
-    margin: "80px auto",
+    margin: "20px auto",
   };
+  const AdminPaperStyle = {
+    width: "100%",
+    padding: 20,
+    margin: "30px auto",
+    marginLeft: "90px"
+  }
   const avatarStyle = {
     backgroundColor: "primary",
   };
@@ -103,7 +111,8 @@ const ViewCertificate = (props) => {
 
   return (
     <Container component="main" maxWidth="sm">
-      <Paper elevation={10} style={paperStyle}>
+      <Toolbar/>
+      <Paper elevation={10} style={paperStyle} style={auth.setting.role == "Admin" ? AdminPaperStyle : paperStyle}>
         <Typography align="center" variant="h4">
           Certificate Details
         </Typography>
@@ -125,7 +134,7 @@ const ViewCertificate = (props) => {
         ) : (
           <LoadingSpinner open={isLoading} />
         )}
-      <Grid   className={classes.submit}>
+      {/* <Grid   className={classes.submit}>
         {disableField && hasEditAccess && (
           <Button
             onClick={EnableFieldsHandler}
@@ -138,9 +147,10 @@ const ViewCertificate = (props) => {
             Edit Details
           </Button>
         )}
-        </Grid>
+        </Grid> */}
         {/* <Box mt={4}></Box> */}
       </Paper>
+    
     </Container>
   );
 };
