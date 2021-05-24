@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ProblemList = (props) => {
-
+  console.log(props.items)
   const classes = useStyles();
 
   const heading = {

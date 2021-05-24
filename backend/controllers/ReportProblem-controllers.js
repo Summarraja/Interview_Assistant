@@ -63,9 +63,8 @@ const getProblemByUserId = async (req, res, next) => {
 
   let userWithProblem;
   try {
-    userWithProblem = await User.findById(userId).populate("problems");
+    userWithProblem = await User.findById(userId).populate({path:"problems",model:ReportProblem});
   } catch (err) {
-      console.log(err)
     const error = new HttpError(
       "Fetching problem failed, please try again later.",
       500
@@ -151,12 +150,11 @@ const createProblem = async (req, res, next) => {
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
-        await createdProblem.save({ session: sess });
         user.problems.push(createdProblem);
+        await createdProblem.save({ session: sess });
         await user.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
-       console.log("error is"+ err)
         const error = new HttpError(
             'Reporting problem failed, please try again.',
             500

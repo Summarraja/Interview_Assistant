@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from "react";
 import Paper from "./Paper/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
-import ClearIcon from "@material-ui/icons/Clear";
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
@@ -47,15 +46,53 @@ function Right() {
     setSuccess(status == 200);
   }, [status]);
   const classes = useStyles();
-  const handleDeleteDate = (event) => {
-    event.preventDefault();
-    localStorage.clear();
-    setContent({
-      header: {},
-      professional: { desc1: ["", "", ""], desc2: ["", "", ""] },
-      education: {},
-      additional: [],
-    });
+  const handleDeleteData = async () => {
+
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/resumes/${auth.resume._id}`,
+        'PATCH',
+        JSON.stringify({
+          dob: auth.resume.dob,
+          firstname: content.header.firstname,
+          lastname: content.header.lastname,
+          address: content.header.address,
+          email: content.header.email,
+          country: content.header.country,
+          city: content.header.city,
+          phone: content.header.phone,
+          professional: { desc1: ["", "", ""], desc2: ["", "", ""] },
+          education: {},
+          additional: [],
+        }),
+        {
+          'Content-Type': 'application/json',
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      if (responseData.resume) {
+        const storedData = JSON.parse(localStorage.getItem("userData"));
+        storedData.resume = {...responseData.resume};
+        auth.setResume({...responseData.resume});
+        localStorage.setItem("userData", JSON.stringify(storedData));
+        setContent({
+          header: {
+            firstname: responseData.resume.firstname,
+            lastname: responseData.resume.lastname,
+            address: responseData.resume.address,
+            email: responseData.resume.email,
+            country: responseData.resume.country,
+            city: responseData.resume.city,
+            phone: responseData.resume.phone,
+          },
+          professional: { desc1: ["", "", ""], desc2: ["", "", ""] },
+          education: {},
+          additional: [],
+        });
+      }
+    }
+    catch (err) {
+    }
   };
   const handleSaveToPDF = (event) => {
     // event.preventDefault();
@@ -129,13 +166,6 @@ function Right() {
         </MuiAlert>
       </Snackbar>
       <div className={classes.root}>
-        <Link  onClick={handleDeleteDate}>
-          <Tooltip title="Delete All Data" placement="right">
-            <Avatar className={classes.pink}>
-              <ClearIcon />
-            </Avatar>
-          </Tooltip>
-        </Link>
         <Link  onClick={handleSaveToPDF}>
           <Tooltip title="Save to PDF" placement="right">
             <Avatar className={classes.green}>
@@ -143,7 +173,7 @@ function Right() {
             </Avatar>
           </Tooltip>
         </Link>
-        <Link  >
+        <Link  onClick={handleDeleteData}>
           <Tooltip title="Delete Resume" placement="right">
             <Avatar className={classes.green}>
               <DeleteIcon />

@@ -9,6 +9,8 @@ import RightTopBar from "../components/RightTopBar";
 import { AuthContext } from "../../shared/context/auth-context";
 import { SocketContext } from "../../shared/context/socket-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+
 import "./Chat.css"
 const useStyles = makeStyles((theme) => ({
 
@@ -137,7 +139,7 @@ function Chat() {
           Authorization: "Bearer " + auth.token,
         }
       );
-      setData(responseData.chats);
+      setData(responseData.chats.reverse());
     } catch (err) { }
   };
   function pushMessage() {
@@ -147,7 +149,6 @@ function Chat() {
         receiver: (selectedChat.with == auth.userId) ? selectedChat.from : selectedChat.with,
         content: newMessage,
         time: (new Date()).toISOString(),
-        isRead: true,
         chat: selectedChat.id,
       }
       let d = {
@@ -189,6 +190,7 @@ function Chat() {
 
   return (
     <div className="app">
+      <LoadingSpinner open={isLoading}/>
       <div className={classes.aside} >
         <header>
           <LeftTopBar
@@ -197,7 +199,7 @@ function Chat() {
         </header>
         <ChatSearch data={data} setSearchedData={setSearchedData} />
         <div className="contact-boxes">
-          {data != null && (<ConversationList data={data} setData={setData} searchedData={searchedData} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />)}
+          <ConversationList  data={data} setData={setData} searchedData={searchedData} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />
         </div>
       </div>
       <div className={classes.mainChat}>

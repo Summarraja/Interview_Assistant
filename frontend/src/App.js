@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./App.css";
 import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 
@@ -20,9 +20,7 @@ import Chat from "./chat/pages/Chat";
 import CandidateList from "./Interviews/components/CandidatesList";
 import ViewInterview from "./Interviews/pages/ViewInterview";
 
-import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 import Certificate from "./certificates/pages/Certificate";
-import InterviewItems from "./Interviews/components/InterviewItems";
 import ViewCertificate from "./certificates/pages/ViewCertificate";
 import io from "socket.io-client";
 
@@ -91,7 +89,7 @@ const App = () => {
           <Route path="/chat" exact component={Chat} />
           <Route path="/interviews/new" exact component={CreateInterview} />
           <Route path="/interview/candidates" exact component={CandidateList} />
-      
+
           <Route
             path="/interviews/view/:interId"
             exact
@@ -164,11 +162,14 @@ const App = () => {
             !auth.isLoggedIn &&
             setting.role == "Admin" &&
             location.pathname !== "/auth" &&
-            location.pathname !== "/Faq" && 
-            location.pathname !== "/signup"? (
+            location.pathname !== "/Faq" &&
+            location.pathname !== "/signup" ? (
             <SideBar />
           ) : (
-            <MainNavigation />
+            <>
+              <RTC />
+              <MainNavigation />
+            </>
           )}
 
           <main>{routes}</main>

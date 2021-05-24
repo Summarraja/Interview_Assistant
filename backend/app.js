@@ -28,7 +28,7 @@ const HttpError = require('./models/http-error');
 const socketHandler = require('./RTC/socket-handler');
 
 const users = {}
-io.on('connection',(socket)=>socketHandler(users,socket,io));
+io.on('connection', (socket) => socketHandler(users, socket, io));
 
 app.use(bodyParser.json());
 
@@ -52,8 +52,8 @@ app.use('/api/skills', skillsRoutes);
 app.use('/api/resumes', resumesRoutes);
 app.use('/api/certificates', certificatesRoutes);
 app.use('/api/settings', settingsRoutes);
-app.use('/api/faqs', faqsRoutes); 
-app.use('/api/problems', ProblemRoutes); 
+app.use('/api/faqs', faqsRoutes);
+app.use('/api/problems', ProblemRoutes);
 app.use('/api/chats', chatsRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/notifications', notificationsRoutes);
@@ -83,7 +83,7 @@ mongoose
     , {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useCreateIndex: true
+      useCreateIndex: true,
     }
   )
   .then(() => {

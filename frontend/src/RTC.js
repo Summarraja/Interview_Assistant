@@ -29,9 +29,11 @@ const RTC = () => {
     const history = useHistory();
 
     useEffect(() => {
+        console.log('rtc')
         if (!socket)
             return;
         socket.on("hey", (data) => {
+            console.log('hey')
             if(receivingCall){
                 socket.emit("busy", { to: data.fromId })
             }else{

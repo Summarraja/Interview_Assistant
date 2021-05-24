@@ -14,7 +14,15 @@ function LeftTopBar(props) {
 
         <Avatar
           src={"http://localhost:5000/" + auth.resume.image}
-          >
+          style={{
+            display: "flex",
+            alignItems: "center",
+            border: '1px solid lightgray',
+            margin: "0.5rem",
+            width: 50,
+            height: 50,
+          }}>
+
         </Avatar>
         <div style={{ margin: "10px" }}>
           <Typography variant="h6" >
@@ -24,12 +32,12 @@ function LeftTopBar(props) {
 
 
       </div>
-      <div style={{ float: "right" }}>
+      {/* <div style={{ float: "right" }}>
         <IconButton
         >
           <MoreVertIcon color="primary" />
         </IconButton>
-      </div>
+      </div> */}
     </>
   );
 

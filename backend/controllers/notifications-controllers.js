@@ -49,10 +49,10 @@ const clearNotificationsByUserId = async (req, res, next) => {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     userWithNotification.notifications.map(async (notification)=>{
-      await notification.remove();
+      await notification.remove({session:sess});
     });
     userWithNotification.notifications=[];
-    await userWithNotification.save();
+    await userWithNotification.save({session:sess});
     await sess.commitTransaction();
 
   }catch(err){

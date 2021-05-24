@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
 
-import { Menu, MenuItem, Divider } from "@material-ui/core";
+import { Menu, MenuItem } from "@material-ui/core";
 import { IoMdEye } from "react-icons/io";
 import { FiShieldOff } from "react-icons/fi";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
@@ -18,7 +18,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { grey } from "@material-ui/core/colors";
 import Button from "@material-ui/core/Button";
-import { GiShieldDisabled, GiStamper } from "react-icons/gi";
+import {  GiStamper } from "react-icons/gi";
 
 import { useHttpClient } from "../../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../../shared/context/auth-context";

@@ -3,6 +3,7 @@ import Message from "./Message";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import { SocketContext } from "../../shared/context/socket-context";
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import './Message.css';
 function MessageBox(props) {
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
@@ -82,6 +83,7 @@ function MessageBox(props) {
   }
   return (
     <>
+    <LoadingSpinner open={isLoading}/>
       <div className="chats" onScroll={scrollHandler}>
 
         {props.messages.map((msg, idx) => (

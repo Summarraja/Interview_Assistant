@@ -61,6 +61,34 @@ const getUserData = async (req, res, next) => {
   });
 
 };
+const getUserProfile = async (req, res, next) => {
+  let userid = req.params.uid;
+
+  let user;
+  try {
+    user = await User.findById(userid).populate({ path: 'resume', model: Resume });
+
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching user failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+  if (!user) {
+    const error = new HttpError(
+      "Could not find user with provided id.",
+      401
+    );
+    return next(error);
+  }
+
+  res.json({
+    fullname: user.resume.fullname,
+    image: user.resume.image
+  });
+
+};
 
 const sendCode = async (req, res, next) => {
   const errors = validationResult(req);
@@ -200,7 +228,9 @@ const uploadImage = async (req, res, next) => {
   const { userId } = req.body;
   let existingUser;
   try {
-    existingUser = await User.findById(userId).populate('resume');
+    existingUser = await User.findById(userId)
+      .populate({ path: 'resume', model: Resume })
+      .populate({ path: 'chats', model: Chat });
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, please try again later.",
@@ -219,14 +249,23 @@ const uploadImage = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    fs.unlink(existingUser.resume.image, err => {
-      console.log(err);
-    });
+    if (existingUser.resume.image)
+      fs.unlink(existingUser.resume.image, err => {
+        console.log(err);
+      });
+    existingUser.chats.map(async (chat) => {
+      if (chat.with == existingUser.id) {
+        chat.withImage = req.file.path;
+      }
+      if (chat.from == existingUser.id) {
+        chat.fromImage = req.file.path;
+      }
+      await chat.save();
+    })
     existingUser.resume.image = req.file.path;
-    await existingUser.resume.save();
+    await existingUser.resume.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
-    console.log(err)
     const error = new HttpError(
       "Image Upload failed, please try again later.",
       500
@@ -305,7 +344,7 @@ const signup = async (req, res, next) => {
     status: "available",
     role: "Candidate",
     blockedUsers: [],
-    OthersBlockedMe:[]
+    OthersBlockedMe: []
   });
 
   const code = random4Digit();
@@ -316,10 +355,10 @@ const signup = async (req, res, next) => {
     email_verify_token: code,
     reset_token_expired_at: Date.now() + 3600000,
     createdInterviews: [],
-    addedInterviews:[],
+    addedInterviews: [],
     sentRRequests: [],
     receivedRequests: [],
-    problems:[],
+    problems: [],
     certificates: [],
     stats: [],
     chats: [],
@@ -333,9 +372,9 @@ const signup = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    await createdUser.save();
-    await createdResume.save();
-    await createdSetting.save();
+    await createdUser.save({ session: sess });
+    await createdResume.save({ session: sess });
+    await createdSetting.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
@@ -478,42 +517,42 @@ const deleteuser = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    await user.remove();
-    await user.resume.remove();
-    await user.setting.remove();
-    user.createdInterviews.map(async (interview)=>{
-      await interview.remove();
+    await user.remove({ session: sess });
+    await user.resume.remove({ session: sess });
+    await user.setting.remove({ session: sess });
+    user.createdInterviews.map(async (interview) => {
+      await interview.remove({ session: sess });
     })
-    user.problems.map(async(problem)=>{
-      await problem.remove();
+    user.problems.map(async (problem) => {
+      await problem.remove({ session: sess });
     })
-    user.certificates.map(async(certificate)=>{
-      await certificate.remove();
+    user.certificates.map(async (certificate) => {
+      await certificate.remove({ session: sess });
     })
-    user.stats.map(async(stat)=>{
-      await stat.remove();
+    user.stats.map(async (stat) => {
+      await stat.remove({ session: sess });
     })
-    user.chats.map(async(chat)=>{
-      await chat.remove();
+    user.chats.map(async (chat) => {
+      await chat.remove({ session: sess });
     })
-    user.calls.map(async(call)=>{
-      await call.remove();
+    user.calls.map(async (call) => {
+      await call.remove({ session: sess });
     })
-    user.notifications.map(async(notification)=>{
-      await notification.remove();
+    user.notifications.map(async (notification) => {
+      await notification.remove({ session: sess });
     })
-    await Message.remove({sender:user.id})
-    await Message.remove({receiver:user.id})
+    await Message.remove({ sender: user.id, session: sess })
+    await Message.remove({ receiver: user.id, session: sess })
     await sess.commitTransaction();
   } catch (err) {
-      const error = new HttpError(
-          'Something went wrong, could not delete user.',
-          500
-      );
-      return next(error);
+    const error = new HttpError(
+      'Something went wrong, could not delete user.',
+      500
+    );
+    return next(error);
   }
 
-  res.status(200).json({message:"deleted user account"});
+  res.status(200).json({ message: "deleted user account" });
 };
 
 function random4Digit() {
@@ -536,6 +575,7 @@ exports.deleteuser = deleteuser;
 exports.sendCode = sendCode;
 exports.verifyCode = verifyCode;
 exports.getUserData = getUserData;
+exports.getUserProfile = getUserProfile;
 exports.uploadImage = uploadImage;
 
 

@@ -6,6 +6,7 @@ import {
     MenuItem,
     Divider,
     Grid,
+    Button,
 } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import { VscClearAll } from "react-icons/vsc";
@@ -23,95 +24,21 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up("xs")]: {
             flexGrow: 1,
         },
+    },
+    notification: {
+        // color:'white',
+        background: '#d3d3d3',
+        margin: '0.1rem'
+    },
+    noNoti:{
+        textAlign:'center',
+        justifyContent:'center',
+        fontSize:20,
+        marginTop:'1rem',
+        padding:0,
     }
 }));
-const notification = [
-    // {
 
-    //     id: 1,
-    //     message: "Your request for an interview has been accepted by the Intervier",
-    //     time: "12:22",
-    //     isRead: true,
-    //     uid: 1
-    // },
-    // {
-    //     id: 1,
-    //     message: "Your request for an interview has been accepted by the Intervier",
-    //     time: "12:22",
-    //     isRead: false,
-    //     uid: 1
-    // },
-    // {
-    //     id: 1,
-    //     message: "Your request for an interview has been accepted by the Intervier",
-    //     time: "12:22",
-    //     isRead: true,
-    //     uid: 2
-    // },
-
-    {
-        id: 1,
-        message: "Your request for an interview has been accepted by the Intervier",
-        time: "12:22",
-        isRead: false,
-        uid: 5
-    },
-    {
-        id: 1,
-        message: "Your request for an interview has been accepted by the Intervier",
-        time: "12:22",
-        isRead: true,
-        uid: 5
-    },
-
-    {
-        id: 1,
-        message: "Your request for an interview has been accepted by the Intervier",
-        time: "12:22",
-        isRead: true,
-        uid: 5
-    },
-
-    {
-        id: 1,
-        message: "Your request for an interview has been accepted by the Intervier",
-        time: "12:22",
-        isRead: true,
-        uid: 5
-    },
-
-    {
-        id: 1,
-        message: "Your certificate has been approved by Admin",
-        time: "12:22",
-        isRead: true,
-        uid: 5
-    },
-    {
-        id: 1,
-        message: "Your request for an interview has been accepted by the Intervier",
-        time: "12:22",
-        isRead: true,
-        uid: 5
-    },
-
-    {
-        id: 1,
-        message: "Your request for an interview has been accepted by the Intervier",
-        time: "12:22",
-        isRead: true,
-        uid: 5
-    },
-
-    {
-        id: 1,
-        message: "Your certificate has been approved by Admin",
-        time: "12:22",
-        isRead: true,
-        uid: 5
-    },
-
-]
 const ITEM_HEIGHT = 130;
 
 const Notifications = (props) => {
@@ -138,7 +65,9 @@ const Notifications = (props) => {
     useEffect(() => {
         if (!socket) return;
         socket.on("notification", (data) => {
+            console.log("notification")
             setNotifications([data, ...notifications]);
+            openNotifications();
         });
 
         return () => {
@@ -178,6 +107,19 @@ const Notifications = (props) => {
             setNotifications([]);
         } catch (err) { }
     };
+    const openNotifications = async () => {
+        try {
+          const responseData = await sendRequest(
+            `http://localhost:5000/api/settings/openNotifications/${auth.userId}`,
+            "PATCH",
+            null,
+            {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + auth.token,
+            }
+          );
+        } catch (err) {}
+      };
     const getDate = (datetime) => {
         let d = new Date(datetime);
         return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear()
@@ -213,41 +155,41 @@ const Notifications = (props) => {
             getContentAnchorEl={null}
         >
             <div ref={notiRef}>
-                    <Grid container >
-                        <Grid item sm={7} className={classes.NotiTitle}
-                        >
-                            <Typography variant="h5" style={{ padding: "10px" }}>Notifications</Typography>
-                        </Grid>
-                        <Grid item sm={4} align="right" onClick={clearNotifications} >
-                            <IconButton color="primary">
-                                <VscClearAll />
-                            </IconButton>
-                            <IconButton color="primary" float="left" onClick={props.closeNotiMenu}>
-                                <AiFillCloseSquare />
-                            </IconButton>
-                        </Grid>
+                <Grid container >
+                    <Grid item sm={7} className={classes.NotiTitle}
+                    >
+                        <Typography variant="h5" style={{ paddingLeft: "10px" }}>Notifications</Typography>
                     </Grid>
+                    <Grid item sm={5} align="center"  >
+                        <Button onClick={clearNotifications} style={{visibility: (notifications && notifications.length==0)?'hidden':'visible'}}color="primary">Clear All</Button>
+                        <IconButton color="primary" float="left" onClick={props.closeNotiMenu}>
+                            <AiFillCloseSquare />
+                        </IconButton>
+                    </Grid>
+                </Grid>
 
                 <Divider variant="middle" />
                 {(notifications && notifications.length == 0) && (
-                    <Grid item sm={9} className={classes.NotiTitle}>
-                        <Typography variant="subtitle1" >You have no new Notification..</Typography>
-                    </Grid>
+                    <MenuItem className={classes.noNoti}>
+                        <Grid item sm={9} className={classes.NotiTitle}>
+                            <Typography variant="h5" >{isLoading?"Loading...": "You have no new Notification.."}</Typography>
+                        </Grid>
+                    </MenuItem>
                 )}
-                    {notifications && notifications.map((noti, k) => (
-                        <>
-                        <MenuItem key={k} >
-                            <Grid item sm={9} className={classes.NotiTitle}>
+                {notifications && notifications.map((noti, k) => (
+                    <>
+                        <MenuItem key={k} className={classes.notification}>
+                            <Grid item sm={11} className={classes.NotiTitle}>
                                 <Typography variant="subtitle1" >{noti.message}</Typography>
                             </Grid>
-                            <Grid item sm={3} align="center" style={{ marginBottom: "10px" }}>
-                                <Typography variant="subtitle1">{getDate(noti.time)}</Typography>
-                                <Typography variant="subtitle1">{getTime(noti.time)}</Typography>
+                            <Grid item sm={1} align="top" style={{ alignItems:'top',marginRight: "15px" }}>
+                                <Typography variant="subtitle2">{getDate(noti.time)}</Typography>
+                                <Typography variant="subtitle2">{getTime(noti.time)}</Typography>
                             </Grid>
                         </MenuItem>
                         <Divider variant="middle" />
-                        </>
-                    ))}
+                    </>
+                ))}
 
             </div>
         </Menu>

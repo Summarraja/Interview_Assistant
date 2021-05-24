@@ -33,7 +33,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import { IoIosSwitch } from "react-icons/io";
 import { useHttpClient } from "../../hooks/http-hook";
-import LoadingSpinner from "../UIElements/LoadingSpinner";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { SocketContext } from "../../../shared/context/socket-context";
@@ -167,10 +166,12 @@ export default function Navbar(props) {
   useEffect(() => {
     if (!socket) return;
     socket.on("notification", (data) => {
+      console.log('notification')
       setUnreadNotifications(unreadNotifications + 1);
     });
 
     return () => {
+      console.log("off")
       socket.off("notification");
     };
   }, [socket]);
@@ -499,8 +500,6 @@ export default function Navbar(props) {
 
   return (
     <Fragment>
-      <LoadingSpinner open={isLoading} />
-
       <Snackbar
         open={success || !!error}
         autoHideDuration={1200}
@@ -580,7 +579,7 @@ export default function Navbar(props) {
                   </Badge>
                 </IconButton>
 
-              <Notification isNotiMenuOpen={isNotiMenuOpen} notiMenuAnchorEl={notiMenuAnchorEl} closeNotiMenu={closeNotiMenu} />
+              {isNotiMenuOpen&&(<Notification isNotiMenuOpen={isNotiMenuOpen} notiMenuAnchorEl={notiMenuAnchorEl} closeNotiMenu={closeNotiMenu} />)}
 
               <FormGroup row>
                 <FormControlLabel

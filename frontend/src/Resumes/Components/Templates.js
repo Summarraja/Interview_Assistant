@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 import myClasses from "./../Components/Left/Left.module.css";
-import thumbn from "../../assets/templateA.png";
+import { useHistory } from 'react-router-dom'
 import { Paper, Typography } from '@material-ui/core';
 function Templates() {
+  const history = useHistory();
+
   const useStyles = makeStyles({
     headerLink: {
       color: "#FF8E53 ",
@@ -13,7 +15,12 @@ function Templates() {
       marginLeft: 30,
     },
   });
-
+useEffect(()=>{
+  if(history)
+  history.push({
+    pathname: '/resume/basic/header',
+  });
+},[history])
   const classes = useStyles();
 
   return (
@@ -30,17 +37,6 @@ function Templates() {
             The Basic
           </Button>
         </div>
-        {/* Placeholder for a second template */}
-        {/* <div className={myClasses.templateCard}>
-          <img src={thumbn} alt="thumbnail" className={myClasses.imgThumb} />
-          <Button
-            className={classes.headerLink}
-            component={Link}
-            to="/basic/header"
-          >
-            The Stylish
-          </Button>
-        </div> */}
       </div>
      
     </div>

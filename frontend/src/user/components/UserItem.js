@@ -6,7 +6,6 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Typography from "@material-ui/core/Typography";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Grid } from "@material-ui/core";
 import { Fab } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
@@ -21,15 +20,17 @@ import EditIcon from '@material-ui/icons/Edit';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import { Link } from "react-router-dom";
 import UploadPhoto from "./UploadPhoto";
+import SendMessage from "./SendMessage";
 import { AuthContext } from '../../shared/context/auth-context';
 import { RiUserUnfollowFill } from "react-icons/ri";
 import { FaRegAddressCard } from "react-icons/fa";
 import EditProfile from "./EditProfile";
-import {useHttpClient} from '../../shared/hooks/http-hook';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { setNestedObjectValues } from "formik";
+import { useHistory } from 'react-router-dom'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     margin: "auto",
+    border: '1px solid lightgray',
     width: 150,
     height: 150,
     transform: "translate(0px, 65px)",
@@ -66,18 +68,20 @@ const useStyles = makeStyles((theme) => ({
 const UserItem = (props) => {
   const auth = useContext(AuthContext);
   const [open, setOpen] = useState(false);
+  const [msgOpen, setMsgOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const {isLoading, error, status, sendRequest, clearError} = useHttpClient();
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const [success, setSuccess] = useState(false);
-  
+
   const [resMsg, setResMsg] = useState("");
   const [showBlockBtn, setShowBlockBtn] = useState(false);
+  const history = useHistory();
 
 
 
   const clearSuccess = () => {
     setSuccess(status != 200);
-    
+
   };
   useEffect(() => {
     setSuccess(status == 200);
@@ -90,6 +94,12 @@ const UserItem = (props) => {
   const handleCloseDialog = () => {
     setOpen(false);
   };
+  const handleMsgOpenDialog = () => {
+    setMsgOpen(true);
+  };
+  const handleMsgCloseDialog = () => {
+    setMsgOpen(false);
+  };
 
   const OpenEditDialogComp = () => {
     setOpenEdit(true);
@@ -100,34 +110,34 @@ const UserItem = (props) => {
 
 
 
-  const BlockUserHandler = () =>{
+  const BlockUserHandler = () => {
     const BlockUser = async () => {
       try {
         const responseData = await sendRequest(
           "http://localhost:5000/api/settings/blockUser/" + auth.setting._id,
           'PATCH',
           JSON.stringify({
-           uid: props.resume.user
+            uid: props.resume.user
           }),
           {
             "Content-Type": "application/json",
             Authorization: "Bearer " + auth.token,
           }
         );
-        if(responseData.responseMessage == "blocked"){
-         setResMsg(responseData.responseMessage)
-         setShowBlockBtn(true);
+        if (responseData.responseMessage == "blocked") {
+          setResMsg(responseData.responseMessage)
+          setShowBlockBtn(true);
         }
       } catch (err) {
         console.log(err);
       }
+    }
+    BlockUser();
   }
-  BlockUser();
-}
 
-function findBlockedUsers(arr1, arr2) {
-  return arr1.some((item) => arr2 == item);
-}
+  function findBlockedUsers(arr1, arr2) {
+    return arr1.some((item) => arr2 == item);
+  }
 
 
   const classes = useStyles();
@@ -174,28 +184,28 @@ function findBlockedUsers(arr1, arr2) {
       "linear-gradient( rgba(0, 27.8, 46.7, 1),rgba(78, 120, 160, 1))",
   };
 
- 
+
   return (
     <>
-    {isLoading && <LoadingSpinner open = {isLoading}/>}
-    {!isLoading && (
+      {isLoading && <LoadingSpinner open={isLoading} />}
+      {!isLoading && (
         <Snackbar
-         open={success || !!error}
-         autoHideDuration={3000}
-         onClose={status == 200 ? clearSuccess : clearError}
-       >
-         <MuiAlert
-           elevation={6}
-           variant="filled"
-           severity={status == 200? "success" : "error"}
-           onClose={status == 200 ? clearSuccess : clearError}
-         >
-           {(status == 200 && resMsg == "blocked") ? "User has blocked successfully!" : error}
-         </MuiAlert>
-       </Snackbar>
-   
-    )}
- 
+          open={success || !!error}
+          autoHideDuration={3000}
+          onClose={status == 200 ? clearSuccess : clearError}
+        >
+          <MuiAlert
+            elevation={6}
+            variant="filled"
+            severity={status == 200 ? "success" : "error"}
+            onClose={status == 200 ? clearSuccess : clearError}
+          >
+            {(status == 200 && resMsg == "blocked") ? "User has blocked successfully!" : error}
+          </MuiAlert>
+        </Snackbar>
+
+      )}
+
       <Paper elevation={10} className={classes.paperStyle}>
         <div style={topBorder}>
           <Avatar
@@ -204,42 +214,41 @@ function findBlockedUsers(arr1, arr2) {
             alt={props.resume.fullname}
             src={"http://localhost:5000/" + auth.resume.image}
 
-            alt={null}
           />
 
-          {props.setting && !((findBlockedUsers(props.setting.blockedUsers, props.resume.user)) ||  showBlockBtn) &&  ( 
-          <Button
-            style={{ float: "right", margin: 10 }}
-            type="submit"
-            variant="contained"
-            color="primary"
-            startIcon={props.otherUser ? <RiUserUnfollowFill /> : <EditIcon />}
-            size="small"
-            onClick = {props.otherUser? BlockUserHandler: OpenEditDialogComp}
-           
-          >
-            {props.otherUser  ? "Block User" : "Edit Profile"}
-          </Button>
-        )} 
-       
-        
-{openEdit && (
-  <EditProfile
-    openEdit = {openEdit}
-    CloseEditDialogComp = {CloseEditDialogComp}
-    setOpenEdit = {setOpenEdit} 
-    userId = {auth.resume.user}
-    setMyResume = {props.setMyResume}
-  />
-)}
+          {props.setting && !((findBlockedUsers(props.setting.blockedUsers, props.resume.user)) || showBlockBtn) && (
+            <Button
+              style={{ float: "right", margin: 10 }}
+              type="submit"
+              variant="contained"
+              color="primary"
+              startIcon={props.otherUser ? <RiUserUnfollowFill /> : <EditIcon />}
+              size="small"
+              onClick={props.otherUser ? BlockUserHandler : OpenEditDialogComp}
+
+            >
+              {props.otherUser ? "Block User" : "Edit Profile"}
+            </Button>
+          )}
+
+
+          {openEdit && (
+            <EditProfile
+              openEdit={openEdit}
+              CloseEditDialogComp={CloseEditDialogComp}
+              setOpenEdit={setOpenEdit}
+              userId={auth.resume.user}
+              setMyResume={props.setMyResume}
+            />
+          )}
           {!props.otherUser && (
             <>
-            <IconButton className={classes.cameraIcon} onClick={handleOpenDialog} >
+              <IconButton className={classes.cameraIcon} onClick={handleOpenDialog} >
 
-              <PhotoCameraIcon style={{ width: "30px", height: "40px" }} />
+                <PhotoCameraIcon style={{ width: "30px", height: "40px" }} />
 
-            </IconButton>
-            {open && (
+              </IconButton>
+              {open && (
                 <UploadPhoto
                   open={open}
                   handleCloseDialog={handleCloseDialog}
@@ -257,13 +266,31 @@ function findBlockedUsers(arr1, arr2) {
         {props.otherUser && (
           <>
             <Grid align="center" style={{ marginBottom: 0 }}>
-              <IconButton style={{ padding: "0px 5px" }}>
+              <IconButton style={{ padding: "0px 5px" }} onClick={handleMsgOpenDialog}>
                 <ChatIcon style={RTCiconStyle} />
               </IconButton>
-              <IconButton style={{ padding: "0px 5px" }}>
+              {msgOpen && (
+                <SendMessage
+                  open={msgOpen}
+                  handleCloseDialog={handleMsgCloseDialog}
+                  setOpen={setMsgOpen}
+                  receiver={props.otherUser}
+                />
+              )}
+              <IconButton style={{ padding: "0px 5px" }} onClick={() => {
+                history.push({
+                  pathname: '/videocall',
+                  state: { to: props.otherUser, type: "audio" }
+                });
+              }}>
                 <CallIcon style={RTCiconStyle} />
               </IconButton>
-              <IconButton style={{ padding: "0px 5px" }}>
+              <IconButton style={{ padding: "0px 5px" }} onClick={() => {
+                history.push({
+                  pathname: '/videocall',
+                  state: { to: props.otherUser, type: "video" }
+                });
+              }}>
                 <VideocamIcon style={RTCiconStyle} />
               </IconButton>
             </Grid>
@@ -286,33 +313,33 @@ function findBlockedUsers(arr1, arr2) {
 
         </div>
 
-          <Accordion style={accordStyle} expanded={true}>
-            <AccordionSummary
-              //expandIcon={<ExpandMoreIcon />} 
-              aria-controls="panel1a-content"
-              id="panel1a-header"
+        <Accordion style={accordStyle} expanded={true}>
+          <AccordionSummary
+            //expandIcon={<ExpandMoreIcon />} 
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography className={classes.heading} align="justify">
+              My Interviews
+              </Typography>
+          </AccordionSummary>
+          <AccordionDetails lg={12} md={6}>
+            <Typography style={typoStyle}>
+              {props.userInter.length + " "}
+              {props.userInter.length === 0 || 1 ? "Interview" : "Interviews"}
+            </Typography>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              size="small"
+              component={Link}
+              to={`/interviews/${props.resume.user}`}
             >
-              <Typography className={classes.heading} align="justify">
-                My Interviews
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails lg={12} md={6}>
-              <Typography style={typoStyle}>
-                {props.userInter.length + " "}
-                {props.userInter.length === 0 || 1 ? "Interview" : "Interviews"}
-              </Typography>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="small"
-                component={Link}
-                to={`/interviews/${props.resume.user}`}
-              >
-                View Interviews
+              View Interviews
               </Button>
-            </AccordionDetails>
-          </Accordion>
+          </AccordionDetails>
+        </Accordion>
         <Accordion style={accordStyle} expanded={true}>
           <AccordionSummary
             //   expandIcon={<ExpandMoreIcon />}

@@ -61,8 +61,9 @@ export default function ReportProblem() {
         const responseData = await sendRequest(
           'http://localhost:5000/api/problems/user/'+ auth.userId
         );
-
+        if(responseData)
         setFaqs(responseData.problems);
+        console.log(responseData)
       } catch (err) {
         console.log(err)
       }

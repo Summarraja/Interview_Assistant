@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import { Grid, IconButton, Typography } from "@material-ui/core";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -13,11 +13,21 @@ import { useHistory } from 'react-router-dom'
 function RightTopBar(props) {
   const auth = useContext(AuthContext);
   const history = useHistory();
+  const getImage = () => {
+    return (props.selectedChat.from == auth.userId) ? props.selectedChat.withImage : props.selectedChat.fromImage
+  }
   return (
     <>
       <div className="avatar-component">
 
-        <Avatar src={'http://localhost:5000/uploads/images/image.png'}>
+        <Avatar src={'http://localhost:5000/' + getImage()} style={{
+          display: "flex",
+          alignItems: "center",
+          border: '1px solid lightgray',
+          margin: "0.5rem",
+          width: 50,
+          height: 50,
+        }}>
         </Avatar>
         <div style={{ margin: "10px" }}>
           <Typography variant="h6" >
