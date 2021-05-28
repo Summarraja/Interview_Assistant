@@ -7,34 +7,16 @@ import ProblemList from "./ProblemList";
 
 
 
-const ProblemCollection = () => {
-  const auth = useContext(AuthContext);
+const ProblemCollection = (props) => {
   const [faqs, setFaqs] = useState();
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const responseData = await sendRequest(
-          'http://localhost:5000/api/problems/user/'+ auth.userId
-        );
-        console.log(responseData.problems)
-        setFaqs(responseData.problems);
-      } catch (err) {
-        console.log(err)
-      }
-    }
-
-    if (!faqs)
-      getData();
-
-  }, [faqs])
 
   return (
   <React.Fragment>
-    <LoadingSpinner open={isLoading} />
-    {faqs && (<ProblemList items={faqs}  setFaqs ={setFaqs}
-    />)}
+   
+    <ProblemList items={props.faqs}  setFaqs ={props.setFaqs}
+    />
   </React.Fragment>
   )
 };

@@ -6,7 +6,6 @@ import { useHttpClient } from "../../../shared/hooks/http-hook";
 
 
 const FaqCollectionAdmin = () => {
-  // {console.log("it is faqcollectionAdmin page")}
   const [faqs, setFaqs] = useState();
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 

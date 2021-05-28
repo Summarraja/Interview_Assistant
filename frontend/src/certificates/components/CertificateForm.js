@@ -14,7 +14,6 @@ import MuiAlert from "@material-ui/lab/Alert";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { Typography } from "@material-ui/core";
 import UploadPhoto from "../../user/components/UploadPhoto";
-//import UploadCertificate from "./uploadCertificate";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -132,7 +131,7 @@ const CertificateForm = (props) => {
       .string()
       .min(10, "Institute must be atleast 10 characters long")
       .required("Institute is required"),
-    //  CertificateImage: yup.mixed().required("A Certificate Image is required"),
+     //CertificateImage: yup.mixed().required("A Certificate Image is required"),
     //   .test(
     //     "fileSize",
     //     "File too large",
@@ -153,7 +152,7 @@ const CertificateForm = (props) => {
       formData.append( 'description', values.description);
       formData.append( 'institute', values.institute);
       formData.append( 'fieldTitle', props.field);
-      formData.append('image', file);
+      formData.append('file', file);
       const responseData = await sendRequest(
         "http://localhost:5000/api/certificates/",
         "POST",
@@ -330,14 +329,14 @@ const CertificateForm = (props) => {
                 </div>
               </Grid>
             </Grid>
-
+           {/* {console.log("file: "+       (!(fProps.isValid || !props.field || fProps.isSubmitting ) && file))} */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
               color="primary"
               disabled={
-                !(fProps.isValid || !props.field || fProps.isSubmitting)
+                !(fProps.isValid || !props.field || fProps.isSubmitting ) 
               }
               className={classes.submit}
             >

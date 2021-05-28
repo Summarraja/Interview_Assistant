@@ -9,6 +9,8 @@ import RightTopBar from "../components/RightTopBar";
 import { AuthContext } from "../../shared/context/auth-context";
 import { SocketContext } from "../../shared/context/socket-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+
 import "./Chat.css"
 const useStyles = makeStyles((theme) => ({
 
@@ -70,7 +72,6 @@ function Chat() {
   const [searchedData, setSearchedData] = useState();
   const [selectedChat, setSelectedChat] = useState()
   const [messages, setMessages] = useState([]);
-  const [flag, setFlag] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [file, setFile] = useState('');
   const[previewUrl,setPreviewUrl]=useState('');
@@ -147,7 +148,6 @@ function Chat() {
         receiver: (selectedChat.with == auth.userId) ? selectedChat.from : selectedChat.with,
         content: newMessage,
         time: (new Date()).toISOString(),
-        isRead: true,
         chat: selectedChat.id,
       }
       let d = {
@@ -157,7 +157,9 @@ function Chat() {
         previewUrl:previewUrl,
         token: "Bearer " + auth.token
       }
-      socket.emit("message", d);
+      socket.emit("message", d,(error,success)=>{
+        console.log(error,success)
+      });
       setNewMessage('');
       setPreviewUrl('');
       setFile('');
@@ -189,6 +191,7 @@ function Chat() {
 
   return (
     <div className="app">
+      <LoadingSpinner open={isLoading}/>
       <div className={classes.aside} >
         <header>
           <LeftTopBar
@@ -197,7 +200,7 @@ function Chat() {
         </header>
         <ChatSearch data={data} setSearchedData={setSearchedData} />
         <div className="contact-boxes">
-          {data != null && (<ConversationList data={data} setData={setData} searchedData={searchedData} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />)}
+          <ConversationList  data={data} setData={setData} searchedData={searchedData} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />
         </div>
       </div>
       <div className={classes.mainChat}>

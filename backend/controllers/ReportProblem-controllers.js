@@ -63,28 +63,26 @@ const getProblemByUserId = async (req, res, next) => {
 
   let userWithProblem;
   try {
-    userWithProblem = await User.findById(userId).populate("problem");
+    userWithProblem = await User.findById(userId).populate({path:"problems",model:ReportProblem});
   } catch (err) {
-      console.log(err)
     const error = new HttpError(
       "Fetching problem failed, please try again later.",
       500
     );
     return next(error);
   }
-  if (!userWithProblem || !userWithProblem.problem) {
+  if (!userWithProblem || userWithProblem.problems.length==0) {
     return next(
       new HttpError("Could not find problem for the provided user id.", 404)
     );
   }
 
   res.json({
-    problems: userWithProblem.problem.toObject({ getters: true }),
+    problems: userWithProblem.problems.toObject({ getters: true }),
   });
 }; 
 
 const getunansweredProblems = async (req, res, next) => {
-console.log("UNANSWER: ")
     let unanswerdproblems;
     try {
         unanswerdproblems = await ReportProblem.find({ 
@@ -126,7 +124,6 @@ const createProblem = async (req, res, next) => {
     }
     const { title, answer, description } = req.body;
 
-    console.log("useris:  "+req.userData.userId)
     const createdProblem = new ReportProblem({
         title,
         answer,
@@ -153,12 +150,11 @@ const createProblem = async (req, res, next) => {
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
+        user.problems.push(createdProblem);
         await createdProblem.save({ session: sess });
-        user.problem.push(createdProblem);
         await user.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
-       console.log("error is"+ err)
         const error = new HttpError(
             'Reporting problem failed, please try again.',
             500

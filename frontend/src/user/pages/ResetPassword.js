@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -12,6 +12,7 @@ import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
+import { Toolbar } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: theme.typography.fontFamily,
   },
   avatar: {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
   },
   form: {
     width: "100%",
@@ -39,7 +40,7 @@ export default function ResetPassword() {
     margin: "20px auto",
   };
   const avatarStyle = {
-    backgroundColor: "#2D5F5D",
+    backgroundColor: "#004777",
   };
   const initialValues = {
     username: "",
@@ -51,15 +52,13 @@ export default function ResetPassword() {
   };
   const validationSchema = yup.object().shape({
     NewPass: yup
-    .string()
-    .min(8, "Password must be atleast 8 characters long")
-    .matches(
-      /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/,
-      "Must contain One Number and One Special Case Character"
-    ),
-  
+      .string()
+      .required("This field is required")
+      .min(6, "Password must be atleast 6 characters long"),
+
     ConfirmPass: yup
       .string()
+      .required("This field is required")
       .oneOf([yup.ref("NewPass"), null], "Passwords must match"),
   });
 
@@ -74,9 +73,10 @@ export default function ResetPassword() {
   //  console.log(props);
   //   };
   const classes = useStyles();
-  
+
   return (
     <Container component="main" maxWidth="xs">
+      <Toolbar />
       <Paper elevation={10} style={paperStyle}>
         <Typography align="center" variant="h5">
           Reset Password?
@@ -92,14 +92,14 @@ export default function ResetPassword() {
             validationSchema={validationSchema}
           >
             {(props) => (
-              <Form  className={classes.form}>
+              <Form className={classes.form}>
                 <Field
                   as={TextField}
                   variant="outlined"
                   margin="normal"
                   required
                   fullWidth
-                 // type="password"
+                  // type="password"
                   id="NewPass"
                   label="Enter new Password"
                   name="NewPass"
@@ -112,7 +112,7 @@ export default function ResetPassword() {
                   }
                 />
 
-                  <Field
+                <Field
                   as={TextField}
                   variant="outlined"
                   margin="normal"
@@ -135,17 +135,19 @@ export default function ResetPassword() {
                   variant="contained"
                   color="primary"
                   style={ButtonStyle}
-                  component={Link} to="/Home"
-                  disabled= {!(props.isValid || props.isSubmitting)}
+                  component={Link}
+                  to="/Home"
+                  disabled={!(props.isValid || props.isSubmitting)}
                 >
-                 Reset
+                  Reset
                 </Button>
                 <Button
                   type="submit"
                   variant="outlined"
                   color="primary"
                   style={ButtonStyle}
-                  component={Link} to="/login"
+                  component={Link}
+                  to="/forgotpassword"
                 >
                   CANCEL
                 </Button>

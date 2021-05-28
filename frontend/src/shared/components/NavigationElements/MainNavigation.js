@@ -89,18 +89,13 @@ const MainNavigation = () => {
   useEffect(() => {
     if (!socket) return;
     socket.on("message", (data) => {
-      console.log("msg  noti");
       setUnreadChats(unreadChats + 1);
-    });
-    socket.on("notification", (data) => {
-      console.log("noti");
     });
 
     return () => {
       socket.off("message");
-      socket.off("notification");
     };
-  }, [socket]);
+  }, [socket,unreadChats]);
 
   useEffect(() => {
     if (!auth.userId) return;
@@ -134,11 +129,14 @@ const MainNavigation = () => {
       setUnreadChats(responseData.unreadChats);
     } catch (err) {}
   };
+
   const HandleDrawer = () => {
     SetOpenDrawer(!OpenDrawer);
   };
 
+ // console.log("GO: "+history.goBack())
   const drawerItems = (
+
     <List >
       <Tooltip
         title="Back"
@@ -225,9 +223,7 @@ const MainNavigation = () => {
           to={`/interviews/${auth.userId}`}
         >
           <ListItemIcon>
-            <Badge badgeContent={4} color="error">
               <DvrIcon className={classes.Navicon} />
-            </Badge>
           </ListItemIcon>
           <ListItemText primary="Interviews" />
         </ListItem>
@@ -290,6 +286,8 @@ const MainNavigation = () => {
           onClick={() => {
             SetOpenDrawer(false);
           }}
+          component={Link}
+          to="/charts"
         >
           <ListItemIcon>
             <InsertChartIcon className={classes.Navicon} />

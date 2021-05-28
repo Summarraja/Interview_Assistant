@@ -77,6 +77,7 @@ const ReportProblemForm = (props) => {
           Authorization: "Bearer " + auth.token,
         }
       );
+      props.getData();
     } catch (err) {}
   };
 

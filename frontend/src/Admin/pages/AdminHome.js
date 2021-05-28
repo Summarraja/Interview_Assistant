@@ -11,7 +11,7 @@ import SearchCandidates from "../../Interviews/components/SearchCandidates";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    paddingLeft: 200
+    paddingLeft: 210
   },
   bgCard: {
     marginTop: "50px",
@@ -113,6 +113,7 @@ export default function AdminHome(props) {
                 id={resume._id}
                 name={resume.firstname + " " + resume.lastname}
                 userId={resume.user}
+                file = {resume.image}
               />
             ))}
           </Card>

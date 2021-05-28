@@ -9,6 +9,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 
@@ -118,6 +119,7 @@ const UploadPhoto = (props) => {
                         <img className={classes.preview} src={previewUrl} />
                         <br />
                         {file && (<Fab color="secondary" size="small" component="span" aria-label="add" variant="extended" onClick={uploadPhoto}>Upload</Fab>)}
+                        {isLoading&&(<><br/><br/><CircularProgress /></>)}
                     </div>
 
                 </DialogContent>

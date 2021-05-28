@@ -120,7 +120,7 @@ function VideoCall(props) {
     const history = useHistory();
 
     const [audioMuted, setAudioMuted] = useState(false);
-    const [videoMuted, setVideoMuted] = useState(false);
+    const [videoMuted, setVideoMuted] = useState(props.location.state.type=='audio');
     const [stream, setStream] = useState();
     const [caller, setCaller] = useState("");
     const [callerSignal, setCallerSignal] = useState();
@@ -132,7 +132,7 @@ function VideoCall(props) {
     const [partnerStream, setPartnerSstream] = useState(false);
     const [facialEmotionState, setFacialEmotionState] = useState([0, 0, 0, 0, 0, 0, 0]);
     const [vocalEmotionState, setVocalEmotionState] = useState([0, 0, 0, 0, 0, 0, 0]);
-
+    const [isInterviewer,setIsInterviewer] = useState(false);
     const socket = useContext(SocketContext);
     const auth = useContext(AuthContext);
 
@@ -166,13 +166,22 @@ function VideoCall(props) {
         }
     };
     useEffect(() => {
-        if (props.location.state && props.location.state.to)
-            callPeer(props.location.state.to);
+        if (props.location.state && props.location.state.to){
+            callPeer(props.location.state.to, props.location.state.type);
+            if(props.location.state.type=='interview')
+                setIsInterviewer(true);
+
+        }
         if (props.location.state && props.location.state.caller) {
             setCaller(props.location.state.caller);
             setCallerSignal(props.location.state.callerSignal);
         }
     }, []);
+    useEffect(()=>{
+        if(videoMuted && stream){
+            stream.getVideoTracks()[0].enabled = !videoMuted;
+        }
+    },[stream])
     useEffect(() => {
         if (caller && callerSignal)
             acceptCall();
@@ -192,7 +201,7 @@ function VideoCall(props) {
             socket.off("rejected");
         };
     }, [])
-    function callPeer(id) {
+    function callPeer(id,type) {
         if (id !== '' && id !== auth.userId) {
             navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
                 setStream(stream);
@@ -260,7 +269,7 @@ function VideoCall(props) {
 
                 peer.on("signal", data => {
                     console.log("signal")
-                    socket.emit("callUser", { userToCall: props.location.state.to, signalData: data, fromId: auth.userId, fromName: auth.resume.fullname, fromImage: auth.resume.image })
+                    socket.emit("callUser", { userToCall: props.location.state.to, signalData: data, fromId: auth.userId, fromName: auth.resume.fullname, fromImage: auth.resume.image , type:type})
                 })
 
                 peer.on("stream", stream => {
@@ -445,12 +454,12 @@ function VideoCall(props) {
                         <IconButton className={classes.IconStyles} onClick={() => endCall()}>
                             <CallEndIcon color="primary" style={{ fontSize: "2rem" }} />
                         </IconButton>
-                        {true && (
+                        {isInterviewer && (
                             <IconButton className={classes.IconStyles} onClick={() => showFaceEmotionsHandler()}>
                                 <SentimentVerySatisfiedIcon color="primary" style={{ fontSize: "2rem" }} />
                             </IconButton>
                         )}
-                        {true && (
+                        {isInterviewer && (
                             <IconButton className={classes.IconStyles} onClick={() => showVoiceEmotionsHandler()}>
                                 <RecordVoiceOverIcon color="primary" style={{ fontSize: "2rem" }} />
                             </IconButton>

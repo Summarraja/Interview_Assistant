@@ -107,8 +107,8 @@ const deleteChat = async (req, res, next) => {
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
-        await chat.remove({ session: sess });
         chat.from.chats.pull(chat.id);
+        await chat.remove({ session: sess });
         await chat.from.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {

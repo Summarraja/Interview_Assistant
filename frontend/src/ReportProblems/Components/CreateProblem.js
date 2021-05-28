@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment , useContext} from "react";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
@@ -10,7 +10,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import ReportProblemForm from "./ReportProblemForm";
 import ReportProblemIcon from '@material-ui/icons/ReportProblem';
-
+import { AuthContext } from "../../shared/context/auth-context";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +30,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CreateProblem = (props) => {
+  const auth = useContext(AuthContext);
+  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
+  const getData = async () => {
+    try {
+      const responseData = await sendRequest(
+        'http://localhost:5000/api/problems/user/'+ auth.userId
+      );
+      props.setFaqs(responseData.problems);
+    } catch (err) {
+      console.log(err)
+    }
+  }
   const paperStyle = {
     width: 400,
     padding: 20,
@@ -58,6 +71,7 @@ const CreateProblem = (props) => {
         <DialogContent dividers>
           <div className={classes.demo}>
             <ReportProblemForm
+            getData = {getData}
             />
           </div>
         </DialogContent>

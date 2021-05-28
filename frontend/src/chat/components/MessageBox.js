@@ -3,6 +3,7 @@ import Message from "./Message";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import { SocketContext } from "../../shared/context/socket-context";
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import './Message.css';
 function MessageBox(props) {
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
@@ -55,7 +56,9 @@ function MessageBox(props) {
       msg,
       token: "Bearer " + auth.token
     }
-    socket.emit("deleteMessage", d);
+    socket.emit("deleteMessage", d,(error,success)=>{
+      console.log(error,success)
+    });
     if (props.messages[props.messages.length - 1].id == msg.id) {
       let chat = props.selectedChat;
       chat.lastMessage = props.messages[props.messages.length - 2].content;
@@ -82,6 +85,7 @@ function MessageBox(props) {
   }
   return (
     <>
+    <LoadingSpinner open={isLoading}/>
       <div className="chats" onScroll={scrollHandler}>
 
         {props.messages.map((msg, idx) => (

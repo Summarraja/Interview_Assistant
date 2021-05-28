@@ -3,8 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { Button, Card, Grid } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { TiEdit } from "react-icons/ti";
 import { useHttpClient } from '../../shared/hooks/http-hook';
 import UpdateProblem from './UpdateProblem';
 import DeleteProblem from './DeleteProblem';
@@ -74,14 +74,12 @@ const ProblemListItems = (props) =>{
         const responseData = await sendRequest(
           'http://localhost:5000/api/problems/user/'+ auth.userId
         );
-        console.log(responseData.problems)
+    
         props.setFaqs(responseData.problems);
       } catch (err) {
         console.log(err)
       }
     }
-
-
   
 
 
@@ -127,7 +125,7 @@ return (
             variant="contained"
             color="primary"
             className={classes.ViewButton}
-            startIcon={<EditIcon style={{ marginLeft: 6 }} />}
+            startIcon={<TiEdit style={{ marginLeft: 6 }} />}
             onClick={() => {
               handleOpenDialog();
           }}
@@ -150,7 +148,7 @@ return (
           variant="contained"
           color="primary"
           className={classes.ViewButton}
-          startIcon={<DeleteIcon style={{ marginLeft: 6 }} />}
+          startIcon={<RiDeleteBin6Line style={{ marginLeft: 6 }} />}
           onClick={() => {
             OpenDeleteDialogHandler();
           }}

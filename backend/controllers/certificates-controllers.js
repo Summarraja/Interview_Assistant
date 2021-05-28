@@ -1,11 +1,13 @@
+const fs = require('fs');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
-
 const HttpError = require('../models/http-error');
 const Certificate = require('../models/certificate');
+const Setting = require('../models/setting');
 const Field = require('../models/field');
 const User = require('../models/user');
-
+const Notification = require('../models/notification');
+const socket = require('../RTC/socket-context');
 const getCertificateById = async (req, res, next) => {
     const certificateId = req.params.cid;
 
@@ -81,7 +83,6 @@ const getAllCertificates = async (req, res, next) => {
         return next(error);
     }
 
-    console.log(certificates)
     res.json({
         certificates: certificates.map(certificate =>
             certificate.toObject({ getters: true })
@@ -117,14 +118,13 @@ const createCertificate = async (req, res, next) => {
         );
         return next(error);
     }
-    console.log("File Path:  "+ req.file.path);
     const createdCertificate = new Certificate({
         title,
         description,
         institute,
         isApproved: false,
         field: field.id,
-        image: req.file.path,
+        file: req.file?req.file.path:'',
         creator: req.userData.userId
     });
 
@@ -147,12 +147,11 @@ const createCertificate = async (req, res, next) => {
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
-        await createdCertificate.save({ session: sess });
         user.certificates.push(createdCertificate);
-        await user.save({ session: sess });
+        await createdCertificate.save({session:sess});
+        await user.save({session:sess});
         await sess.commitTransaction();
     } catch (err) {
-        console.log("Certificate:  "+err)
         const error = new HttpError(
             'Creating certificate failed, please try again.',
             500
@@ -250,7 +249,7 @@ const acceptCertificate = async (req, res, next) => {
 
     let certificate;
     try {
-        certificate = await Certificate.findById(certificateId);
+        certificate = await Certificate.findById(certificateId).populate({path:'creator',model:User});
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not update certificate.',
@@ -266,10 +265,41 @@ const acceptCertificate = async (req, res, next) => {
         );
         return next(error);
     }
+    let setting;
+    try {
+        setting = await Setting.findById(certificate.creator.setting);
+    } catch (err) {
+        const error = new HttpError(
+            'Something went wrong, could not update setting.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!setting) {
+        const error = new HttpError(
+            'Could not find setting for the provided id.',
+            404
+        );
+        return next(error);
+    }
     certificate.isApproved = true;
+    const newNotification = new Notification({
+        message: `Congratulations! your certificate "${certificate.title}" is just approve by the administrator. Now, people are able to view it in your profile.`,
+        to: certificate.creator.id,
+    });
 
     try {
-        await certificate.save();
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        certificate.creator.notifications=[newNotification,...certificate.creator.notifications];
+        setting.unreadNotis = setting.unreadNotis+1;
+        await certificate.save({session:sess});
+        await newNotification.save({session:sess});
+        await certificate.creator.save({session:sess});
+        await setting.save({session:sess});
+        await sess.commitTransaction();
+
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not approve certificate.',
@@ -277,7 +307,7 @@ const acceptCertificate = async (req, res, next) => {
         );
         return next(error);
     }
-
+    socket.emit('notification',{userId:certificate.creator.id,notification:newNotification});
     res.status(200).json({ certificate: certificate.toObject({ getters: true }), responseMsg: "approved" });
 };
 const rejectCertificate = async (req, res, next) => {
@@ -292,7 +322,7 @@ const rejectCertificate = async (req, res, next) => {
 
     let certificate;
     try {
-        certificate = await Certificate.findById(certificateId);
+        certificate = await Certificate.findById(certificateId).populate({path:'creator',model:User});
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not update certificate.',
@@ -308,53 +338,56 @@ const rejectCertificate = async (req, res, next) => {
         );
         return next(error);
     }
-    certificate.isApproved = false;
-   
-    let certificateWithCreator;
+    let setting;
     try {
-        certificateWithCreator = await Certificate.findById(certificateId).populate('creator');
+        setting = await Setting.findById(certificate.creator.setting);
     } catch (err) {
         const error = new HttpError(
-            'Something went wrong, could not delete certificate after rejecting.',
+            'Something went wrong, could not update setting.',
             500
         );
         return next(error);
     }
 
-    if (!certificateWithCreator) {
+    if (!setting) {
         const error = new HttpError(
-            'Could not find certificate for the provided id for rejection.',
+            'Could not find setting for the provided id.',
             404
         );
         return next(error);
     }
+    const newNotification = new Notification({
+        message: `Sorry! your certificate "${certificate.title}" is just rejected by the administrator. Please create a new certificate and provide all information.`,
+        to: certificate.creator.id,
+    });
 
-    console.log("certy : " + certificate.id)
+    const imagePath = certificate.file;
 
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
+        certificate.creator.notifications=[newNotification,...certificate.creator.notifications];
+        setting.unreadNotis = setting.unreadNotis+1;
+        certificate.creator.certificates.pull(certificate.id);
+        await newNotification.save({session:sess});
+        await setting.save({session:sess});
         await certificate.remove({ session: sess });
-        certificateWithCreator.creator.certificates.pull(certificate.id);
-        await certificateWithCreator.creator.save({ session: sess });
+        await certificate.creator.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
         const error = new HttpError(
-            'Something went wrong, could not delete certificate after rejection.',
-            500
-        );
-        return next(error);
-    }
-    try {
-        await certificate.save();
-    } catch (err) {
-        const error = new HttpError(
-            'Something went wrong, could not disapprove certificate.',
+            'Something went wrong, could not reject certificate.',
             500
         );
         return next(error);
     }
 
+    
+    fs.unlink(imagePath, err => {
+        console.log(err);
+    });
+
+    socket.emit('notification',{userId:certificate.creator.id,notification:newNotification});
     res.status(200).json({ certificate: certificate.toObject({ getters: true }), responseMsg: "rejected" });
 };
 const deleteCertificate = async (req, res, next) => {
@@ -384,13 +417,13 @@ const deleteCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    // const imagePath = certificate.image;
+    const imagePath = certificate.file;
 
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
         await certificate.remove({ session: sess });
-        certificate.creator.certificates.pull(certificate);
+        certificate.creator.certificates.pull(certificate.id);
         await certificate.creator.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
@@ -401,9 +434,9 @@ const deleteCertificate = async (req, res, next) => {
         return next(error);
     }
 
-    // fs.unlink(imagePath, err => {
-    //     console.log(err);
-    // });
+    fs.unlink(imagePath, err => {
+        console.log(err);
+    });
 
     res.status(200).json({ message: 'Deleted certificate.' });
 };

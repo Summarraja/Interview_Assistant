@@ -1,36 +1,47 @@
-import React, { useContext } from 'react';
-import { makeStyles, fade } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import HomeRoundedIcon from '@material-ui/icons/HomeRounded';
-import LiveHelpIcon from '@material-ui/icons/LiveHelp';
-import ReportProblemIcon from '@material-ui/icons/ReportProblem';
-import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
+import React, { useContext } from "react";
+import { makeStyles, fade } from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import AppBar from "@material-ui/core/AppBar";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Toolbar from "@material-ui/core/Toolbar";
+import List from "@material-ui/core/List";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import HomeRoundedIcon from "@material-ui/icons/HomeRounded";
+import LiveHelpIcon from "@material-ui/icons/LiveHelp";
+import ReportProblemIcon from "@material-ui/icons/ReportProblem";
+import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import { Link } from "react-router-dom";
-import { AuthContext } from '../../shared/context/auth-context';
-import { Button } from '@material-ui/core';
+import { AuthContext } from "../../shared/context/auth-context";
+import { Button } from "@material-ui/core";
+import { IoIosArrowDropleftCircle } from "react-icons/io";
+import { useHistory } from "react-router-dom";
+import Tooltip from "@material-ui/core/Tooltip";
+import Fade from "@material-ui/core/Fade";
+import IconButton from "@material-ui/core/IconButton";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
+    display: "flex",
   },
   button: {
     margin: "auto 8px",
-     [theme.breakpoints.up("xs")]: {
+    [theme.breakpoints.up("xs")]: {
       display: "flex",
-    }
+    },
   },
-
+  Navicon: {
+    fontSize: "2rem",
+    color: "#004777",
+    [theme.breakpoints.down("xs")]: {
+      color: "#004777",
+    },
+  },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
   },
@@ -42,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
   },
   drawerContainer: {
-    overflow: 'auto',
+    overflow: "auto",
   },
   content: {
     flexGrow: 1,
@@ -59,11 +70,11 @@ const useStyles = makeStyles((theme) => ({
     height: "40px",
     margin: theme.spacing(0, 6),
     [theme.breakpoints.up("sm")]: {
-     // margin: theme.spacing(0, 15),
+      // margin: theme.spacing(0, 15),
       width: "auto",
     },
     [theme.breakpoints.up("md")]: {
-    //  margin: theme.spacing(0, 25),
+      //  margin: theme.spacing(0, 25),
       width: "auto",
     },
     [theme.breakpoints.up("lg")]: {
@@ -95,45 +106,43 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  listicon:{
-minWidth:"40px",
-
+  listicon: {
+    minWidth: "40px",
   },
 
   list: {
-     padding:0 
+    padding: 0,
   },
   MainLogo: {
     flexGrow: 1,
     color: "#fff",
   },
-
 }));
 
 export default function ClippedDrawer() {
   const classes = useStyles();
   const auth = useContext(AuthContext);
-
-  const logout=()=>{
+ let history = useHistory();
+  const logout = () => {
     auth.logout();
-  }
+  };
 
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar position="fixed"className={classes.appBar}>
+      <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
-          <Typography variant="h4" className = {classes.MainLogo}>
-           Admin 
+          <Typography variant="h4" className={classes.MainLogo}>
+            Admin
           </Typography>
-          <Button 
-                  variant="contained"
-                  color="secondary"
-                  className={classes.button}
-                  onClick={logout}
-                >
-                  LogOut
-                </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            onClick={logout}
+          >
+            LogOut
+          </Button>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -145,75 +154,68 @@ export default function ClippedDrawer() {
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
-          <List className={classes.list}>        
-              <ListItem button style={{margin:"0px"}}
-              component={Link}
-              to="/admin/home" >
-                <ListItemIcon className={classes.listicon}>
-                <HomeRoundedIcon color="primary"/>
-                </ListItemIcon>
-                <ListItemText primary="Home" />
-              </ListItem>
-          </List>
-          
-          <Divider />
-
-          <List className={classes.list}>        
-              <ListItem
+          <List className={classes.list}>
+            <Tooltip
+              title="Back"
+              placement="right"
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+            >
+              <IconButton
+                className={classes.Navicon}
+                onClick={() => history.goBack()}
+              >
+                <IoIosArrowDropleftCircle style={{ margin: "0px 0px 20px 5px" }} />
+              </IconButton>
+            </Tooltip>
+            <ListItem
               button
+              style={{ margin: "0px" }}
               component={Link}
-              to="/admin/certificates" > 
-                <ListItemIcon  className={classes.listicon}>
-                <VerifiedUserIcon color="primary"/>
-                </ListItemIcon>
-                <ListItemText primary="Approve Certificates" />
-              </ListItem>
+              to="/admin/home"
+            >
+              <ListItemIcon className={classes.listicon}>
+                <HomeRoundedIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary="Home" />
+            </ListItem>
           </List>
 
           <Divider />
 
-          <List className={classes.list}>        
-              <ListItem button 
-              component={Link}
-              to="/admin/reportProblem">
-                <ListItemIcon  className={classes.listicon}>
-        <ReportProblemIcon color="primary"/>
-                </ListItemIcon>
-                <ListItemText primary="Reported Problems" />
-              </ListItem>
+          <List className={classes.list}>
+            <ListItem button component={Link} to="/admin/certificates">
+              <ListItemIcon className={classes.listicon}>
+                <VerifiedUserIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary="Approve Certificates" />
+            </ListItem>
           </List>
 
           <Divider />
-        
-          <List className={classes.list}>        
-              <ListItem button
-                 component={Link}
-                 to=  "/admin/faq" >
-                <ListItemIcon  className={classes.listicon}>
-                <LiveHelpIcon color="primary"/>
-                </ListItemIcon>
-                <ListItemText primary="FAQS" />
-              </ListItem>
+
+          <List className={classes.list}>
+            <ListItem button component={Link} to="/admin/reportProblem">
+              <ListItemIcon className={classes.listicon}>
+                <ReportProblemIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary="Reported Problems" />
+            </ListItem>
+          </List>
+
+          <Divider />
+
+          <List className={classes.list}>
+            <ListItem button component={Link} to="/admin/faq">
+              <ListItemIcon className={classes.listicon}>
+                <LiveHelpIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary="FAQS" />
+            </ListItem>
           </List>
           <Divider />
-        
         </div>
       </Drawer>
-      {/* <main className={classes.content}>
-        <Toolbar />
-        <div className={classes.search}>
-          <div className={classes.searchIcon}>
-            <SearchIcon />
-          </div>
-          <InputBase
-            placeholder="Search Users"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-            }}
-          />
-        </div>
-      </main> */}
     </div>
   );
 }

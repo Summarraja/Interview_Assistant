@@ -33,12 +33,12 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import { IoIosSwitch } from "react-icons/io";
 import { useHttpClient } from "../../hooks/http-hook";
-import LoadingSpinner from "../UIElements/LoadingSpinner";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { SocketContext } from "../../../shared/context/socket-context";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import UserBlockedListDialog from "../../../user/components/UserBlockedListDialog";
+import Notification from './Notifications';
 import { VscClearAll } from "react-icons/vsc";
 import { AiFillCloseSquare } from "react-icons/ai";
 
@@ -61,15 +61,15 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-    customWidth: {
-    
-          '& li': {
-           
-            maxWidth: '400px',
-          }
-      },
+  customWidth: {
 
-  
+    '& li': {
+
+      maxWidth: '400px',
+    }
+  },
+
+
   navbar: {
     zIndex: theme.zIndex.drawer + 1,
     flexGrow: 1,
@@ -125,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
   track: {
     backgroundColor: "#fff",
   },
-  NotiTitle:{
+  NotiTitle: {
     [theme.breakpoints.up("xs")]: {
       flexGrow: 1,
     },
@@ -133,97 +133,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const notifications = [
-  {
 
-  id: 1,
-  message: "Your request for an interview has been accepted by the Intervier",
-  time: "12:22",
-  isRead: true,
-  uid: 1
-},
-{
-  id: 1,
-  message: "Your request for an interview has been accepted by the Intervier",
-  time: "12:22",
-  isRead: false,
-  uid: 1
-},
-{
-  id: 1,
-  message: "Your request for an interview has been accepted by the Intervier",
-  time: "12:22",
-  isRead: true,
-  uid: 2
-},
-
-{
-  id: 1,
-  message:"Your request for an interview has been accepted by the Intervier" ,
-  time: "12:22",
-  isRead: false,
-  uid: 5
-},
-{
-  id: 1,
-  message:"Your request for an interview has been accepted by the Intervier",
-  time: "12:22",
-  isRead: true,
-  uid: 5
-},
-
-{
-  id: 1,
-  message:"Your request for an interview has been accepted by the Intervier",
-  time: "12:22",
-  isRead: true,
-  uid: 5
-},
-
-{
-  id: 1,
-  message:"Your request for an interview has been accepted by the Intervier",
-  time: "12:22",
-  isRead: true,
-  uid: 5
-},
-
-{
-  id: 1,
-  message:"Your certificate has been approved by Admin",
-  time: "12:22",
-  isRead: true,
-  uid: 5
-},
-{
-  id: 1,
-  message:"Your request for an interview has been accepted by the Intervier",
-  time: "12:22",
-  isRead: true,
-  uid: 5
-},
-
-{
-  id: 1,
-  message:"Your request for an interview has been accepted by the Intervier",
-  time: "12:22",
-  isRead: true,
-  uid: 5
-},
-
-{
-  id: 1,
-  message:"Your certificate has been approved by Admin",
-  time: "12:22",
-  isRead: true,
-  uid: 5
-},
-
-]
 export default function Navbar(props) {
   const [NavSignUp, setNavSignup] = useState(true);
   const auth = useContext(AuthContext);
   const socket = useContext(SocketContext);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   const { login } = useAuth();
 
@@ -249,6 +164,51 @@ export default function Navbar(props) {
     socket.disconnect();
   };
   useEffect(() => {
+    if (!socket) return;
+    socket.on("notification", (data) => {
+      console.log('notification')
+      setUnreadNotifications(unreadNotifications + 1);
+    });
+
+    return () => {
+      console.log("off")
+      socket.off("notification");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!auth.userId) return;
+    getBadges();
+  }, [auth.userId]);
+  const getBadges = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/settings/notifications/${auth.userId}`,
+        "GET",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setUnreadNotifications(responseData.unreadNotis);
+    } catch (err) { }
+  }
+  const openNotifications = async () => {
+    try {
+      const responseData = await sendRequest(
+        `http://localhost:5000/api/settings/openNotifications/${auth.userId}`,
+        "PATCH",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setUnreadNotifications(responseData.unreadNotis);
+    } catch (err) {}
+  };
+  useEffect(() => {
     setSuccess(status == 200 && switchResMsg);
   }, [status]);
 
@@ -265,9 +225,9 @@ export default function Navbar(props) {
   };
 
   const paper = {
-    width: "1000px", 
+    width: "1000px",
     height: "800px"
-};
+  };
 
   const classes = useStyles();
 
@@ -279,15 +239,6 @@ export default function Navbar(props) {
   const isSettingMenuOpen = Boolean(settingMenuAnchorEl);
   const [notiMenuAnchorEl, setNotiMenuAnchorEl] = useState(false);
   const isNotiMenuOpen = Boolean(notiMenuAnchorEl);
-  const [open, setOpen] = useState(false);
-
-  const openNotiMenu = (event) => {
-    setNotiMenuAnchorEl(event.currentTarget);
-  };
-  const closeNotiMenu = () => {
-  
-    setNotiMenuAnchorEl(null);
-  };
 
 
   const openMobileMenu = (event) => {
@@ -296,8 +247,13 @@ export default function Navbar(props) {
   const closeMobileMenu = () => {
     setMobileMenuAnchorEl(null);
   };
-
-
+  const openNotiMenu = (event) => {
+    openNotifications();
+    setNotiMenuAnchorEl(event.currentTarget);
+  };
+  const closeNotiMenu = () => {
+    setNotiMenuAnchorEl(null);
+  };
 
 
   function OpenNavbarMenu(event) {
@@ -376,65 +332,6 @@ export default function Navbar(props) {
   };
 
 
-  const ITEM_HEIGHT = 130;
-
-  const NotificationMenu = (
-    <Menu
-      anchorEl={notiMenuAnchorEl}
-      id="notification-menu"
-      keepMounted
-      open={isNotiMenuOpen}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }}
-      PaperProps={{
-        style: {
-          maxHeight: ITEM_HEIGHT * 4.5,
-          width: '50ch',
-        },
-      }}
-    
-      transformOrigin={{
-        vertical: -60,
-        horizontal: 180,
-      }}
-  
-    >
-
- <Grid container>
-    <Grid item  sm={7}className={classes.NotiTitle}  >
-        <Typography variant="h5"   style={{padding: "10px"}}>Notifications</Typography>
-        </Grid>
-        <Grid item  sm={4} align="right"  >
-        <IconButton color="primary">
-          <VscClearAll />
-        </IconButton>
-        <IconButton color="primary" float="left" onClick={closeNotiMenu}>
-          <AiFillCloseSquare />
-        </IconButton>
-</Grid>
-</Grid>
-     
-      <Divider variant="middle" />
-      {notifications.map((noti) => (
-      <MenuItem key={noti} >
-      
-        <Grid item sm = {9} className = {classes.NotiTitle}>
-        <Typography variant="subtitle1" >{noti.message}</Typography>
-     
-       
-        </Grid>
-      <Grid item sm = {3} align="center"  style={{marginBottom: "20px" }}>
-        <Typography variant="subtitle1">{noti.time}</Typography>
-        </Grid>
-        
-        </MenuItem>
-    ) )}
-   
-
-    </Menu>
-  );
 
 
 
@@ -453,8 +350,8 @@ export default function Navbar(props) {
         onClick={Reporthandler}
         component={Link}
         to="/reportproblem"
-        // component={Link}
-        // to={NavSignUp ? "/signup" : "/auth"}
+      // component={Link}
+      // to={NavSignUp ? "/signup" : "/auth"}
       >
         <IconButton color="primary">
           <ReportProblemIcon />
@@ -476,6 +373,7 @@ export default function Navbar(props) {
           blockedUsers={blockedUsers}
         />
       )}
+
     </Menu>
   );
 
@@ -531,7 +429,7 @@ export default function Navbar(props) {
       // }}
       transformOrigin={{
         vertical: -10,
-        horizontal: 230,
+        horizontal: 200,
       }}
       getContentAnchorEl={null}
     >
@@ -553,6 +451,7 @@ export default function Navbar(props) {
             {auth.resume && auth.resume.fullname}
           </Typography>
           <Typography variant="body1">See your profile</Typography>
+        <Typography variant="body1" color = "primary">{auth.setting && auth.setting.status}</Typography>
         </div>
       </MenuItem>
       <MenuItem
@@ -602,8 +501,6 @@ export default function Navbar(props) {
 
   return (
     <Fragment>
-      <LoadingSpinner open={isLoading} />
-
       <Snackbar
         open={success || !!error}
         autoHideDuration={1200}
@@ -611,7 +508,7 @@ export default function Navbar(props) {
       >
         <MuiAlert
           elevation={6}
-          
+
           variant="filled"
           severity={status == "200" ? "success" : "error"}
           onClose={status == "200" ? clearSuccess : clearError}
@@ -676,15 +573,14 @@ export default function Navbar(props) {
 
           {auth.isLoggedIn && (
             <>
-            
-              <IconButton color="inherit" onClick={openNotiMenu}
-              >
-                <Badge badgeContent={4} color="error">
-                  <FaBell />
-                </Badge>
-              </IconButton>
-            
-              {NotificationMenu}
+                <IconButton color="inherit" onClick={openNotiMenu}>
+                  <Badge badgeContent={unreadNotifications} color="error">
+
+                    <FaBell />
+                  </Badge>
+                </IconButton>
+
+              {isNotiMenuOpen&&(<Notification isNotiMenuOpen={isNotiMenuOpen} notiMenuAnchorEl={notiMenuAnchorEl} closeNotiMenu={closeNotiMenu} />)}
 
               <FormGroup row>
                 <FormControlLabel

@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
-import { Menu, MenuItem, Divider } from "@material-ui/core";
+
+import { Menu, MenuItem } from "@material-ui/core";
 import { IoMdEye } from "react-icons/io";
 import { FiShieldOff } from "react-icons/fi";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
@@ -17,7 +18,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { grey } from "@material-ui/core/colors";
 import Button from "@material-ui/core/Button";
-import { GiShieldDisabled, GiStamper } from "react-icons/gi";
+import {  GiStamper } from "react-icons/gi";
 
 import { useHttpClient } from "../../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../../shared/context/auth-context";
@@ -80,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UnapprovedCertificatesItems = (props) => {
+
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
   const [loadedField, setLoadedField] = useState();
@@ -97,47 +99,49 @@ const UnapprovedCertificatesItems = (props) => {
     setSuccess(status == 200);
   }, [status]);
 
-//   const ApproveCertificateHandler = () =>{
-//     const ApproveCertificate = async () => {
-//         try {
-//           const responseData = await sendRequest(
-//             `http://localhost:5000/api/certificates/accept/${props.id}`,
-//             "PATCH",
-//              null,
-//             {
-//               "Content-Type": "application/json",
-//               Authorization: "Bearer " + auth.token,
-//             }
-//           );
+  const ApproveCertificateHandler = () =>{
+    const ApproveCertificate = async () => {
+        try {
+          const responseData = await sendRequest(
+            `http://localhost:5000/api/certificates/accept/${props.id}`,
+            "PATCH",
+             null,
+            {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + auth.token,
+            }
+          );
          
-//           setResponseStatus(responseData.responseMsg);
-//         } catch (err) {
-//           console.log(err);
-//         }
-//       };
-//       ApproveCertificate();
-//   }
+          setResponseStatus(responseData.responseMsg);
+          props.fetchUnapprovedCertificates();
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      ApproveCertificate();
+  }
 
-//   const RejectCertificateHandler = () =>{
-//     const RejectCertificate = async () => {
-//         try {
-//           const responseData = await sendRequest(
-//             `http://localhost:5000/api/certificates/reject/${props.id}`,
-//             "PATCH",
-//              null,
-//             {
-//               "Content-Type": "application/json",
-//               Authorization: "Bearer " + auth.token,
-//             }
-//           );
-         
-//           setResponseStatus(responseData.responseMsg);
-//         } catch (err) {
-//           console.log(err);
-//         }
-//       };
-//       RejectCertificate();
-//   }
+  const RejectCertificateHandler = () =>{
+    const RejectCertificate = async () => {
+        try {
+          const responseData = await sendRequest(
+            `http://localhost:5000/api/certificates/reject/${props.id}`,
+            "PATCH",
+             null,
+            {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + auth.token,
+            }
+          );
+          setResponseStatus(responseData.responseMsg);
+          props.fetchUnapprovedCertificates();
+          
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      RejectCertificate();
+  }
 
   //for getting field of loaded Certificate from the dababase
   //   useEffect(() => {
@@ -200,7 +204,8 @@ const UnapprovedCertificatesItems = (props) => {
 
   return (
       <>
-            {
+      <LoadingSpinner open={isLoading}/>
+    {
         <Snackbar
           open={success || !!error}
           autoHideDuration={6000}
@@ -234,13 +239,26 @@ const UnapprovedCertificatesItems = (props) => {
         </Grid>
 
         <Grid item sm={6} lg={5} >
-          <Button
+        {status == "200" ? (
+                <Typography variant="subtitle2" className={classes.statusStyle}>
+                  {responseStatus == "approved" ? (
+                    <GiStamper className={classes.statusIconStyle} />
+                  ) : (
+                    <FiShieldOff className={classes.statusIconStyle} />
+                  )}
+
+                  {responseStatus == "approved" ? "APPROVED" : "REJECTED"}
+                </Typography>
+                
+                ) : (
+                    <>
+                <Button
             variant="contained"
             color="primary"
             size="small"
             className={classes.ViewButton}
             startIcon={<FiShieldOff style={{ marginLeft: 6 }} />}
-        //    onClick={RejectCertificateHandler}
+           onClick={RejectCertificateHandler}
           >
             Reject
           </Button>
@@ -250,10 +268,12 @@ const UnapprovedCertificatesItems = (props) => {
             size="small"
             className={classes.ViewButton}
             startIcon={<GiStamper style={{ marginLeft: 6 }} />}
-        //     onClick = {ApproveCertificateHandler}
+            onClick = {ApproveCertificateHandler}
           >
             Approve
           </Button>
+          </>
+                )}
         </Grid>
       </Grid>
 

@@ -16,7 +16,7 @@ router.get('/', certificatesControllers.getAllCertificates);
 
 router.post(
     '/',
-    fileUpload.single('image'),
+    fileUpload.single('file'),
     [
         check('title')
         .not()

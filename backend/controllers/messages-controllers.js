@@ -6,6 +6,8 @@ const HttpError = require('../models/http-error');
 const Message = require('../models/message');
 const Chat = require('../models/chat');
 const User = require('../models/user');
+const Resume = require('../models/resume');
+const Setting = require('../models/setting');
 const { ObjectID } = require('bson');
 
 const getMessageById = async (req, res, next) => {
@@ -69,21 +71,22 @@ const getMessagesByChatId = async (req, res, next) => {
 const createMessage = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log(errors)
         return next(
             new HttpError('Invalid inputs passed, please check your data.', 422)
         );
     }
 
     const { sender, receiver, content } = req.body;
-    if (content.length == 0 &&!req.file ) {
+    if (content.length == 0 && !req.file) {
         return next(
             new HttpError('Invalid inputs passed, please check your data.', 422)
         );
     }
     let senderUser;
     try {
-        senderUser = await User.findById(sender).populate('resume').populate('setting');
+        senderUser = await User.findById(sender)
+        .populate({path:'resume',model:Resume})
+        .populate({path:'setting',model:Setting});
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find a sender.',
@@ -102,7 +105,9 @@ const createMessage = async (req, res, next) => {
 
     let receiverUser;
     try {
-        receiverUser = await User.findById(receiver).populate('resume').populate('setting');
+        receiverUser = await User.findById(receiver)
+        .populate({path:'resume',model:Resume})
+        .populate({path:'setting',model:Setting});
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find a receiver.',
@@ -146,8 +151,8 @@ const createMessage = async (req, res, next) => {
         createdMessage = new Message({
             sender,
             receiver,
-            content:content?content:'',
-            file:req.file?req.file.path:'',
+            content: content ? content : '',
+            file: req.file ? req.file.path : '',
             time: Date.now(),
             chat: chat.id
         });
@@ -155,8 +160,7 @@ const createMessage = async (req, res, next) => {
         try {
             const sess = await mongoose.startSession();
             sess.startTransaction();
-            await createdMessage.save({ session: sess });
-            chat.lastMessage = content?content:'image';
+            chat.lastMessage = content ? content : 'image';
             if (sender == chat.with) {
                 chat.withUnread = 0;
                 chat.fromUnread = chat.fromUnread + 1;
@@ -166,6 +170,7 @@ const createMessage = async (req, res, next) => {
             }
             chat.lastMessageTime = Date.now();
             receiverUser.setting.unreadChats = receiverUser.setting.unreadChats + 1;
+            await createdMessage.save({ session: sess });
             await receiverUser.setting.save({ session: sess });
             await chat.save({ session: sess });
             await sess.commitTransaction();
@@ -189,8 +194,8 @@ const createMessage = async (req, res, next) => {
             _id: mid,
             sender,
             receiver,
-            content:content?content:'',
-            file:req.file?req.file.path:'',
+            content: content ? content : '',
+            file: req.file ? req.file.path : '',
             time: Date.now(),
             chat: cid
         });
@@ -199,9 +204,11 @@ const createMessage = async (req, res, next) => {
             with: receiver,
             withUnread: 1,
             withName: receiverUser.resume.fullname,
+            withImage: receiverUser.resume.image,
             from: sender,
             fromName: senderUser.resume.fullname,
-            lastMessage: content?content:'image',
+            fromImage: senderUser.resume.image,
+            lastMessage: content ? content : 'image',
             lastMessageTime: Date.now()
 
         });
@@ -218,7 +225,6 @@ const createMessage = async (req, res, next) => {
             await senderUser.save({ session: sess });
             await sess.commitTransaction();
         } catch (err) {
-            console.log(err)
             const error = new HttpError(
                 'Creating message failed, please try again.',
                 500
@@ -275,20 +281,22 @@ const deleteMessage = async (req, res, next) => {
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
-        fs.unlink(message.image, err => {
-            console.log(err);
-          });
+        if (message.image)
+            fs.unlink(message.image, err => {
+                console.log(err);
+            });
         if (message.id == lastMessage[0].id) {
-            message.chat.lastMessage = lastMessage[1].content?lastMessage[1].content:'image';
+            message.chat.lastMessage = lastMessage[1].content ? lastMessage[1].content : 'image';
             message.chat.lastMessageTime = lastMessage[1].time;
         } else {
-            message.chat.lastMessage =lastMessage[0].content?lastMessage[0].content:'image';
+            message.chat.lastMessage = lastMessage[0].content ? lastMessage[0].content : 'image';
             message.chat.lastMessageTime = lastMessage[0].time;
         }
         await message.chat.save({ session: sess });
         await message.remove({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
+        console.log(err)
         const error = new HttpError(
             'Something went wrong, could not delete message.',
             500

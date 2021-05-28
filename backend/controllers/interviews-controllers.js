@@ -1,12 +1,13 @@
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
-
+const socket = require('../RTC/socket-context');
 const HttpError = require("../models/http-error");
 const Interview = require("../models/interview");
 const Field = require("../models/field");
 const User = require("../models/user");
-const setting = require("../models/setting");
-const user = require("../models/user");
+const Setting = require("../models/setting");
+const Notification = require('../models/notification');
+const notification = require("../models/notification");
 
 const getInterviewById = async (req, res, next) => {
   const interviewId = req.params.iid;
@@ -174,8 +175,8 @@ const createInterview = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    await createdInterview.save({ session: sess });
     user.createdInterviews.push(createdInterview);
+    await createdInterview.save({ session: sess });
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
@@ -313,7 +314,6 @@ const updateInterview = async (req, res, next) => {
     await interview.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       "Updating interview failed, please try again.",
       500
@@ -357,8 +357,8 @@ const deleteInterview = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    await interview.remove({ session: sess });
     interview.creator.createdInterviews.pull(interview.id);
+    await interview.remove({ session: sess });
     await interview.creator.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
@@ -432,14 +432,40 @@ const AcceptInviteReq = async (req, res, next) => {
     );
     return next(error);
   }
-  candidate.receivedRequests.pull(interview.id);
-  candidate.addedInterviews.addToSet(interview.id);
-  interview.sentRequests.pull(candidate.id);
+  let interviewer;
+  try {
+    interviewer = await User.findById(interview.creator).populate({ path: 'setting', model: Setting });
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong Could not find interviewer.",
+      500
+    );
+    return next(error);
+  }
+  if (!interviewer) {
+    const error = new HttpError(
+      "Could not find interviewer for the provided id.",
+      404
+    );
+    return next(error);
+  }
+  const newNotification = new Notification({
+    message: `A candidate has accepted your request for the interview "${interview.title}".`,
+    to: interviewer.id,
+  });
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
+    candidate.receivedRequests.pull(interview.id);
+    candidate.addedInterviews.addToSet(interview.id);
+    interview.sentRequests.pull(candidate.id);
+    interviewer.notifications = [newNotification, ...interviewer.notifications];
+    interviewer.setting.unreadNotis = interviewer.setting.unreadNotis + 1;
+    await interviewer.save({ session: sess });
     await interview.save({ session: sess });
     await candidate.save({ session: sess });
+    await newNotification.save({session:sess});
+    await interviewer.setting.save({session:sess});
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
@@ -448,6 +474,7 @@ const AcceptInviteReq = async (req, res, next) => {
     );
     return next(error);
   }
+  socket.emit('notification', { userId: interviewer.id, notification: newNotification });
 
   res.status(200).json({
     interview: interview.toObject({ getters: true }),
@@ -502,32 +529,49 @@ const rejectInviteReq = async (req, res, next) => {
     );
     return next(error);
   }
-  // if (interview.creator.toString() !== req.userData.userId) {
-  //     const error = new HttpError('You are not allowed to edit this interview.', 401);
-  //     return next(error);
-  // }
-
-  // const added = interview.candidates.addToSet(candidate.id);
-  // if (added.length < 1) {
-  //     const error = new HttpError('Candidate is already added to the interview.', 401);
-  //     return next(error);
-  // }
-  candidate.receivedRequests.pull(interview.id);
-  interview.sentRequests.pull(candidate.id);
-
+  let interviewer;
   try {
-    const sess = await mongoose.startSession();
-    sess.startTransaction();
-    await interview.save({ session: sess });
-    await candidate.save({ session: sess });
-    await sess.commitTransaction();
+    interviewer = await User.findById(interview.creator).populate({ path: 'setting', model: Setting });
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not add candidate to interview.",
+      "Something went wrong Could not find interviewer.",
       500
     );
     return next(error);
   }
+  if (!interviewer) {
+    const error = new HttpError(
+      "Could not find interviewer for the provided id.",
+      404
+    );
+    return next(error);
+  }
+
+  const newNotification = new Notification({
+    message: `A candidate has rejcted your invitation to the interview "${interview.title}".`,
+    to: interviewer.id,
+  });
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    candidate.receivedRequests.pull(interview.id);
+    interview.sentRequests.pull(candidate.id);
+    interviewer.notifications = [newNotification, ...interviewer.notifications];
+    interviewer.setting.unreadNotis =interviewer.setting.unreadNotis + 1;
+    await interview.save({ session: sess });
+    await candidate.save({ session: sess });
+    await interviewer.save({ session: sess });
+    await interviewer.setting.save({session:sess});
+    await newNotification.save({session:sess});
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not reject invitation request to interview.",
+      500
+    );
+    return next(error);
+  }
+  socket.emit('notification', { userId: interviewer.id, notification: newNotification });
 
   res.status(200).json({
     interview: interview.toObject({ getters: true }),
@@ -547,7 +591,7 @@ const AcceptCandidateReq = async (req, res, next) => {
 
   let candidate;
   try {
-    candidate = await User.findById(uid);
+    candidate = await User.findById(uid).populate({ path: 'setting', model: Setting });
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not find a User.",
@@ -591,15 +635,22 @@ const AcceptCandidateReq = async (req, res, next) => {
     );
     return next(error);
   }
-  candidate.sentRequests.pull(interview.id);
-  interview.receivedRequests.pull(candidate.id);
-  candidate.addedInterviews.addToSet(interview.id);
-
+  const newNotification = new Notification({
+    message: `Congratulations! You are selected for the interview "${interview.title}". Remember the schedule and be on time. `,
+    to: candidate.id,
+  });
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
+    candidate.sentRequests.pull(interview.id);
+    interview.receivedRequests.pull(candidate.id);
+    candidate.addedInterviews.addToSet(interview.id);
+    candidate.notifications = [newNotification, ...candidate.notifications];
+    candidate.setting.unreadNotis = candidate.setting.unreadNotis + 1;
+    await newNotification.save({session:sess});
     await interview.save({ session: sess });
     await candidate.save({ session: sess });
+    await candidate.setting.save({session:sess});
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
@@ -608,6 +659,7 @@ const AcceptCandidateReq = async (req, res, next) => {
     );
     return next(error);
   }
+  socket.emit('notification', { userId: candidate.id, notification: newNotification });
 
   res.status(200).json({
     interview: interview.toObject({ getters: true }),
@@ -627,7 +679,7 @@ const RejectCandidateReq = async (req, res, next) => {
 
   let candidate;
   try {
-    candidate = await User.findById(uid);
+    candidate = await User.findById(uid).populate({ path: 'setting', model: Setting });
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not find a User.",
@@ -663,14 +715,22 @@ const RejectCandidateReq = async (req, res, next) => {
     return next(error);
   }
 
-  candidate.sentRequests.pull(interview.id);
-  interview.receivedRequests.pull(candidate.id);
+  const newNotification = new Notification({
+    message: `Your request for the interview "${interview.title}" is rejected by the interviewer `,
+    to: candidate.id,
+  });
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
+    candidate.sentRequests.pull(interview.id);
+    interview.receivedRequests.pull(candidate.id);
+    candidate.notifications = [newNotification, ...candidate.notifications];
+    candidate.setting.unreadNotis =candidate.setting.unreadNotis + 1;
     await interview.save({ session: sess });
     await candidate.save({ session: sess });
+    await newNotification.save({ session: sess });
+    await candidate.setting.save({session:sess});
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
@@ -679,6 +739,7 @@ const RejectCandidateReq = async (req, res, next) => {
     );
     return next(error);
   }
+  socket.emit('notification', { userId: candidate.id, notification: newNotification });
 
   res.status(200).json({
     interview: interview.toObject({ getters: true }),
@@ -698,7 +759,7 @@ const inviteCandidate = async (req, res, next) => {
 
   let candidate;
   try {
-    candidate = await User.findById(uid);
+    candidate = await User.findById(uid).populate({path:'setting',model:Setting});
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not find a User.",
@@ -741,14 +802,22 @@ const inviteCandidate = async (req, res, next) => {
     return next(error);
   }
 
-  interview.sentRequests.addToSet(candidate.id);
-  candidate.receivedRequests.addToSet(interview.id);
+  const newNotification = new Notification({
+    message: `You are invited for the interview "${interview.title}" by an interview. Open Interviews to respond.`,
+    to: candidate.id,
+  });
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
+    interview.sentRequests.addToSet(candidate.id);
+    candidate.receivedRequests.addToSet(interview.id);
+    candidate.notifications = [newNotification, ...candidate.notifications];
+    candidate.setting.unreadNotis = candidate.setting.unreadNotis + 1;
     await interview.save({ session: sess });
     await candidate.save({ session: sess });
+    await newNotification.save({ session: sess });
+    await candidate.setting.save({session:sess});
     await sess.commitTransaction();
   } catch (err) {
     console.log("Interview: " + err);
@@ -759,15 +828,7 @@ const inviteCandidate = async (req, res, next) => {
     return next(error);
   }
 
-  // try {
-  //     await interview.save();
-  // } catch (err) {
-  //     const error = new HttpError(
-  //         'Something went wrong, could not send request to the Candidate for interview.',
-  //         500
-  //     );
-  //     return next(error);
-  // }
+  socket.emit('notification', { userId: candidate.id, notification: newNotification });
 
   res.status(201).json({ interview: interview.toObject({ getters: true }) });
 };
@@ -819,18 +880,43 @@ const RequestForInterview = async (req, res, next) => {
     );
     return next(error);
   }
+  let interviewer;
+  try {
+    interviewer = await User.findById(interview.creator).populate({ path: 'setting', model: Setting });
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong Could not find interviewer.",
+      500
+    );
+    return next(error);
+  }
+  if (!interviewer) {
+    const error = new HttpError(
+      "Could not find interviewer for the provided id.",
+      404
+    );
+    return next(error);
+  }
 
-  candidate.sentRequests.addToSet(interview.id);
-  interview.receivedRequests.addToSet(candidate.id);
+  const newNotification = new Notification({
+    message: `A candidate has requested for the interview "${interview.title}". Open interviews to view requests.`,
+    to: interviewer.id,
+  });
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
+    candidate.sentRequests.addToSet(interview.id);
+    interview.receivedRequests.addToSet(candidate.id);
+    interviewer.notifications = [newNotification, ...interviewer.notifications];
+    interviewer.setting.unreadNotis =interviewer.setting.unreadNotis + 1;
     await interview.save({ session: sess });
     await candidate.save({ session: sess });
+    await interviewer.save({session:sess});
+    await interviewer.setting.save({session:sess});
+    await newNotification.save({session:sess});
     await sess.commitTransaction();
   } catch (err) {
-    console.log("Interview: " + err);
     const error = new HttpError(
       "Something went wrong, could not send request to the Candidate for interview.",
       500
@@ -838,15 +924,7 @@ const RequestForInterview = async (req, res, next) => {
     return next(error);
   }
 
-  // try {
-  //     await interview.save();
-  // } catch (err) {
-  //     const error = new HttpError(
-  //         'Something went wrong, could not send request to the Candidate for interview.',
-  //         500
-  //     );
-  //     return next(error);
-  // }
+  socket.emit('notification', { userId: interviewer.id, notification: newNotification });
 
   res.status(201).json({ interview: interview.toObject({ getters: true }) });
 };
@@ -909,7 +987,6 @@ const cancelRequestForInterview = async (req, res, next) => {
     await candidate.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
-    console.log("Interview: " + err);
     const error = new HttpError(
       "Something went wrong, could not cancel sent request for interview of the Candidate.",
       500
@@ -932,7 +1009,7 @@ const removeCandidate = async (req, res, next) => {
 
   let candidate;
   try {
-    candidate = await User.findById(uid);
+    candidate = await User.findById(uid).populate({path:'setting',model:Setting});
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not find a User.",
@@ -978,15 +1055,24 @@ const removeCandidate = async (req, res, next) => {
     );
     return next(error);
   }
-  interview.candidates.pull(candidate.id);
-  candidate.addedInterviews.pull(interview.id);
-  interview.sentRequests.pull(candidate.id);
+  const newNotification = new Notification({
+    message: `You are removed from the interview "${interview.title}" by the interview.`,
+    to: candidate.id,
+  });
+
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
+    interview.candidates.pull(candidate.id);
+    candidate.addedInterviews.pull(interview.id);
+    interview.sentRequests.pull(candidate.id);
+    candidate.notifications = [newNotification, ...candidate.notifications];
+    candidate.setting.unreadNotis = candidate.setting.unreadNotis + 1;
     await interview.save({ session: sess });
     await candidate.save({ session: sess });
+    await newNotification.save({ session: sess });
+    await candidate.setting.save({session:sess});
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
@@ -995,6 +1081,7 @@ const removeCandidate = async (req, res, next) => {
     );
     return next(error);
   }
+  socket.emit('notification', { userId: candidate.id, notification: newNotification });
 
   res.status(200).json({
     interview: interview.toObject({ getters: true }),

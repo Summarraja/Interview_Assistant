@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
@@ -60,7 +59,7 @@ props.userId != auth.userId && (
       >
         <ListItemAvatar>
           <Avatar
-            src={props.image}
+           src={"http://localhost:5000/" + props.file}
             style={{
               height: "50px",
               width: "50px",
