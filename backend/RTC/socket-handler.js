@@ -1,5 +1,7 @@
-const socketHandler = (socket) => {
-    const users = {}
+var FormData = require('form-data');
+const axios = require('axios');
+
+const socketHandler = (users, socket,io) => {
 
     let userid = socket.request._query['id'];
     console.log("connected")
@@ -26,14 +28,11 @@ const socketHandler = (socket) => {
         }
         console.log(users)
     })
-    socket.on('message', (data) => {
+    socket.on('message', (data,callback) => {
         let msgdata = new FormData();
         msgdata.append('sender', data.message.sender);
         msgdata.append('receiver', data.message.receiver);
         msgdata.append('content', data.message.content);
-        msgdata.append('time', data.message.time);
-        msgdata.append('isRead', 'true');
-        msgdata.append('chat', data.message.chat);
         msgdata.append('image', data.file, { filename: data.fileName });
         axios.post('http://localhost:5000/api/messages/',
             msgdata, {
@@ -43,6 +42,7 @@ const socketHandler = (socket) => {
             }
         })
             .then(function (response) {
+                callback(false, true);
                 console.log(response.status);
                 if (users[data.message.receiver]) {
                     users[data.message.receiver].forEach(soc => {
@@ -51,6 +51,7 @@ const socketHandler = (socket) => {
                 }
             })
             .catch(function (error) {
+                callback(true, false);
                 console.log(error);
             });
     })
@@ -77,7 +78,7 @@ const socketHandler = (socket) => {
     socket.on('callUser', (data) => {
         if (users[data.userToCall]) {
             users[data.userToCall].forEach(soc => {
-                io.to(soc).emit('hey', { signal: data.signalData, fromId: data.fromId, fromName: data.fromName, fromImage: data.fromImage })
+                io.to(soc).emit('hey', { signal: data.signalData, fromId: data.fromId, fromName: data.fromName, fromImage: data.fromImage ,type:data.type})
             });
         }
     })
@@ -109,10 +110,11 @@ const socketHandler = (socket) => {
             });
         }
     })
-    socket.on('sendNotification', (data) => {
-        if (users[data.to]) {
-            users[data.to].forEach(soc => {
-                io.to(soc).emit('busy')
+    socket.on('notification', (data) => {
+        console.log(data)
+        if (users[data.userId]) {
+            users[data.userId].forEach(soc => {
+                io.to(soc).emit('notification',data.notification);
             });
         }
     })

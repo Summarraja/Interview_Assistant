@@ -24,25 +24,25 @@ const Emotions = (props) => {
 
         <>
             <div >
-                Angry <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[0]} valueBuffer={buffer[0]} />
+                Angry <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[0]*100} valueBuffer={buffer[0]} />
             </div >
             <div >
-                Disgusted <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[1]} valueBuffer={buffer[1]} />
+                Disgusted <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[1]*100} valueBuffer={buffer[1]} />
             </div >
             <div >
-                Fearful <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[2]} valueBuffer={buffer[2]} />
+                Fearful <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[2]*100} valueBuffer={buffer[2]} />
             </div >
             <div >
-                Happy <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[3]} valueBuffer={buffer[3]} />
+                Happy <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[3]*100} valueBuffer={buffer[3]} />
             </div >
             <div >
-                Neutral <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[4]} valueBuffer={buffer[4]} />
+                Neutral <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[4]*100} valueBuffer={buffer[4]} />
             </div >
             <div >
-                Sad <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[5]} valueBuffer={buffer[5]} />
+                Sad <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[5]*100} valueBuffer={buffer[5]} />
             </div >
             <div >
-                Surprised <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[6]} valueBuffer={buffer[6]} />
+                Surprised <LinearProgress classes={{ root: classes.root, }} variant="buffer" value={props.progress[6]*100} valueBuffer={buffer[6]} />
             </div >
 
         </>

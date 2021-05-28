@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
+import VideocamIcon from '@material-ui/icons/Videocam';
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -18,7 +19,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 import { BsFillPersonCheckFill } from "react-icons/bs";
 import Typography from "@material-ui/core/Typography";
 import { FaUserClock, FaUserCheck } from "react-icons/fa";
-import { ImUserPlus } from "react-icons/im";
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   ActionButton: {
@@ -26,6 +27,16 @@ const useStyles = makeStyles((theme) => ({
     margin: "15px 0px",
     height: "32px",
     width: "140px",
+    [theme.breakpoints.down("xs")]: {
+      width: "120px",
+      height: "30px",
+    },
+  },
+  VideoCall:{
+    fontSize: "0.8rem",
+    margin: "15px 10px",
+    height: "32px",
+    width: "60px",
     [theme.breakpoints.down("xs")]: {
       width: "120px",
       height: "30px",
@@ -67,6 +78,7 @@ const CandidatesDialogItems = (props) => {
 
   const Users = [];
   Users.push(props.userId);
+  const history = useHistory();
 
   const classes = useStyles();
   const [interview, setInterview] = useState("");
@@ -85,7 +97,7 @@ const CandidatesDialogItems = (props) => {
           }
         );
         setInterview(responseData.interview);
-      } catch (err) {}
+      } catch (err) { }
     };
     props.interId && fetchInterview();
   }, []);
@@ -117,7 +129,7 @@ const CandidatesDialogItems = (props) => {
           }
         );
         setInterview(responseData.interview);
-        
+
       } catch (err) {
         console.log(err);
       }
@@ -140,7 +152,7 @@ const CandidatesDialogItems = (props) => {
           }
         );
         setResponseStatus(responseData.responseDone);
-       props.getInterviewRequestsData();
+        props.getInterviewRequestsData();
       } catch (err) {
         console.log(err);
       }
@@ -148,7 +160,7 @@ const CandidatesDialogItems = (props) => {
     removeAddedCand();
   };
   const AcceptCandidateReqHandler = () => {
-     const AcceptCandRequest = async () => {  
+    const AcceptCandRequest = async () => {
       try {
         const responseData = await sendRequest(
           `http://localhost:5000/api/interviews/acceptcandidatereq/${props.interId}`,
@@ -204,10 +216,10 @@ const CandidatesDialogItems = (props) => {
             {status == "201"
               ? "Invitation has sent successfully!"
               : responseStatus == "removed"
-              ? "Candidate has been removed from the Interview successfully!"
-              : responseStatus == "accepted"
-              ? "Candidate Request has been accepted successfully!"
-              : error}
+                ? "Candidate has been removed from the Interview successfully!"
+                : responseStatus == "accepted"
+                  ? "Candidate Request has been accepted successfully!"
+                  : error}
           </MuiAlert>
         </Snackbar>
       }
@@ -215,7 +227,7 @@ const CandidatesDialogItems = (props) => {
       {props.userId != auth.userId && (
         <List className={classes.list}>
           <Grid container>
-            <Grid item xs={6} sm={8} className={classes.responsive}>
+            <Grid item xs={6} sm={6} className={classes.responsive}>
               <ListItem
                 className={classes.listItem}
                 button
@@ -237,113 +249,131 @@ const CandidatesDialogItems = (props) => {
             </Grid>
             {isLoading && <LoadingSpinner open={isLoading} />}
 
-            <Grid item sm={4} xs={6} align="center">
+            <Grid item sm={6} xs={6} align="center">
               {/* IF */}
               {props.interCandidates && !props.searchItem ? (
                 Users.map(
                   (id) =>
                     findAddedCandidates(props.interCandidates, id) && (
-                      <Button
-                        key={id}
-                        variant="contained"
-                        color="primary"
-                        className={classes.ActionButton}
-                        onClick={removeCandidateHandler}
-                        startIcon={
-                          <PersonAddDisabledIcon style={{ marginLeft: 6 }} />
-                        }
-                      >
-                        Remove
+                      <div style={{display:'inline'}}>
+                        <Button
+                          key={id}
+                          variant="contained"
+                          color="primary"
+                          className={classes.VideoCall}
+                          onClick={()=>{
+                            history.push({
+                              pathname: '/videocall',
+                              state: { to: id, type: "interview" }
+                            });
+                          }}
+                          startIcon={
+                            <VideocamIcon style={{ marginLeft: 6 }} />
+                          }
+                        />
+
+                        <Button
+                          key={id}
+                          variant="contained"
+                          color="primary"
+                          className={classes.ActionButton}
+                          onClick={removeCandidateHandler}
+                          startIcon={
+                            <PersonAddDisabledIcon style={{ marginLeft: 6 }} />
+                          }
+                        >
+                          Remove
                       </Button>
+                       </div>
                     )
                 )
               ) : // ELSE
-              //IF
-              typeof interview.sentRequests !== "undefined" &&
-                props.interCandidates &&
-                props.interReceivedRequests ? (
-                //  else if
-                Users.map((id) =>
-                  findAddedCandidates(props.interCandidates, id) ? (
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.statusStyle}
-                      key={id}
-                    >
-                      <BsFillPersonCheckFill
-                        className={classes.statusIconStyle}
-                        key={id}
-                      />
-                      ADDED
-                    </Typography>
-                  ) : //  else if
-                  findRequestedCandidates(interview.sentRequests, id) ||
-                    status == 201 ? (
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.statusStyle}
-                      key={id}
-                    >
-                      <FaUserClock
-                        className={classes.statusIconStyle}
-                        key={id}
-                      />
-                      REQUESTED
-                    </Typography>
-                  ) : //else
-                  findAcceptingCandidates(props.interReceivedRequests, id) &&
-                    status == "200" ? (
-                    responseStatus == "accepted" ? (
+                //IF
+                typeof interview.sentRequests !== "undefined" &&
+                  props.interCandidates &&
+                  props.interReceivedRequests ? (
+                  //  else if
+                  Users.map((id) =>
+                    findAddedCandidates(props.interCandidates, id) ? (
                       <Typography
                         variant="subtitle2"
                         className={classes.statusStyle}
                         key={id}
                       >
-                        <FaUserCheck
+                        <BsFillPersonCheckFill
                           className={classes.statusIconStyle}
                           key={id}
                         />
-                        ACCEPTED
+                      ADDED
                       </Typography>
-                    ) : (
-                      <Button
-                        key={id}
-                        variant="contained"
-                        color="primary"
-                        className={classes.ActionButton}
-                        startIcon={<FaUserCheck style={{ marginLeft: 6 }} />}
-                        onClick={AcceptCandidateReqHandler}
-                      >
-                        Accept
-                      </Button>
-                    )
-                  ) : (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={classes.ActionButton}
-                      onClick={inviteCandidateHandler}
-                      startIcon={<PersonAddIcon style={{ marginLeft: 6 }} />}
-                      key={id}
-                    >
-                      Invite
-                    </Button>
+                    ) : //  else if
+                      findRequestedCandidates(interview.sentRequests, id) ||
+                        status == 201 ? (
+                        <Typography
+                          variant="subtitle2"
+                          className={classes.statusStyle}
+                          key={id}
+                        >
+                          <FaUserClock
+                            className={classes.statusIconStyle}
+                            key={id}
+                          />
+                      REQUESTED
+                        </Typography>
+                      ) : //else
+                        findAcceptingCandidates(props.interReceivedRequests, id) &&
+                          status == "200" ? (
+                          responseStatus == "accepted" ? (
+                            <Typography
+                              variant="subtitle2"
+                              className={classes.statusStyle}
+                              key={id}
+                            >
+                              <FaUserCheck
+                                className={classes.statusIconStyle}
+                                key={id}
+                              />
+                        ACCEPTED
+                            </Typography>
+                          ) : (
+                            <Button
+                              key={id}
+                              variant="contained"
+                              color="primary"
+                              className={classes.ActionButton}
+                              startIcon={<FaUserCheck style={{ marginLeft: 6 }} />}
+                              onClick={AcceptCandidateReqHandler}
+                            >
+                              Accept
+                            </Button>
+                          )
+                        ) : (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.ActionButton}
+                            onClick={inviteCandidateHandler}
+                            startIcon={<PersonAddIcon style={{ marginLeft: 6 }} />}
+                            key={id}
+                          >
+                            Invite
+                          </Button>
+                        )
                   )
-                )
-              ) : (
-                //ELSE
-                //ELSE
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.ActionButton}
-                  onClick={inviteCandidateHandler}
-                  startIcon={<PersonAddIcon style={{ marginLeft: 6 }} />}
+                ) : (
+                  //ELSE
+                  //ELSE
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.ActionButton}
+                    onClick={inviteCandidateHandler}
+                    startIcon={<PersonAddIcon style={{ marginLeft: 6 }} />}
                   //key={id}
-                >
-                  Invite
-                </Button>
-              )}
+                  >
+                    Invite
+                  </Button>
+                )}
             </Grid>
           </Grid>
         </List>

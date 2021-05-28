@@ -10,6 +10,7 @@ const router = express.Router();
 
 router.get('/', usersController.getUsers);
 router.get('/:uid', usersController.getUserData);
+router.get('/profile/:uid', usersController.getUserProfile);
 
 router.post('/sendCode',
   [

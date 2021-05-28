@@ -10,6 +10,14 @@ const useStyles = makeStyles((theme) => ({
   customBadge: {
     backgroundColor: "#00aa00",
     color: "white"
+  },
+  Avatar: {
+    display: "flex",
+    alignItems: "center",
+    marginRight: "0.5rem",
+    border: '1px solid lightgray',
+    width: 60,
+    height: 60,
   }
 }));
 
@@ -26,6 +34,9 @@ function ConversationList(props) {
   }
   const getName=()=>{
     return(props.chat.from == auth.userId) ? props.chat.withName : props.chat.fromName
+  }
+  const getImage=()=>{
+    return(props.chat.from == auth.userId) ? props.chat.withImage : props.chat.fromImage
   }
   const getUnread=()=>{
     return(props.chat.from != auth.userId) ? props.chat.withUnread : props.chat.fromUnread
@@ -49,7 +60,7 @@ function ConversationList(props) {
     <React.Fragment >
       <div className={getClass()} onClick={() => props.setSelectedChat(props.chat)}>
         <div className="avatar-component">
-          <Avatar src={'http://localhost:5000/uploads/images/image.png'} style={{ height: "50px", width: "50px", marginRight: "10px" }}>
+          <Avatar src={'http://localhost:5000/'+getImage()} className={classes.Avatar}>
           </Avatar>
         </div>
         <div className="right-section">

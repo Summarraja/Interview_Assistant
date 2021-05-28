@@ -1,12 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-var FormData = require('form-data');
 
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const axios = require('axios');
 
 const http = require('http')
 const server = http.createServer(app)
@@ -25,10 +23,13 @@ const faqsRoutes = require('./routes/faqs-routes');
 const ProblemRoutes = require('./routes/ReportProblem-routes');
 const chatsRoutes = require('./routes/chats-routes');
 const messagesRoutes = require('./routes/messages-routes');
+const notificationsRoutes = require('./routes/notifications-routes');
+const emotionStatsRoutes = require('./routes/emotionStats-routes');
 const HttpError = require('./models/http-error');
 const socketHandler = require('./RTC/socket-handler');
 
-io.on('connection',socketHandler);
+const users = {}
+io.on('connection', (socket) => socketHandler(users, socket, io));
 
 app.use(bodyParser.json());
 
@@ -52,10 +53,12 @@ app.use('/api/skills', skillsRoutes);
 app.use('/api/resumes', resumesRoutes);
 app.use('/api/certificates', certificatesRoutes);
 app.use('/api/settings', settingsRoutes);
-app.use('/api/faqs', faqsRoutes); 
-app.use('/api/problems', ProblemRoutes); 
+app.use('/api/faqs', faqsRoutes);
+app.use('/api/problems', ProblemRoutes);
 app.use('/api/chats', chatsRoutes);
 app.use('/api/messages', messagesRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/emotionStats', emotionStatsRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError('Could not find this route.', 404);
@@ -82,7 +85,7 @@ mongoose
     , {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useCreateIndex: true
+      useCreateIndex: true,
     }
   )
   .then(() => {

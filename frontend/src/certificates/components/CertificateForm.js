@@ -14,7 +14,6 @@ import MuiAlert from "@material-ui/lab/Alert";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { Typography } from "@material-ui/core";
 import UploadPhoto from "../../user/components/UploadPhoto";
-//import UploadCertificate from "./uploadCertificate";
 
 const useStyles = makeStyles((theme) => ({
   form: {

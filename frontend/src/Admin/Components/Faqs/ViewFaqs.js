@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import Toolbar from "@material-ui/core/Toolbar";
 import FaqCollectionAdmin from "./FaqCollectionAdmin";
 import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
-import { makeStyles, fade } from "@material-ui/core/styles";
-import { Button, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import CreateFaq from "./CreateFaqs";
 

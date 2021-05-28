@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./App.css";
 import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 
@@ -17,12 +17,11 @@ import UserProfile from "./user/pages/UserProfile";
 import Interview from "./Interviews/pages/Interview";
 import CreateInterview from "./Interviews/components/CreateInterview";
 import Chat from "./chat/pages/Chat";
+import Charts from "./charts/pages/Charts";
 import CandidateList from "./Interviews/components/CandidatesList";
 import ViewInterview from "./Interviews/pages/ViewInterview";
 
-import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 import Certificate from "./certificates/pages/Certificate";
-import InterviewItems from "./Interviews/components/InterviewItems";
 import ViewCertificate from "./certificates/pages/ViewCertificate";
 import io from "socket.io-client";
 
@@ -89,9 +88,10 @@ const App = () => {
           <Route path="/profile/:uid" exact component={UserProfile} />
           <Route path="/interviews/:uid" exact component={Interview} />
           <Route path="/chat" exact component={Chat} />
+          <Route path="/charts" exact component={Charts} />
           <Route path="/interviews/new" exact component={CreateInterview} />
           <Route path="/interview/candidates" exact component={CandidateList} />
-      
+
           <Route
             path="/interviews/view/:interId"
             exact
@@ -171,7 +171,10 @@ const App = () => {
             location.pathname !== "/signup"? (
             <SideBar />
           ) : (
-            <MainNavigation />
+            <>
+              <RTC />
+              <MainNavigation />
+            </>
           )}
 
           <main>{routes}</main>

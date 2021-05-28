@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 
 const HttpError = require("../models/http-error");
 const Resume = require("../models/resume");
+const Chat = require("../models/chat");
 const Field = require("../models/field");
 const User = require("../models/user");
 const Setting = require("../models/setting");
-const resume = require("../models/resume");
 
 const getResumeById = async (req, res, next) => {
   const resumeId = req.params.rid;
@@ -234,8 +234,8 @@ const createResume = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    await createResume.save({ session: sess });
-    user.resume.id = createResume.id;
+    user.resume = createResume;
+    await createdResume.save({ session: sess });
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
@@ -258,20 +258,21 @@ const updateResume = async (req, res, next) => {
   }
   const resumeId = req.params.rid;
 
-  let resume;
+  let user;
   try {
-    resume = await Resume.findById(resumeId);
+    user = await User.findOne({resume:resumeId})
+    .populate({path:'resume',model:Resume})
+    .populate({path:'chats',model:Chat});
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
-      "Something went wrong, could not update resume.",
+      "Something went wrong, could not find user.",
       500
     );
     return next(error);
   }
-  if (!resume) {
+  if (!user) {
     const error = new HttpError(
-      "Could not find resume for the provided id.",
+      "Could not find user for the provided resume id.",
       404
     );
     return next(error);
@@ -314,7 +315,7 @@ const updateResume = async (req, res, next) => {
     }
   }
 
-  if (resume.user.toString() !== req.userData.userId) {
+  if (user.id.toString() !== req.userData.userId) {
     const error = new HttpError(
       "You are not allowed to edit this resume.",
       401
@@ -322,26 +323,37 @@ const updateResume = async (req, res, next) => {
     return next(error);
   }
 
-  resume.firstname = firstname;
-  resume.lastname = lastname;
-  resume.fullname = firstname + " " + lastname;
-  resume.dob = dob;
-  resume.phone = phone;
-  resume.email = email;
-  resume.city = city;
-  resume.country = country;
-  resume.address = address;
-  resume.maxEducation = maxEducation;
-  resume.experience = experience;
-  resume.field = fieldId && field.id;
-  resume.professional=professional;
-  resume.education=education;
-  resume.additional=additional;
+  user.resume.firstname = firstname;
+  user.resume.lastname = lastname;
+  user.resume.fullname = firstname + " " + lastname;
+  user.resume.dob = dob;
+  user.resume.phone = phone;
+  user.resume.email = email;
+  user.resume.city = city;
+  user.resume.country = country;
+  user.resume.address = address;
+  user.resume.maxEducation = maxEducation;
+  user.resume.experience = experience;
+  user.resume.field = fieldId && field.id;
+  user.resume.professional=professional;
+  user.resume.education=education;
+  user.resume.additional=additional;
 
   try {
-    await resume.save();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    user.chats.map(async (chat)=>{
+      if(chat.with==user.id){
+        chat.withName=user.resume.fullname;
+      }
+      if(chat.from==user.id){
+        chat.fromName=user.resume.fullname;
+      }
+      await chat.save();
+    })
+    await user.resume.save();
+    sess.commitTransaction();
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       "Something went wrong, could not update resume.",
       500
@@ -349,7 +361,7 @@ const updateResume = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ resume: resume.toObject({ getters: true }) });
+  res.status(200).json({ resume: user.resume.toObject({ getters: true }) });
 };
 
 const deleteResume = async (req, res, next) => {
