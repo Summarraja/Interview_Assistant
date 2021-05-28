@@ -354,6 +354,8 @@ function findBlockedUsers(arr1, arr2) {
             size="medium"
             style={resumeButtonStyle}
             startIcon={<FaRegAddressCard />}
+            component = {Link}
+            to ="/resume"
           >
             {props.otherUser ? `${props.resume.firstname} Resume` : "My Resume"}
           </Button>

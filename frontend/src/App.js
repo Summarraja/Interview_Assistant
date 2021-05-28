@@ -165,6 +165,9 @@ const App = () => {
             setting.role == "Admin" &&
             location.pathname !== "/auth" &&
             location.pathname !== "/Faq" && 
+            location.pathname !== "/forgotpassword" && 
+            location.pathname !== "/verifycode" && 
+            location.pathname !== "/Reset" && 
             location.pathname !== "/signup"? (
             <SideBar />
           ) : (

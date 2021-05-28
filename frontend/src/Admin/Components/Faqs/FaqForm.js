@@ -36,7 +36,7 @@ const FaqForm = (props) => {
 
   const clearSuccess = () => {
     setSuccess(false);
-    props.setOpen(false)
+    
   };
   useEffect(() => {
     setSuccess(status==201);
@@ -50,11 +50,11 @@ const FaqForm = (props) => {
   const validationSchema = yup.object().shape({
     question: yup
       .string()
-      .min(10, "Question must be atleast 5 characters long")
+      .min(10, "Question must be atleast 10 characters long")
       .required("Title is required"),
     answer: yup
       .string()
-      .min(10, "Answer must be atleast 15 characters long")
+      .min(10, "Answer must be atleast 10 characters long")
       .required("Answer is required"),
   });
 

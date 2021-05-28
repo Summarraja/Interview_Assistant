@@ -330,14 +330,14 @@ const CertificateForm = (props) => {
                 </div>
               </Grid>
             </Grid>
-
+           {/* {console.log("file: "+       (!(fProps.isValid || !props.field || fProps.isSubmitting ) && file))} */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
               color="primary"
               disabled={
-                !(fProps.isValid || !props.field || fProps.isSubmitting)
+                !(fProps.isValid || !props.field || fProps.isSubmitting ) 
               }
               className={classes.submit}
             >

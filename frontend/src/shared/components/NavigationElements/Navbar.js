@@ -408,63 +408,63 @@ export default function Navbar(props) {
 
   const ITEM_HEIGHT = 130;
 
-  const NotificationMenu = (
-    <Menu
-      anchorEl={notiMenuAnchorEl}
-      id="notification-menu"
-      keepMounted
-      open={isNotiMenuOpen}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }}
-      PaperProps={{
-        style: {
-          maxHeight: ITEM_HEIGHT * 4.5,
-          width: '50ch',
-        },
-      }}
+//   const NotificationMenu = (
+//     <Menu
+//       anchorEl={notiMenuAnchorEl}
+//       id="notification-menu"
+//       keepMounted
+//       open={isNotiMenuOpen}
+//       anchorOrigin={{
+//         vertical: "bottom",
+//         horizontal: "right",
+//       }}
+//       PaperProps={{
+//         style: {
+//           maxHeight: ITEM_HEIGHT * 4.5,
+//           width: '50ch',
+//         },
+//       }}
     
-      transformOrigin={{
-        vertical: -60,
-        horizontal: 180,
-      }}
+//       transformOrigin={{
+//         vertical: -60,
+//         horizontal: 180,
+//       }}
   
-    >
+//     >
 
- <Grid container>
-    <Grid item  sm={7}className={classes.NotiTitle}  >
-        <Typography variant="h5"   style={{padding: "10px"}}>Notifications</Typography>
-        </Grid>
-        <Grid item  sm={4} align="right"  >
-        <IconButton color="primary">
-          <VscClearAll />
-        </IconButton>
-        <IconButton color="primary" float="left" onClick={closeNotiMenu}>
-          <AiFillCloseSquare />
-        </IconButton>
-</Grid>
-</Grid>
+//  <Grid container>
+//     <Grid item  sm={7}className={classes.NotiTitle}  >
+//         <Typography variant="h5"   style={{padding: "10px"}}>Notifications</Typography>
+//         </Grid>
+//         <Grid item  sm={4} align="right"  >
+//         <IconButton color="primary">
+//           <VscClearAll />
+//         </IconButton>
+//         <IconButton color="primary" float="left" onClick={closeNotiMenu}>
+//           <AiFillCloseSquare />
+//         </IconButton>
+// </Grid>
+// </Grid>
      
-      <Divider variant="middle" />
-      {notifications.map((noti) => (
-      <MenuItem key={noti} >
+//       <Divider variant="middle" />
+//       {notifications.map((noti) => (
+//       <MenuItem key={noti} >
       
-        <Grid item sm = {9} className = {classes.NotiTitle}>
-        <Typography variant="subtitle1" >{noti.message}</Typography>
+//         <Grid item sm = {9} className = {classes.NotiTitle}>
+//         <Typography variant="subtitle1" >{noti.message}</Typography>
      
        
-        </Grid>
-      <Grid item sm = {3} align="center"  style={{marginBottom: "20px" }}>
-        <Typography variant="subtitle1">{noti.time}</Typography>
-        </Grid>
+//         </Grid>
+//       <Grid item sm = {3} align="center"  style={{marginBottom: "20px" }}>
+//         <Typography variant="subtitle1">{noti.time}</Typography>
+//         </Grid>
         
-        </MenuItem>
-    ) )}
+//         </MenuItem>
+//     ) )}
    
 
-    </Menu>
-  );
+//     </Menu>
+//   );
 
 
 
@@ -561,7 +561,7 @@ export default function Navbar(props) {
       // }}
       transformOrigin={{
         vertical: -10,
-        horizontal: 230,
+        horizontal: 200,
       }}
       getContentAnchorEl={null}
     >
@@ -583,6 +583,7 @@ export default function Navbar(props) {
             {auth.resume && auth.resume.fullname}
           </Typography>
           <Typography variant="body1">See your profile</Typography>
+        <Typography variant="body1" color = "primary">{auth.setting && auth.setting.status}</Typography>
         </div>
       </MenuItem>
       <MenuItem
@@ -713,7 +714,7 @@ export default function Navbar(props) {
                 </Badge>
               </IconButton>
             
-              {NotificationMenu}
+              {/* {NotificationMenu} */}
 
               <FormGroup row>
                 <FormControlLabel

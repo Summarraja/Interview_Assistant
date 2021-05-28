@@ -330,6 +330,7 @@ const rejectCertificate = async (req, res, next) => {
         return next(error);
     }
 
+    const imagePath = certificate.file;
 
     try {
         const sess = await mongoose.startSession();
@@ -345,6 +346,11 @@ const rejectCertificate = async (req, res, next) => {
         );
         return next(error);
     }
+
+    
+    fs.unlink(imagePath, err => {
+        console.log(err);
+    });
 
     res.status(200).json({ certificate: certificate.toObject({ getters: true }), responseMsg: "rejected" });
 };
@@ -381,7 +387,7 @@ const deleteCertificate = async (req, res, next) => {
         const sess = await mongoose.startSession();
         sess.startTransaction();
         await certificate.remove({ session: sess });
-        certificate.creator.certificates.pull(certificate);
+        certificate.creator.certificates.pull(certificate.id);
         await certificate.creator.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {

@@ -162,8 +162,9 @@ export default function ForgetPassword(props) {
                   variant="contained"
                   color="primary"
                   className={classes.ButtonStyle}
-                  // onSubmit = {onSubmitHandler}
-                  disabled={!(props.isValid || props.isSubmitting)}
+                  // component = {Link}
+                  // to ="/Reset"
+                 disabled={!(props.isValid || props.isSubmitting)}
                 >
                   NEXT
                 </Button>
