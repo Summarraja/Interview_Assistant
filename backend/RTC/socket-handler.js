@@ -78,7 +78,7 @@ const socketHandler = (users, socket,io) => {
     socket.on('callUser', (data) => {
         if (users[data.userToCall]) {
             users[data.userToCall].forEach(soc => {
-                io.to(soc).emit('hey', { signal: data.signalData, fromId: data.fromId, fromName: data.fromName, fromImage: data.fromImage })
+                io.to(soc).emit('hey', { signal: data.signalData, fromId: data.fromId, fromName: data.fromName, fromImage: data.fromImage ,type:data.type})
             });
         }
     })

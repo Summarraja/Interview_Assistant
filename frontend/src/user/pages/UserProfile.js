@@ -138,7 +138,7 @@ export default function UserProfile() {
       <CssBaseline />
       <LoadingSpinner open={isLoading}/>
       {!isLoading && 
-       <User approvedCertCount = {approvedCertCount} otherUser = {uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>
+       <User approvedCertCount = {approvedCertCount} otherUser = {(uid==auth.userId)?null:uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>
       
       }
          </Container>

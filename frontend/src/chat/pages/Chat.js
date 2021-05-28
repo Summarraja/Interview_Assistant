@@ -72,7 +72,6 @@ function Chat() {
   const [searchedData, setSearchedData] = useState();
   const [selectedChat, setSelectedChat] = useState()
   const [messages, setMessages] = useState([]);
-  const [flag, setFlag] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [file, setFile] = useState('');
   const[previewUrl,setPreviewUrl]=useState('');
@@ -139,7 +138,7 @@ function Chat() {
           Authorization: "Bearer " + auth.token,
         }
       );
-      setData(responseData.chats.reverse());
+      setData(responseData.chats);
     } catch (err) { }
   };
   function pushMessage() {
@@ -158,7 +157,9 @@ function Chat() {
         previewUrl:previewUrl,
         token: "Bearer " + auth.token
       }
-      socket.emit("message", d);
+      socket.emit("message", d,(error,success)=>{
+        console.log(error,success)
+      });
       setNewMessage('');
       setPreviewUrl('');
       setFile('');

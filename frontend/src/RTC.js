@@ -23,6 +23,7 @@ const RTC = () => {
     const [callerData, setCallerData] = useState({ name: '', image: '' });
     const [receivingCall, setReceivingCall] = useState(false);
     const [callerSignal, setCallerSignal] = useState();
+    const [callType, setCallType] = useState('');
     const [callMessage, setCallMessage] = useState('is calling you..');
 
     const socket = useContext(SocketContext);
@@ -33,10 +34,9 @@ const RTC = () => {
         if (!socket)
             return;
         socket.on("hey", (data) => {
-            console.log('hey')
-            if(receivingCall){
+            if (receivingCall) {
                 socket.emit("busy", { to: data.fromId })
-            }else{
+            } else {
                 setReceivingCall(true);
                 ringtoneSound.load();
                 ringtoneSound.play();
@@ -46,6 +46,7 @@ const RTC = () => {
                     image: data.fromImage
                 });
                 setCallerSignal(data.signal);
+                setCallType(data.type);
             }
         })
         socket.on("close", (data) => {
@@ -88,10 +89,17 @@ const RTC = () => {
             >
 
                 <DialogTitle id="alert-dialog-slide-title">
-                    Friend's Call
+                    {(callType == 'interview') ? "Interview Call" : "Friend's " + callType + " Call"}
                 </DialogTitle>
                 <div style={{ display: 'flex', alignItems: 'center', alignContent: 'center', margin: '5%' }}>
-                    <Avatar src={'http://localhost:5000/' + callerData.image} style={{ height: "20%", width: "20%", margin: "10px" }}></Avatar>
+                    <Avatar src={'http://localhost:5000/' + callerData.image} style={{
+                        display: "flex",
+                        alignItems: "center",
+                        border: '1px solid lightgray',
+                        margin: "0.5rem",
+                        width: 100,
+                        height: 100,
+                    }}></Avatar>
                     {callerData.name} {callMessage}
                 </div>
 

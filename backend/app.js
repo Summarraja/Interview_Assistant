@@ -24,6 +24,7 @@ const ProblemRoutes = require('./routes/ReportProblem-routes');
 const chatsRoutes = require('./routes/chats-routes');
 const messagesRoutes = require('./routes/messages-routes');
 const notificationsRoutes = require('./routes/notifications-routes');
+const emotionStatsRoutes = require('./routes/emotionStats-routes');
 const HttpError = require('./models/http-error');
 const socketHandler = require('./RTC/socket-handler');
 
@@ -57,6 +58,7 @@ app.use('/api/problems', ProblemRoutes);
 app.use('/api/chats', chatsRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/emotionStats', emotionStatsRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError('Could not find this route.', 404);

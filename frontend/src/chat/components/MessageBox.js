@@ -56,7 +56,9 @@ function MessageBox(props) {
       msg,
       token: "Bearer " + auth.token
     }
-    socket.emit("deleteMessage", d);
+    socket.emit("deleteMessage", d,(error,success)=>{
+      console.log(error,success)
+    });
     if (props.messages[props.messages.length - 1].id == msg.id) {
       let chat = props.selectedChat;
       chat.lastMessage = props.messages[props.messages.length - 2].content;

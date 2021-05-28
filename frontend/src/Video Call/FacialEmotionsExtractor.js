@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 let socket = io.connect("http://localhost:5001");
 
 function FacialEmotionsExtractor(props) {
-
+  const [stats, setStats]=useState([0,0,0,0,0,0,0]);
   useEffect(() => {
     const timer = setInterval(() => {
       takepicture();
@@ -18,6 +18,11 @@ function FacialEmotionsExtractor(props) {
       let arr = arg.emotion.map(function(item) {
         return item * 100;
       })
+      var sum = stats.map(function (num, idx) {
+        return num + arr[idx];
+      });
+      console.log(sum);
+      setStats(sum);
       props.setProgress(arr)
     })
     return () => {

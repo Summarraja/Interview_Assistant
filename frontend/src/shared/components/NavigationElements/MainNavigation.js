@@ -223,9 +223,7 @@ const MainNavigation = () => {
           to={`/interviews/${auth.userId}`}
         >
           <ListItemIcon>
-            <Badge badgeContent={4} color="error">
               <DvrIcon className={classes.Navicon} />
-            </Badge>
           </ListItemIcon>
           <ListItemText primary="Interviews" />
         </ListItem>
@@ -288,6 +286,8 @@ const MainNavigation = () => {
           onClick={() => {
             SetOpenDrawer(false);
           }}
+          component={Link}
+          to="/charts"
         >
           <ListItemIcon>
             <InsertChartIcon className={classes.Navicon} />

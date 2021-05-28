@@ -7,7 +7,6 @@ import CallIcon from '@material-ui/icons/Call';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import './RightTopBar.css';
 import { AuthContext } from '../../shared/context/auth-context';
-import { Redirect } from 'react-router'
 import { useHistory } from 'react-router-dom'
 
 function RightTopBar(props) {
@@ -18,24 +17,26 @@ function RightTopBar(props) {
   }
   return (
     <>
-      <div className="avatar-component">
+      <Link style={{ textDecoration: 'none', color: '#000000' }} to={`/profile/${(props.selectedChat.from == auth.userId) ? props.selectedChat.with : props.selectedChat.from}`}>
+        <div className="avatar-component">
 
-        <Avatar src={'http://localhost:5000/' + getImage()} style={{
-          display: "flex",
-          alignItems: "center",
-          border: '1px solid lightgray',
-          margin: "0.5rem",
-          width: 50,
-          height: 50,
-        }}>
-        </Avatar>
-        <div style={{ margin: "10px" }}>
-          <Typography variant="h6" >
-            {(props.selectedChat.from == auth.userId) ? props.selectedChat.withName : props.selectedChat.fromName}
-          </Typography>
+          <Avatar src={'http://localhost:5000/' + getImage()} style={{
+            display: "flex",
+            alignItems: "center",
+            border: '1px solid lightgray',
+            margin: "0.5rem",
+            width: 50,
+            height: 50,
+          }}>
+          </Avatar>
+          <div style={{ margin: "10px" }}>
+            <Typography variant="h6" >
+              {(props.selectedChat.from == auth.userId) ? props.selectedChat.withName : props.selectedChat.fromName}
+            </Typography>
+          </div>
+
         </div>
-
-      </div>
+      </Link>
       <div style={{ float: "right" }}>
         <IconButton onClick={() => {
           history.push({

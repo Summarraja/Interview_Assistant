@@ -17,6 +17,7 @@ import UserProfile from "./user/pages/UserProfile";
 import Interview from "./Interviews/pages/Interview";
 import CreateInterview from "./Interviews/components/CreateInterview";
 import Chat from "./chat/pages/Chat";
+import Charts from "./charts/pages/Charts";
 import CandidateList from "./Interviews/components/CandidatesList";
 import ViewInterview from "./Interviews/pages/ViewInterview";
 
@@ -87,6 +88,7 @@ const App = () => {
           <Route path="/profile/:uid" exact component={UserProfile} />
           <Route path="/interviews/:uid" exact component={Interview} />
           <Route path="/chat" exact component={Chat} />
+          <Route path="/charts" exact component={Charts} />
           <Route path="/interviews/new" exact component={CreateInterview} />
           <Route path="/interview/candidates" exact component={CandidateList} />
 
