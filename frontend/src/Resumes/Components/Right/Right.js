@@ -125,7 +125,7 @@ function Right() {
           severity={status == "200" ? "success" : "error"}
           onClose={status == "200" ? clearSuccess : clearError}
         >
-          {status == "200" ? "Profile Updated Successfully!" : error}
+          {status == "200" ? "Resume Created Successfully!" : error}
         </MuiAlert>
       </Snackbar>
       <div className={classes.root}>

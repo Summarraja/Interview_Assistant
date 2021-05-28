@@ -58,7 +58,7 @@ const ReportProblemForm = (props) => {
       .string(),
       description: yup
       .string()
-      .min(10, "description must be atleast 15 characters long")
+      .min(10, "description must be atleast 10 characters long")
       .required("description is required"),
   });
 
