@@ -86,14 +86,16 @@ const validationSchema = yup.object().shape({
   //   "Must contain One Number and One Special Case Character"
   // )
   ,
-  address: yup
-    .string()
-    .required("This field is required"),
+ 
 
   confirmPassword: yup
     .string()
     .required("This field is required")
     .oneOf([yup.ref("password"), null], "Passwords must match"),
+
+    address: yup
+    .string()
+    .required("This field is required"),
 
   contact: yup
     .string()

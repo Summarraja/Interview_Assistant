@@ -429,7 +429,7 @@ export default function Navbar(props) {
       // }}
       transformOrigin={{
         vertical: -10,
-        horizontal: 230,
+        horizontal: 200,
       }}
       getContentAnchorEl={null}
     >
@@ -451,6 +451,7 @@ export default function Navbar(props) {
             {auth.resume && auth.resume.fullname}
           </Typography>
           <Typography variant="body1">See your profile</Typography>
+        <Typography variant="body1" color = "primary">{auth.setting && auth.setting.status}</Typography>
         </div>
       </MenuItem>
       <MenuItem
