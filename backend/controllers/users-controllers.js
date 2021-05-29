@@ -552,7 +552,7 @@ const deleteuser = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ message: "deleted user account" });
+  res.status(200).json({ message: "User Account Deleted" });
 };
 
 function random4Digit() {
