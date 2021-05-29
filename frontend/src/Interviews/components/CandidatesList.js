@@ -10,7 +10,7 @@ const CandidateList = (props) => {
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
   const [candidateResume, setCandidateResume] = useState([]);
-  const [receivedCandResume, setReceivedCandResume ] = useState([]);
+  
 
 
 

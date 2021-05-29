@@ -9,13 +9,10 @@ import DvrIcon from "@material-ui/icons/Dvr";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import EmailIcon from "@material-ui/icons/Email";
 import Tooltip from "@material-ui/core/Tooltip";
 import Navbar from "./Navbar";
 import Fade from "@material-ui/core/Fade";
-import ListAltIcon from "@material-ui/icons/ListAlt";
-import InsertChartIcon from "@material-ui/icons/InsertChart";
-import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
+import { FaChartBar } from "react-icons/fa";
 import Hidden from "@material-ui/core/Hidden";
 import { Divider } from "@material-ui/core";
 import { AuthContext } from "../../context/auth-context";
@@ -95,7 +92,7 @@ const MainNavigation = () => {
     return () => {
       socket.off("message");
     };
-  }, [socket,unreadChats]);
+  }, [socket, unreadChats]);
 
   useEffect(() => {
     if (!auth.userId) return;
@@ -134,24 +131,20 @@ const MainNavigation = () => {
     SetOpenDrawer(!OpenDrawer);
   };
 
- // console.log("GO: "+history.goBack())
+  // console.log("GO: "+history.goBack())
   const drawerItems = (
-
-    <List >
+    <List>
       <Tooltip
         title="Back"
         placement="right"
         TransitionComponent={Fade}
         TransitionProps={{ timeout: 600 }}
-
       >
         <IconButton
           className={classes.Navicon}
           onClick={() => history.goBack()}
         >
-          <IoIosArrowDropleft
-             style={{ margin: "0px 0px 20px 5px" }}
-          />
+          <IoIosArrowDropleft style={{ margin: "0px 0px 20px 5px" }} />
         </IconButton>
       </Tooltip>
 
@@ -223,7 +216,7 @@ const MainNavigation = () => {
           to={`/interviews/${auth.userId}`}
         >
           <ListItemIcon>
-              <DvrIcon className={classes.Navicon} />
+            <DvrIcon className={classes.Navicon} />
           </ListItemIcon>
           <ListItemText primary="Interviews" />
         </ListItem>
@@ -272,29 +265,34 @@ const MainNavigation = () => {
           <ListItemText primary="Resume" />
         </ListItem>
       </Tooltip>
-      <Divider variant="middle" className={classes.divider} />
 
-      <Tooltip
-        title={OpenDrawer ? "" : "Charts"}
-        placement="right"
-        TransitionComponent={Fade}
-        TransitionProps={{ timeout: 600 }}
-      >
-        <ListItem
-          button
-          key="Charts"
-          onClick={() => {
-            SetOpenDrawer(false);
-          }}
-          component={Link}
-          to="/charts"
-        >
-          <ListItemIcon>
-            <InsertChartIcon className={classes.Navicon} />
-          </ListItemIcon>
-          <ListItemText primary="Charts" />
-        </ListItem>
-      </Tooltip>
+      {auth.setting && auth.setting.role == "Interviewer" && (
+        <>
+          <Divider variant="middle" className={classes.divider} />
+
+          <Tooltip
+            title={OpenDrawer ? "" : "Charts"}
+            placement="right"
+            TransitionComponent={Fade}
+            TransitionProps={{ timeout: 600 }}
+          >
+            <ListItem
+              button
+              key="Charts"
+              onClick={() => {
+                SetOpenDrawer(false);
+              }}
+              component={Link}
+              to="/charts"
+            >
+              <ListItemIcon>
+                <FaChartBar className={classes.Navicon} />
+              </ListItemIcon>
+              <ListItemText primary="Charts" />
+            </ListItem>
+          </Tooltip>
+        </>
+      )}
     </List>
   );
 

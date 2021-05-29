@@ -69,7 +69,6 @@ const Interview = () => {
   
 
   const auth = useContext(AuthContext);
-  // const [reloadPage, setReloadPage] = useState(false);
   const { uid } = useParams();
 
   useEffect(() => {
