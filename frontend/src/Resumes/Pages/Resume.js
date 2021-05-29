@@ -10,12 +10,14 @@ import myClasses from "./../Components/Left/Left.module.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Templates from "../Components/Templates";
+import { Toolbar } from "@material-ui/core";
 
 
 
 function App() {
   return (
     <div className="app">
+      <Toolbar/>
       <ResumeContextProvider>
         <BrowserRouter>
           <Switch>
@@ -25,6 +27,7 @@ function App() {
         </BrowserRouter>
         <Right />
       </ResumeContextProvider>
+      
     </div>
   );
 }
