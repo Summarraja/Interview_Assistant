@@ -9,7 +9,7 @@
   
   .app {
     display: flex;
-    min-height: 100vh;
+    min-height: 90vh;
     margin-top:"0px";
   }
   
@@ -19,9 +19,6 @@
     flex: 1;
   }
  
- 
-  
-  
   main header,
   aside header {
     background: #ededed;
