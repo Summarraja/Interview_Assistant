@@ -458,7 +458,7 @@ function VideoCall(props) {
                     interview:props.location.state.interview,
                     candidate:props.location.state.candidate,
                     type:'vocal',
-                    emotions:facialStats
+                    emotions:voiceStats
                 }),
                 {
                     "Content-Type": "application/json",
@@ -482,7 +482,7 @@ function VideoCall(props) {
                     interview:props.location.state.interview,
                     candidate:props.location.state.candidate,
                     type:'facial',
-                    emotions:voiceStats
+                    emotions:facialStats
                 }),
                 {
                     "Content-Type": "application/json",

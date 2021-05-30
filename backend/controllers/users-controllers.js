@@ -122,6 +122,7 @@ const sendCode = async (req, res, next) => {
   try {
     await user.save();
   } catch (err) {
+    console.log(err)
     const error = new HttpError(
       "Something went wrong, could not send code.",
       500
@@ -193,6 +194,7 @@ const verifyCode = async (req, res, next) => {
   try {
     await user.save();
   } catch (err) {
+    console.log(err)
     const error = new HttpError(
       "Something went wrong, could not verify email",
       500
@@ -340,7 +342,6 @@ const signup = async (req, res, next) => {
   });
 
   const createdSetting = new Setting({
-    notiStatus: false,
     status: "available",
     role: "Candidate",
     blockedUsers: [],

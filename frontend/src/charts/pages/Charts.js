@@ -7,6 +7,10 @@ import { AuthContext } from "../../shared/context/auth-context";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import TakenInterviewsList from "../components/ChartInterface/TakenInterviewsList";
 import InterCandidatesList from "../components/ChartInterface/InterCandidatesList";
+import Polar from '../components/Polar';
+import HorizontalBar from '../components/HorizontalBar';
+import MultiAxisLine from '../components/MultiAxisLine';
+import LineChart from '../components/LineChart';
 import { AiFillPropertySafety } from "react-icons/ai";
 
 const useStyles = makeStyles((theme) => ({
@@ -64,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
     color: "#004777",
     margin: "0% 38%",
   },
+  charts:{
+    margin:'1rem'
+  }
 }));
 
 const Charts = () => {
@@ -72,6 +79,7 @@ const Charts = () => {
   const [candidates, setCandidates] = useState([]);
   const [selectedInterview, setSelectedInterview] = useState();
   const [selectedCand, setSelectedCand] = useState();
+  const [stats, setStats] = useState([]);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
   const today = new Date();
@@ -81,6 +89,28 @@ const Charts = () => {
 
 
 
+  useEffect(() => {
+    if (!selectedCand || !selectedInterview)
+      return
+    const getStats = async () => {
+      try {
+
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/emotionStats/${selectedInterview.id}/${selectedCand}`,
+          "GET",
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setStats(responseData.stats)
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getStats();
+  }, [selectedCand]);
   useEffect(() => {
     const getData = async () => {
       try {
@@ -94,7 +124,6 @@ const Charts = () => {
           }
         );
         setInterviews(responseData.interviews);
-        console.log(responseData.interviews);
       } catch (err) {
         console.log(err);
       }
@@ -129,13 +158,14 @@ const Charts = () => {
               </Typography>
             </header>
             <div>
-              {!isLoading && (
+              {interviews && (
                 <TakenInterviewsList
                   items={takenInterviews}
                   selectedInterview={selectedInterview}
                   setSelectedInterview={setSelectedInterview}
                   setCandidates={setCandidates}
-                  candidates = {candidates}
+                  candidates={candidates}
+                  setSelectedCand={setSelectedCand}
                 />
               )}
             </div>
@@ -147,12 +177,13 @@ const Charts = () => {
                 variant="h5"
                 className={classes.LeftTypoDiv}
               >
-                Select Candidates
+                Select Candidate
               </Typography>
             </header>
             <div>
-             {/* { console.log("Chart candidates: " + candidates)} */}
-              {!isLoading && candidates && (
+
+              {/* { console.log("Chart candidates: " + candidates)} */}
+              {interviews && candidates && (
                 <InterCandidatesList
                   items={candidates}
                   selectedCand={selectedCand}
@@ -174,6 +205,21 @@ const Charts = () => {
               Emotions Statistics
             </Typography>
           </header>
+          {selectedCand && (
+            <div className={classes.charts}>
+              {(stats.length == 0) && (
+                <>No Data Found</>
+              )}
+              {(stats.length > 0) && (
+                <>
+                  <MultiAxisLine data={stats} />
+                  <LineChart data={stats}/>
+                  <HorizontalBar data={stats} />
+                  <Polar data={stats} />
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

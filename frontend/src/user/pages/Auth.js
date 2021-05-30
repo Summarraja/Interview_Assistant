@@ -21,7 +21,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" to={{
+      <Link style={{ textDecoration: 'none', color: 'inherit' }} to={{
         pathname: "/",
       }}>
         Smarthire
@@ -96,7 +96,7 @@ const SignIn = () => {
           'Content-Type': 'application/json'
         }
       );
-      auth.login(responseData.userId, responseData.token,responseData.resume, responseData.setting);
+      auth.login(responseData.userId, responseData.token, responseData.resume, responseData.setting);
     } catch (err) {
     }
 
@@ -106,9 +106,10 @@ const SignIn = () => {
     return <Redirect
       to={{
         pathname: "/verifyEmail",
-        state: { emailverification: true,
-          forgotpassword:false
-         }
+        state: {
+          emailverification: true,
+          forgotpassword: false
+        }
       }} />;
   }
   return (
@@ -145,17 +146,21 @@ const SignIn = () => {
               />
               <Grid container>
                 <Grid item xs>
-                  <Link to={{
-                    pathname: "/forgotpassword",
-                    state: { forgotpassword: true }
-                  }} variant="body2">
+                  <Link
+                    style={{ textDecoration: 'none',  }}
+                    to={{
+                      pathname: "/forgotpassword",
+                      state: { forgotpassword: true }
+                    }} variant="body2">
                     Forgot password?
                </Link>
                 </Grid>
                 <Grid item>
-                  <Link to={{
-                    pathname: "/signup",
-                  }} variant="body2">
+                  <Link
+                    style={{ textDecoration: 'none',  }}
+                    to={{
+                      pathname: "/signup",
+                    }} variant="body2">
                     {"Don't have an account? Sign Up"}
 
                   </Link>

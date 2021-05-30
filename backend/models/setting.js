@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const settingSchema = new Schema({
-  notiStatus: {  type: Boolean, default: false },
   unreadChats:{type:Number,default:0},
   unreadNotis:{type:Number,default:0},
   status: { type: String, enum: ['busy', 'available','away'], default: 'available' },
