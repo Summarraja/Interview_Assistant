@@ -39,9 +39,11 @@ const TakenInterviewsList = (props) => {
       field={interview.field}
       candidates={interview.candidates}
       creatorId={interview.creator}
+      interview = {interview}
       selectedInterview={props.selectedInterview} 
       setSelectedInterview={props.setSelectedInterview}
       setCandidates = {props.setCandidates}
+      candidates = {props.candidates}
       
     />
 

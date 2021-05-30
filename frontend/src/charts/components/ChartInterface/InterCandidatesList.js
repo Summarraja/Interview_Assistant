@@ -16,14 +16,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const InterCandidatesList = (props) => {
+  console.log(" Candidate List: " + props.items.length)
   const classes = useStyles();
-  const [candidateResume, setCandidateResume] = useState([]);
+  const [candidResume, setCandidResume] = useState([]);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
 
+  
   useEffect(() => {
-    setCandidateResume([]);
-    const fetchCandidateResume = async (candID) => {
+    console.log("IN:")
+  
+    const fetchCandidResume = async (candID) => {
       try {
         const responseData = await sendRequest(
           `http://localhost:5000/api/resumes/user/${candID}`,
@@ -35,19 +38,21 @@ const InterCandidatesList = (props) => {
           }
         );
 
-        setCandidateResume((oldArray) => [...oldArray, responseData.resume]);
+        setCandidResume((oldArray) => [...oldArray, responseData.resume]);
       } catch (err) {
         console.log(err);
       }
     };
-
+    setCandidResume([]);
   if(props.items.length !== 0){
     props.items.map((candID) =>
-    fetchCandidateResume(candID)
+     fetchCandidResume(candID)
   );
   }
  
-  }, [props.items]);
+  }, [props.items, props.selectedInterview ]);
+
+console.log("candid resume: " + candidResume)
 
   if (props.items.length === 0) {
     return (
@@ -63,8 +68,8 @@ const InterCandidatesList = (props) => {
 
   return (
       <>
-      {!isLoading && candidateResume ?
-    candidateResume.map((candidate) => (
+      {!isLoading && candidResume ?
+    candidResume.map((candidate) => (
     <InterCandidatesItems
       key = {candidate.id}
       id = {candidate.id}

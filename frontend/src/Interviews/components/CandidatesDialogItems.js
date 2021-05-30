@@ -273,7 +273,7 @@ const CandidatesDialogItems = (props) => {
                         />
 
                         <Button
-                          key={id}
+                        
                           variant="contained"
                           color="primary"
                           className={classes.ActionButton}

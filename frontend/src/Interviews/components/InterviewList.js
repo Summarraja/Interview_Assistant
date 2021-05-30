@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import InterviewItems from "./InterviewItems";
 import Container from "@material-ui/core/Container";
 
@@ -8,7 +8,6 @@ import bgInterview5 from "../../shared/components/UIElements/Images/bgInterview5
 import Typography from "@material-ui/core/Typography";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import MyInterviewCandidate from "./MyInterviewCandidate";
 import AppBar from "@material-ui/core/AppBar";
 import Tab from "@material-ui/core/Tab";

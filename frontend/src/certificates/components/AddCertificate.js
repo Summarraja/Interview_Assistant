@@ -36,11 +36,6 @@ const AddCertificate = (props) => {
   var date = curr.toISOString().substr(0, 10);
   const [field, setField] = useState("Computer Science");
 
-  const paperStyle = {
-    width: 400,
-    padding: 20,
-    margin: "100px auto",
-  };
   const avatarStyle = {
     backgroundColor: "primary",
   };

@@ -110,7 +110,8 @@ export default function Home(props) {
                 key={resume._id}
                 id={resume._id}
                 name={resume.firstname + " " + resume.lastname}
-                userId={resume.user}
+                userId={resume.user.id}
+                image = {resume.image}
               />
             ))}
           </Card>

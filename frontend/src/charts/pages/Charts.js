@@ -7,6 +7,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import TakenInterviewsList from "../components/ChartInterface/TakenInterviewsList";
 import InterCandidatesList from "../components/ChartInterface/InterCandidatesList";
+import { AiFillPropertySafety } from "react-icons/ai";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,6 +79,8 @@ const Charts = () => {
     today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
   const CurrentDate = new Date(date);
 
+
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -132,6 +135,7 @@ const Charts = () => {
                   selectedInterview={selectedInterview}
                   setSelectedInterview={setSelectedInterview}
                   setCandidates={setCandidates}
+                  candidates = {candidates}
                 />
               )}
             </div>
@@ -147,11 +151,14 @@ const Charts = () => {
               </Typography>
             </header>
             <div>
+             {/* { console.log("Chart candidates: " + candidates)} */}
               {!isLoading && candidates && (
                 <InterCandidatesList
                   items={candidates}
                   selectedCand={selectedCand}
                   setSelectedCand={setSelectedCand}
+                  selectedInterview={selectedInterview}
+                  setSelectedInterview={setSelectedInterview}
                 />
               )}
             </div>

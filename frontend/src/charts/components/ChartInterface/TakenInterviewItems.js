@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import "../../pages/Charts.css";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,19 +13,23 @@ const useStyles = makeStyles((theme) => ({
 const TakenInterviewItems = (props) => {
   const classes = useStyles();
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const [interCandidates, setinterCandidates] = useState([]);
 
-  let interCandidates = [];
-
-  if (props.selectedInterview && props.selectedInterview == props.id) {
-    props.candidates.map((cand) => interCandidates.push(cand));
-  }
 
   useEffect(() => {
+    if (props.selectedInterview && props.selectedInterview.id == props.id) {
+      setinterCandidates([]);
+
+      props.selectedInterview.candidates.map((cand) =>
+        setinterCandidates((oldArray) => [...oldArray, cand])
+      );
+    }
+
     props.setCandidates(interCandidates);
-  }, [props.selectedInterview]);
+  }, [props.selectedInterview, interCandidates.length]);
 
   const getClass = () => {
-    if (props.selectedInterview && props.selectedInterview == props.id)
+    if (props.selectedInterview && props.selectedInterview == props.interview)
       return "selected";
     return "contact-box";
   };
@@ -34,7 +38,7 @@ const TakenInterviewItems = (props) => {
       <LoadingSpinner open={isLoading} />
       <div
         className={getClass()}
-        onClick={() => props.setSelectedInterview(props.id)}
+        onClick={() => props.setSelectedInterview(props.interview)}
       >
         <div className="right-section">
           <div className="contact-box-header">
