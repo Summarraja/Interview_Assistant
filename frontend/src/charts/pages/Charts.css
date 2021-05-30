@@ -33,7 +33,7 @@
 
   .contact-box {
     background: #fff;
-  
+    border: 1px solid lightgray;
     padding: 0.75rem 0.75rem;
     display: flex;
     align-items: center;

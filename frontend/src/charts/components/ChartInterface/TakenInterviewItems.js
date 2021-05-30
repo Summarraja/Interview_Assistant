@@ -15,19 +15,10 @@ const TakenInterviewItems = (props) => {
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const [interCandidates, setinterCandidates] = useState([]);
 
-
-
   useEffect(() => {
-    if (props.selectedInterview && props.selectedInterview.id == props.id) {
-      setinterCandidates([]);
-
-      props.selectedInterview.candidates.map((cand) =>
-        setinterCandidates((oldArray) => [...oldArray, cand])
-      );
-    }
-
-    props.setCandidates(interCandidates);
-  }, [props.selectedInterview, interCandidates.length]);
+    if (props.selectedInterview)
+      props.setCandidates(props.selectedInterview.candidates);
+  }, [props.selectedInterview]);
 
   const getClass = () => {
     if (props.selectedInterview && props.selectedInterview == props.interview)
@@ -40,12 +31,15 @@ const TakenInterviewItems = (props) => {
       <div
         className={getClass()}
 
-        onClick={() => props.setSelectedInterview(props.interview)}
+        onClick={() => {
+          props.setSelectedInterview(props.interview)
+          props.setSelectedCand(null)
+        }}
       >
         <div className="right-section">
           <div className="contact-box-header">
             <Typography variant="h6" className={classes.typoStyle}>
-              {props.title}
+              {props.interview.title}
             </Typography>
           </div>
           <div className="last-msg">
@@ -54,7 +48,7 @@ const TakenInterviewItems = (props) => {
               variant="body2"
               className={classes.typoStyle}
             >
-              {props.date}
+              {props.interview.date}
             </Typography>
           </div>
         </div>

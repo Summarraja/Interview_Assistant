@@ -342,7 +342,6 @@ const signup = async (req, res, next) => {
   });
 
   const createdSetting = new Setting({
-    notiStatus: false,
     status: "available",
     role: "Candidate",
     blockedUsers: [],
