@@ -59,17 +59,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-
-
-  customWidth: {
-
-    '& li': {
-
-      maxWidth: '400px',
-    }
-  },
-
-
   navbar: {
     zIndex: theme.zIndex.drawer + 1,
     flexGrow: 1,
@@ -500,6 +489,7 @@ export default function Navbar(props) {
   );
 
   return (
+
     <Fragment>
       <Snackbar
         open={success || !!error}

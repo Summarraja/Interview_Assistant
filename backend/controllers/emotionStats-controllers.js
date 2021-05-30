@@ -8,9 +8,9 @@ const User = require('../models/user');
 const getEmotionStatsbyInterviewId = async (req, res, next) => {
     const interviewId = req.params.iid;
 
-    let emotions;
+    let stats;
     try {
-        emotions = await EmotionStats.find({ interview: interviewId });
+        stats = await EmotionStats.find({ interview: interviewId });
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find emotions',
@@ -19,7 +19,7 @@ const getEmotionStatsbyInterviewId = async (req, res, next) => {
         return next(error);
     }
 
-    if (!emotions) {
+    if (!stats) {
         const error = new HttpError(
             'Could not find emotions for the provided interview id.',
             404
@@ -27,8 +27,8 @@ const getEmotionStatsbyInterviewId = async (req, res, next) => {
         return next(error);
     }
     res.json({
-        emotions: emotions.map(emotion =>
-            emotion.toObject({ getters: true })
+        stats: stats.map(stat =>
+            stat.toObject({ getters: true })
         )
     });
 };
@@ -40,41 +40,37 @@ const createOrUpdateEmotionStats = async (req, res, next) => {
             new HttpError('Invalid inputs passed, please check your data.', 422)
         );
     }
-    const { interview, candidate, type, happyCount, sadCount, angryCount, neutralCount, disgustCount, surpriseCount, fearCount } = req.body;
+    const { interview, candidate, type, emotions } = req.body;
 
-    let emotions;
+    let stats;
     try {
-        emotions = await EmotionStats.findOne({ interview: interview, candidate: candidate, type: type });
+        stats = await EmotionStats.findOne({ interview: interview, candidate: candidate, type: type });
     } catch (err) {
         const error = new HttpError(
-            'Something went wrong, could not find emotions',
+            'Something went wrong, could not find emotions stats',
             500
         );
         return next(error);
     }
 
-    if (emotions) {
-        emotions.happyCount = emotions.happyCount + happyCount;
-        emotions.sadCount = emotions.sadCount + sadCount;
-        emotions.angryCount = emotions.angryCount + angryCount;
-        emotions.neutralCount = emotions.neutralCount + neutralCount;
-        emotions.disgustCount = emotions.disgustCount + disgustCount;
-        emotions.surpriseCount = emotions.surpriseCount + surpriseCount;
-        emotions.fearCount = emotions.fearCount + fearCount;
+    if (stats) {
+        stats.emotions = [...stats.emotions,...emotions];
         try{
-            await emotions.save();
+            await stats.save();
         }
         catch(err){
+            console.log(err)
             const error = new HttpError(
                 'Updating Emotions failed, please try again.',
                 500
             );
             return next(error);
         }
-        res.status(201).json({ emotions: emotions });
+        console.log("updated")
+        res.status(200).json({ stats: stats });
 
     }
-    if(!emotions){
+    else if(!stats){
         let existingInterview;
         try {
             existingInterview = await Interview.findById(interview);
@@ -116,21 +112,15 @@ const createOrUpdateEmotionStats = async (req, res, next) => {
             );
             return next(error);
         }
-        const createdEmotions = new EmotionStats({
+        const createdStats = new EmotionStats({
             interview,
             candidate,
             type,
-            happyCount,
-            sadCount,
-            angryCount,
-            neutralCount,
-            disgustCount,
-            surpriseCount,
-            fearCount
+            emotions
         });
     
         try {
-            await createdEmotions.save();
+            await createdStats.save();
         } catch (err) {
             const error = new HttpError(
                 'Creating Emotions failed, please try again.',
@@ -138,8 +128,9 @@ const createOrUpdateEmotionStats = async (req, res, next) => {
             );
             return next(error);
         }
-    
-        res.status(201).json({ emotions: createdEmotions });
+        console.log("created")
+
+        res.status(200).json({ stats: createdStats });
     
     }
 };

@@ -5,6 +5,10 @@ import CallEndIcon from '@material-ui/icons/CallEnd';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import SentimentVerySatisfiedIcon from '@material-ui/icons/SentimentVerySatisfied';
+import SaveIcon from '@material-ui/icons/Save';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
 import { Grid, IconButton, makeStyles } from "@material-ui/core";
 import { AuthContext } from "../shared/context/auth-context";
@@ -15,6 +19,10 @@ import Black from './black.png';
 import Emotions from './Emotions';
 import FacialEmotionsExtractor from './FacialEmotionsExtractor';
 import VocalEmotionsExtractor from './VocalEmotionsExtractor';
+import { useHttpClient } from "../shared/hooks/http-hook";
+import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
 
@@ -115,12 +123,14 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+const ITEM_HEIGHT = 48;
 function VideoCall(props) {
     const classes = useStyles();
     const history = useHistory();
+    const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
     const [audioMuted, setAudioMuted] = useState(false);
-    const [videoMuted, setVideoMuted] = useState(props.location.state.type=='audio');
+    const [videoMuted, setVideoMuted] = useState(props.location.state.type == 'audio');
     const [stream, setStream] = useState();
     const [caller, setCaller] = useState("");
     const [callerSignal, setCallerSignal] = useState();
@@ -132,13 +142,29 @@ function VideoCall(props) {
     const [partnerStream, setPartnerSstream] = useState(false);
     const [facialEmotionState, setFacialEmotionState] = useState([0, 0, 0, 0, 0, 0, 0]);
     const [vocalEmotionState, setVocalEmotionState] = useState([0, 0, 0, 0, 0, 0, 0]);
-    const [isInterviewer,setIsInterviewer] = useState(false);
+    const [isInterviewer, setIsInterviewer] = useState(false);
+    const [facialStats, setFacialStats] = useState([]);
+    const [voiceStats, setVoiceStats] = useState([]);
+    const [success, setSuccess] = useState(false);
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+
     const socket = useContext(SocketContext);
     const auth = useContext(AuthContext);
 
     const userVideo = useRef();
     const partnerVideo = useRef();
     const myPeer = useRef();
+
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     useEffect(() => {
 
@@ -166,9 +192,9 @@ function VideoCall(props) {
         }
     };
     useEffect(() => {
-        if (props.location.state && props.location.state.to){
+        if (props.location.state && props.location.state.to) {
             callPeer(props.location.state.to, props.location.state.type);
-            if(props.location.state.type=='interview')
+            if (props.location.state.type == 'interview')
                 setIsInterviewer(true);
 
         }
@@ -177,11 +203,11 @@ function VideoCall(props) {
             setCallerSignal(props.location.state.callerSignal);
         }
     }, []);
-    useEffect(()=>{
-        if(videoMuted && stream){
+    useEffect(() => {
+        if (videoMuted && stream) {
             stream.getVideoTracks()[0].enabled = !videoMuted;
         }
-    },[stream])
+    }, [stream])
     useEffect(() => {
         if (caller && callerSignal)
             acceptCall();
@@ -201,7 +227,7 @@ function VideoCall(props) {
             socket.off("rejected");
         };
     }, [])
-    function callPeer(id,type) {
+    function callPeer(id, type) {
         if (id !== '' && id !== auth.userId) {
             navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
                 setStream(stream);
@@ -269,7 +295,7 @@ function VideoCall(props) {
 
                 peer.on("signal", data => {
                     console.log("signal")
-                    socket.emit("callUser", { userToCall: props.location.state.to, signalData: data, fromId: auth.userId, fromName: auth.resume.fullname, fromImage: auth.resume.image , type:type})
+                    socket.emit("callUser", { userToCall: props.location.state.to, signalData: data, fromId: auth.userId, fromName: auth.resume.fullname, fromImage: auth.resume.image, type: type })
                 })
 
                 peer.on("stream", stream => {
@@ -404,9 +430,12 @@ function VideoCall(props) {
     }
     function showFaceEmotionsHandler() {
         setShowFaceEmotions(!showFaceEmotions);
+        handleClose();
     }
     function showVoiceEmotionsHandler() {
         setShowVoiceEmotions(!showVoiceEmotions);
+        handleClose();
+
     }
     function toggleMuteAudio() {
         if (stream) {
@@ -420,19 +449,84 @@ function VideoCall(props) {
             stream.getVideoTracks()[0].enabled = videoMuted
         }
     }
+    const sendVocalStats = async () => {
+        try {
+            const responseData = await sendRequest(
+                "http://localhost:5000/api/emotionStats/",
+                'POST',
+                JSON.stringify({
+                    interview:props.location.state.interview,
+                    candidate:props.location.state.candidate,
+                    type:'vocal',
+                    emotions:facialStats
+                }),
+                {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + auth.token,
+                }
+            );
+            console.log(responseData.stats.emotions)
+            setVoiceStats([]);
+            setSuccess(true);
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    const sendFacialStats = async () => {
+        try {
+            const responseData = await sendRequest(
+                "http://localhost:5000/api/emotionStats/",
+                'POST',
+                JSON.stringify({
+                    interview:props.location.state.interview,
+                    candidate:props.location.state.candidate,
+                    type:'facial',
+                    emotions:voiceStats
+                }),
+                {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + auth.token,
+                }
+            );
+            console.log(responseData.stats.emotions)
+            setFacialStats([]);
+            setSuccess(true);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    const clearSuccess = () => {
+        setSuccess(false);
+      };
     return (
         <>
+        <LoadingSpinner open={isLoading}/>
+        <Snackbar
+        open={success || !!error}
+        autoHideDuration={3000}
+        onClose={status == "200" ? clearSuccess : clearError}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity={status == "200" ? "success" : "error"}
+          onClose={status == "200" ? clearSuccess : clearError}
+        >
+          {status == "200" ? "Data Saved Successfully!" : error}
+        </MuiAlert>
+      </Snackbar>
             <div className={classes.topdiv}>
                 {showFaceEmotions && (
                     <>
-                        <FacialEmotionsExtractor setProgress={setFacialEmotionState} />
-                        <div className={classes.showFaceEmotions}>Facail Emotions<br/><Emotions progress={facialEmotionState} /></div>
+                        <FacialEmotionsExtractor stats={facialStats} setStats={setFacialStats} setProgress={setFacialEmotionState} />
+                        <div className={classes.showFaceEmotions}>Facail Emotions<br /><Emotions progress={facialEmotionState} /></div>
                     </>
                 )}
                 {showVoiceEmotions && (
                     <>
-                        <VocalEmotionsExtractor setProgress={setVocalEmotionState} />
-                        <div className={classes.showVoiceEmotions}>Vocal Emotions<br/><Emotions progress={vocalEmotionState} /></div>
+                        <VocalEmotionsExtractor  stats={voiceStats} setStats={setVoiceStats} setProgress={setVocalEmotionState} />
+                        <div className={classes.showVoiceEmotions}>Vocal Emotions<br /><Emotions progress={vocalEmotionState} /></div>
                     </>
                 )}
                 <div className={classes.message}>{message}</div>
@@ -455,15 +549,48 @@ function VideoCall(props) {
                             <CallEndIcon color="primary" style={{ fontSize: "2rem" }} />
                         </IconButton>
                         {isInterviewer && (
-                            <IconButton className={classes.IconStyles} onClick={() => showFaceEmotionsHandler()}>
-                                <SentimentVerySatisfiedIcon color="primary" style={{ fontSize: "2rem" }} />
+                            <IconButton
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                onClick={handleClick}
+                            >
+                                <MoreVertIcon />
                             </IconButton>
                         )}
-                        {isInterviewer && (
-                            <IconButton className={classes.IconStyles} onClick={() => showVoiceEmotionsHandler()}>
-                                <RecordVoiceOverIcon color="primary" style={{ fontSize: "2rem" }} />
-                            </IconButton>
-                        )}
+
+                        <Menu
+                            id="long-menu"
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={open}
+                            onClose={handleClose}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: ITEM_HEIGHT * 4.5,
+                                    width: '30ch',
+                                },
+                            }}
+                        >
+
+                            <MenuItem onClick={showFaceEmotionsHandler}>
+                                <SentimentVerySatisfiedIcon color="primary" style={{ fontSize: "2rem", marginRight: "1rem" }} />
+                                {showFaceEmotions?"Hide ":"Show "}Facial Emotions
+                            </MenuItem>
+                            <MenuItem onClick={showVoiceEmotionsHandler}>
+                                <RecordVoiceOverIcon color="primary" style={{ fontSize: "2rem", marginRight: "1rem" }} />
+                                {showVoiceEmotions?"Hide ":"Show "}Vocal Emotions
+                            </MenuItem>
+                            <MenuItem onClick={()=>{
+                                sendVocalStats();
+                                sendFacialStats();
+                                handleClose();
+                            }}>
+                                <SaveIcon color="primary" style={{ fontSize: "2rem", marginRight: "1rem" }} />
+                                Save Statistics
+                            </MenuItem>
+
+                        </Menu>
                     </Grid>
                 </div>
             </div>

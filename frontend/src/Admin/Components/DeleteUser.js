@@ -62,9 +62,21 @@ export default function DeleteUser (props) {
   
   return (
     <>
-      {console.log("loading: " + isLoading)}
-      {console.log("status: " + status)}
-
+  {isLoading && <LoadingSpinner open={isLoading} />}
+          <Snackbar
+            open={success || !!error}
+            autoHideDuration={6000}
+            onClose={status == "200" ? clearSuccess : clearError}
+          >
+            <MuiAlert
+              elevation={6}
+              variant="filled"
+              severity={status == "200" ? "success" : "error"}
+              onClose={status == "200" ? clearSuccess : clearError}
+            >
+              {status == "200" ? "User Deleted Successfully!" : error}
+            </MuiAlert>
+          </Snackbar>
       <Dialog
         onClose={CloseDeleteDialogHandler}
         open={props.OpenDeleteDialog}
@@ -94,21 +106,6 @@ export default function DeleteUser (props) {
           >
             Cancel
           </Button>
-          {isLoading && <LoadingSpinner open={isLoading} />}
-          <Snackbar
-            open={success || !!error}
-            autoHideDuration={6000}
-            onClose={status == "200" ? clearSuccess : clearError}
-          >
-            <MuiAlert
-              elevation={6}
-              variant="filled"
-              severity={status == "200" ? "success" : "error"}
-              onClose={status == "200" ? clearSuccess : clearError}
-            >
-              {status == "200" ? "FAQ Deleted Successfully!" : error}
-            </MuiAlert>
-          </Snackbar>
           <Button
             onClick={confirmDeleteHandler}
             variant="contained"

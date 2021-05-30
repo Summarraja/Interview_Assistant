@@ -36,7 +36,7 @@ function ConversationList({ data,setData, searchedData,selectedChat, setSelected
   if (!data) {
     return (
       <Typography variant="h5" color="primary" align="center" style={{ marginTop: "200px" }}>
-        Loading Chats..
+        Loading Chats...
       </Typography>
     );
   }

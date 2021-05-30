@@ -10,7 +10,6 @@
   .app {
     display: flex;
     min-height: 100vh;
-    max-height: 100vh;
     margin-top:"0px";
   }
   
