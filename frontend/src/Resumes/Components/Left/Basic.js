@@ -98,28 +98,28 @@ function Left() {
             <Button
               className={classes.headerLink}
               component={Link}
-              to="/resume/basic/header"
+              to="/resume/header"
             >
               Header
             </Button>
             <Button
               className={classes.headerLink}
               component={Link}
-              to="/resume/basic/professional"
+              to="/resume/professional"
             >
               Experience
             </Button>
             <Button
               className={classes.headerLink}
               component={Link}
-              to="/resume/basic/education"
+              to="/resume/education"
             >
               Education
             </Button>
             <Button
               className={classes.headerLink}
               component={Link}
-              to="/resume/basic/additional"
+              to="/resume/additional"
             >
               Skills
             </Button>
@@ -130,16 +130,16 @@ function Left() {
               {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
               <Switch>
-                <Route path="/resume/basic/header">
+                <Route path="/resume/header">
                   <Header />
                 </Route>
-                <Route path="/resume/basic/professional">
+                <Route path="/resume/professional">
                   <Professional />
                 </Route>
-                <Route path="/resume/basic/education">
+                <Route path="/resume/education">
                   <Education />
                 </Route>
-                <Route path="/resume/basic/additional">
+                <Route path="/resume/additional">
                   <AdditionalSkills />
                 </Route>
               </Switch>

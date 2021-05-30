@@ -10,6 +10,9 @@ function ChatSearch(props) {
   const getName = (chat) => {
     return (chat.from == auth.userId) ? chat.withName : chat.fromName
   }
+  const cancelHandler=()=>{
+    props.setSearchedData(null);
+  }
   const searchHandler = (value) => {
     if (value == '')
       props.setSearchedData(null);
@@ -22,6 +25,7 @@ function ChatSearch(props) {
     <>
       <div className="search">
         <SearchBar
+        onCancelSearch={cancelHandler}
           onChange={searchHandler}
           placeholder="Search Chat" style={{ height: "40px", width: "100%" }}
         />
