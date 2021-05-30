@@ -104,7 +104,7 @@ const CustomizedDialogs = (props) => {
                       interId={props.interId}
                       interCandidates={props.interCandidates}
                       getInterviewRequestsData = {props.getInterviewRequestsData}
-                       //  image={candidate.image}
+                      //  image={candidate.image} 
                     />
                   ))
               : resume.length === 0

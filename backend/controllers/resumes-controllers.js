@@ -361,7 +361,7 @@ const updateResume = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ resume: user.resume.toObject({ getters: true }) });
+  res.status(200).json({ resume: user.resume.toObject({ getters: true }), message: "Updated resume."});
 };
 
 const deleteResume = async (req, res, next) => {
