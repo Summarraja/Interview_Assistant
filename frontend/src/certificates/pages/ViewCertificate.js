@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
-import Box from "@material-ui/core/Box";
+
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
@@ -10,10 +10,9 @@ import { useParams } from "react-router-dom";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
-import { BiEdit } from "react-icons/bi";
+
 import UpdateCertificate from "../components/UpdateCertificate";
-import Grid from "@material-ui/core/Grid"
-import Button from "@material-ui/core/Button";
+
 import { Toolbar } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({

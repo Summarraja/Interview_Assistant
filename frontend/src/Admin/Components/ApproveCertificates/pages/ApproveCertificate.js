@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 
-import { Paper, Toolbar, Typography } from "@material-ui/core";
+import { Paper, Toolbar } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 
 import { useHttpClient } from "../../../../shared/hooks/http-hook";
@@ -63,34 +63,9 @@ const ApproveCertificate = () => {
     fetchUnapprovedCertificates();
   }, []);
 
-  //   useEffect (()=>{
-  //     const countApprovedCert = () =>{
-  //       if(uid){
-  //         loadedCertificates.map((cert)=>{
-  //         cert.isApproved == true && setApprovedCertCount(approvedCertCount+1);
-  //       })
-  //     }
-  //     else{
-  //       setApprovedCertCount(loadedCertificates.length)
-
-  //     }
-  //   }
-  //       if (loadedCertificates){
-  //          countApprovedCert();
-
-  //       }
-
-  //   }, [uid, loadedCertificates]);
-
-  // const hasDeleteAccess = uid && uid == auth.userId;
 
   return (
     <div className={classes.root}>
-      {/* <Box className={classes.hero}>
-        <Box style={{ fontFamily: "Serif, Open Sans, Arial" }}>
-          Certificates
-        </Box>
-      </Box> */}
       <Toolbar />
 
       <Container maxWidth="lg" component="main">

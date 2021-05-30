@@ -112,7 +112,7 @@ export default function AdminHome(props) {
                 key={resume._id}
                 id={resume._id}
                 name={resume.firstname + " " + resume.lastname}
-                userId={resume.user}
+                userId={resume.user.id}
                 file = {resume.image}
               />
             ))}

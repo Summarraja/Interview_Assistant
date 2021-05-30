@@ -18,7 +18,7 @@ function Templates() {
 useEffect(()=>{
   if(history)
   history.push({
-    pathname: '/resume/basic/header',
+    pathname: '/resume/header',
   });
 },[history])
   const classes = useStyles();
@@ -32,7 +32,7 @@ useEffect(()=>{
           <Button
             className={classes.headerLink}
             component={Link}
-            to="/resume/basic/header"
+            to="/resume/header"
           >
             The Basic
           </Button>

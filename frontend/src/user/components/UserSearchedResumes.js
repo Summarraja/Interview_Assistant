@@ -39,7 +39,7 @@ props.userId != auth.userId && (
       >
         <ListItemAvatar>
           <Avatar
-            src={props.image}
+            src={"http://localhost:5000/" + props.image}
             style={{
               height: "50px",
               width: "50px",
