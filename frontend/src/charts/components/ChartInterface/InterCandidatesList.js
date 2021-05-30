@@ -34,7 +34,7 @@ const InterCandidatesList = (props) => {
             Authorization: "Bearer " + auth.token,
           }
         );
-
+          console.log('yes')
         setCandidateResume((oldArray) => [...oldArray, responseData.resume]);
       } catch (err) {
         console.log(err);

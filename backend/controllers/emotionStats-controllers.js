@@ -7,10 +7,12 @@ const User = require('../models/user');
 
 const getEmotionStatsbyInterviewId = async (req, res, next) => {
     const interviewId = req.params.iid;
-
+    const candidateId = req.params.cid;
+    console.log(interviewId)
+    console.log(candidateId)
     let stats;
     try {
-        stats = await EmotionStats.find({ interview: interviewId });
+        stats = await EmotionStats.find({ interview: interviewId, candidate:candidateId });
     } catch (err) {
         const error = new HttpError(
             'Something went wrong, could not find emotions',

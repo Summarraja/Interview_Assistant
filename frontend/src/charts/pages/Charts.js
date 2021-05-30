@@ -7,6 +7,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import TakenInterviewsList from "../components/ChartInterface/TakenInterviewsList";
 import InterCandidatesList from "../components/ChartInterface/InterCandidatesList";
+import Polar from '../components/Polar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -79,6 +80,27 @@ const Charts = () => {
   const CurrentDate = new Date(date);
 
   useEffect(() => {
+    if (!selectedCand)
+      return
+    const getStats = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/emotionStats/${selectedInterview}/${selectedCand}`,
+          "GET",
+          null,
+          {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        console.log(responseData)
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getStats();
+  }, [selectedCand]);
+  useEffect(() => {
     const getData = async () => {
       try {
         const responseData = await sendRequest(
@@ -91,7 +113,6 @@ const Charts = () => {
           }
         );
         setInterviews(responseData.interviews);
-        console.log(responseData.interviews);
       } catch (err) {
         console.log(err);
       }
@@ -126,7 +147,7 @@ const Charts = () => {
               </Typography>
             </header>
             <div>
-              {!isLoading && (
+              {interviews && (
                 <TakenInterviewsList
                   items={takenInterviews}
                   selectedInterview={selectedInterview}
@@ -143,11 +164,11 @@ const Charts = () => {
                 variant="h5"
                 className={classes.LeftTypoDiv}
               >
-                Select Candidates
+                Select Candidate
               </Typography>
             </header>
             <div>
-              {!isLoading && candidates && (
+              {interviews&& candidates && (
                 <InterCandidatesList
                   items={candidates}
                   selectedCand={selectedCand}
@@ -167,6 +188,11 @@ const Charts = () => {
               Emotions Statistics
             </Typography>
           </header>
+          {selectedCand && (
+            <>
+              <Polar />
+            </>
+          )}
         </div>
       </div>
     </div>

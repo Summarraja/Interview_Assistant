@@ -17,6 +17,7 @@ const TakenInterviewItems = (props) => {
   let interCandidates = [];
 
   if (props.selectedInterview && props.selectedInterview == props.id) {
+    console.log('yes')
     props.candidates.map((cand) => interCandidates.push(cand));
   }
 
@@ -34,7 +35,10 @@ const TakenInterviewItems = (props) => {
       <LoadingSpinner open={isLoading} />
       <div
         className={getClass()}
-        onClick={() => props.setSelectedInterview(props.id)}
+        onClick={() => {
+          console.log(props.id)
+          props.setSelectedInterview(props.id)
+        }}
       >
         <div className="right-section">
           <div className="contact-box-header">
