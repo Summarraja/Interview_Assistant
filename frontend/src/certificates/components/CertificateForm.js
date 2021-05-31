@@ -12,8 +12,7 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import { Typography } from "@material-ui/core";
-import UploadPhoto from "../../user/components/UploadPhoto";
+
 
 const useStyles = makeStyles((theme) => ({
   form: {

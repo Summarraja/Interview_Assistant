@@ -264,7 +264,7 @@ const CandidatesDialogItems = (props) => {
                           onClick={()=>{
                             history.push({
                               pathname: '/videocall',
-                              state: { to: id, type: "interview" }
+                              state: { to: id, type: "interview" ,interview:props.interId, candidate:id}
                             });
                           }}
                           startIcon={
@@ -273,7 +273,7 @@ const CandidatesDialogItems = (props) => {
                         />
 
                         <Button
-                          key={id}
+                        
                           variant="contained"
                           color="primary"
                           className={classes.ActionButton}

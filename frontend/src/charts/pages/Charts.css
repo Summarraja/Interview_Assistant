@@ -1,0 +1,70 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.Chartapp {
+  display: flex;
+  min-height: 91vh;
+  margin-top:"0px";
+}
+
+.contact-boxes {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.LeftBigDiv {
+  display: block;
+  flex-direction: column;
+  flex-wrap: wrap;
+  /* height: 120px;
+  width: 516px; */
+}
+
+.LeftSmallDiv {
+  flex: 0 0 50px;
+  height: 45vh;
+  overflow-y: auto;
+}
+
+.contact-box {
+  background: #fff;
+  border: 1px solid lightgray;
+  padding: 0.75rem 0.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.contact-box:hover{
+  background: #ebebeb;
+}
+
+.right-section {
+  width: 100%;
+}
+.contact-box-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+.selected{
+  background: #aaa8a8;
+  padding: 0.75rem 0.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.avatar-title {
+  color: #000;
+  font-size: 16px;
+  font-weight: normal;
+}
+.avatar-component {
+  display: flex;
+  align-items: center;
+}

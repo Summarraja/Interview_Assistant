@@ -1,8 +1,6 @@
 .app {
     display: flex;
-    min-height: 100vh;
-    /* margin-top: 20; */
-    
+    min-height: 100vh;  
   }
   
   .left {

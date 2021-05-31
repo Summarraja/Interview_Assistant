@@ -30,12 +30,12 @@ const useStyles = makeStyles((theme) => ({
         background: '#d3d3d3',
         margin: '0.1rem'
     },
-    noNoti:{
-        textAlign:'center',
-        justifyContent:'center',
-        fontSize:20,
-        marginTop:'1rem',
-        padding:0,
+    noNoti: {
+        textAlign: 'center',
+        justifyContent: 'center',
+        fontSize: 20,
+        marginTop: '1rem',
+        padding: 0,
     }
 }));
 
@@ -51,7 +51,7 @@ const Notifications = (props) => {
     useEffect(() => {
         function handleClickOutside(event) {
             if (notiRef.current) {
-                if (!notiRef.current.contains(event.target)) {
+                if (!event.target.contains(notiRef.current) && !notiRef.current.contains(event.target)) {
                     props.closeNotiMenu();
                 }
             }
@@ -109,17 +109,17 @@ const Notifications = (props) => {
     };
     const openNotifications = async () => {
         try {
-          const responseData = await sendRequest(
-            `http://localhost:5000/api/settings/openNotifications/${auth.userId}`,
-            "PATCH",
-            null,
-            {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + auth.token,
-            }
-          );
-        } catch (err) {}
-      };
+            const responseData = await sendRequest(
+                `http://localhost:5000/api/settings/openNotifications/${auth.userId}`,
+                "PATCH",
+                null,
+                {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + auth.token,
+                }
+            );
+        } catch (err) { }
+    };
     const getDate = (datetime) => {
         let d = new Date(datetime);
         return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear()
@@ -133,6 +133,7 @@ const Notifications = (props) => {
 
     return (
         <Menu
+            ref={notiRef}
             anchorEl={props.notiMenuAnchorEl}
             id="notification-menu"
             keepMounted
@@ -161,7 +162,7 @@ const Notifications = (props) => {
                         <Typography variant="h5" style={{ paddingLeft: "10px" }}>Notifications</Typography>
                     </Grid>
                     <Grid item sm={5} align="center"  >
-                        <Button onClick={clearNotifications} style={{visibility: (notifications && notifications.length==0)?'hidden':'visible'}}color="primary">Clear All</Button>
+                        <Button onClick={clearNotifications} style={{ visibility: (notifications && notifications.length == 0) ? 'hidden' : 'visible' }} color="primary">Clear All</Button>
                         <IconButton color="primary" float="left" onClick={props.closeNotiMenu}>
                             <AiFillCloseSquare />
                         </IconButton>
@@ -172,7 +173,7 @@ const Notifications = (props) => {
                 {(notifications && notifications.length == 0) && (
                     <MenuItem className={classes.noNoti}>
                         <Grid item sm={9} className={classes.NotiTitle}>
-                            <Typography variant="h5" >{isLoading?"Loading...": "You have no new Notification.."}</Typography>
+                            <Typography variant="h5" >{isLoading ? "Loading..." : "You have no new Notification.."}</Typography>
                         </Grid>
                     </MenuItem>
                 )}
@@ -182,7 +183,7 @@ const Notifications = (props) => {
                             <Grid item sm={11} className={classes.NotiTitle}>
                                 <Typography variant="subtitle1" >{noti.message}</Typography>
                             </Grid>
-                            <Grid item sm={1} align="top" style={{ alignItems:'top',marginRight: "15px" }}>
+                            <Grid item sm={1} align="top" style={{ alignItems: 'top', marginRight: "15px" }}>
                                 <Typography variant="subtitle2">{getDate(noti.time)}</Typography>
                                 <Typography variant="subtitle2">{getTime(noti.time)}</Typography>
                             </Grid>

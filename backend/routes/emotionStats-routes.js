@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.use(checkAuth);
 
-router.get('/:iid', emotionsControllers.getEmotionStatsbyInterviewId);
+router.get('/:iid/:cid', emotionsControllers.getEmotionStatsbyInterviewId);
 
 router.post('/', emotionsControllers.createOrUpdateEmotionStats);
 

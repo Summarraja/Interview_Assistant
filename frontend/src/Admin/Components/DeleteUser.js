@@ -29,14 +29,15 @@ export default function DeleteUser (props) {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const [success, setSuccess] = useState(false);
+  const [responseStatus, setResponseStatus] = useState("");
 
   const clearSuccess = () => {
     setSuccess(false);
-    // props.setOpen(false);
+    props.setOpenDeleteDialog(false);
   };
   useEffect(() => {
     setSuccess(status == 200);
-  }, [status]);
+  }, [status, responseStatus]);
 
   const CloseDeleteDialogHandler = () => {
     props.setOpenDeleteDialog(false);
@@ -53,8 +54,8 @@ export default function DeleteUser (props) {
           Authorization: "Bearer " + auth.token,
         }
       );
-    //   props.getData();
-      props.setOpenDeleteDialog(false);
+      setResponseStatus(responseData.message)
+     
     } catch (err) {
       console.log(err);
     }
@@ -62,9 +63,20 @@ export default function DeleteUser (props) {
   
   return (
     <>
-      {console.log("loading: " + isLoading)}
-      {console.log("status: " + status)}
-
+          <Snackbar
+            open={success || !!error}
+            autoHideDuration={6000}
+            onClose={status == "200" ? clearSuccess : clearError}
+          >
+            <MuiAlert
+              elevation={6}
+              variant="filled"
+              severity={status == "200" ? "success" : "error"}
+              onClose={status == "200" ? clearSuccess : clearError}
+            >
+              {status == "200" && responseStatus === "User Account Deleted" ? "User Deleted Successfully!" : error}
+            </MuiAlert>
+          </Snackbar>
       <Dialog
         onClose={CloseDeleteDialogHandler}
         open={props.OpenDeleteDialog}
@@ -94,21 +106,7 @@ export default function DeleteUser (props) {
           >
             Cancel
           </Button>
-          {isLoading && <LoadingSpinner open={isLoading} />}
-          <Snackbar
-            open={success || !!error}
-            autoHideDuration={6000}
-            onClose={status == "200" ? clearSuccess : clearError}
-          >
-            <MuiAlert
-              elevation={6}
-              variant="filled"
-              severity={status == "200" ? "success" : "error"}
-              onClose={status == "200" ? clearSuccess : clearError}
-            >
-              {status == "200" ? "FAQ Deleted Successfully!" : error}
-            </MuiAlert>
-          </Snackbar>
+          <LoadingSpinner open={isLoading}/>
           <Button
             onClick={confirmDeleteHandler}
             variant="contained"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { IoMdEye } from "react-icons/io";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -15,8 +15,6 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Button from "@material-ui/core/Button";
 import theme from "../../shared/components/UIElements/AppTheme/theme";
 import { MdEventAvailable, MdEventBusy } from "react-icons/md";
-import { VscVmActive } from "react-icons/vsc";
-import { Hidden } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 
@@ -204,9 +202,7 @@ const InterviewItems = (props) => {
       </Snackbar>
 
  
-{/* {console.log("HEELO: "+(props.InterStatus == "CANCELLED" || props.InterStatus == "TAKEN") && (props.userReceivedRequests || props.userSentRequests))} */}
-{/* {(props.userSentRequests || props.userReceivedRequests ) && props.InterStatus == "PENDING" ||() ( */}
-  <Card className={classes.card}>
+ <Card className={classes.card}>
   <Grid container spacing={5}>
     <Grid item sm={6} lg={7} style={{ flexGrow: 1 }}>
       <div className={classes.header}>
@@ -235,7 +231,6 @@ const InterviewItems = (props) => {
         </Typography>
       )}
   
-  {/* {console.log("Status: "+props.InterStatus)} */}
       {props.tabValue == "1" && status != "201" && (
         <Button
           variant="contained"

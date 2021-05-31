@@ -1,6 +1,5 @@
 import React, {useContext} from "react";
 import Container from "@material-ui/core/Container";
-import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from '@material-ui/core/AppBar';
 import Typography from "@material-ui/core/Typography";

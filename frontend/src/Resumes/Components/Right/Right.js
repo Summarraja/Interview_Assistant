@@ -39,14 +39,17 @@ function Right() {
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
   const [success, setSuccess] = useState(false);
+  const [responsemessage, setresponsemessage] = useState();
 
   const clearSuccess = () => {
     setSuccess(false);
   };
   useEffect(() => {
     setSuccess(status == 200);
-  }, [status]);
+  }, [status, responsemessage]);
   const classes = useStyles();
+
+
   const handleDeleteData = async () => {
 
     try {
@@ -71,7 +74,8 @@ function Right() {
           Authorization: "Bearer " + auth.token,
         }
       );
-      if (responseData.resume) {
+      if (responseData.resume ) {
+        setresponsemessage("")
         const storedData = JSON.parse(localStorage.getItem("userData"));
         storedData.resume = {...responseData.resume};
         auth.setResume({...responseData.resume});
@@ -124,6 +128,7 @@ function Right() {
         }
       );
       if (responseData.resume) {
+        setresponsemessage(responseData.message)
         const storedData = JSON.parse(localStorage.getItem("userData"));
         storedData.resume = {...responseData.resume};
         auth.setResume({...responseData.resume});
@@ -151,6 +156,7 @@ function Right() {
 
   return (
     <div className="right">
+      
       {isLoading && <LoadingSpinner open={isLoading} />}
       <Snackbar
         open={success || !!error}
@@ -163,7 +169,9 @@ function Right() {
           severity={status == "200" ? "success" : "error"}
           onClose={status == "200" ? clearSuccess : clearError}
         >
-          {status == "200" ? "Resume Created Successfully!" : error}
+
+          {status == "200"&& responsemessage=="Updated resume."  ? "Resume Saved Sucessfully!": status == "200"&& responsemessage==""  ? "Resume Deleted Sucessfully!" : error}
+      
         </MuiAlert>
       </Snackbar>
       <div className={classes.root}>

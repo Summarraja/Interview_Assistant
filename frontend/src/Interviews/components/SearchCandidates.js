@@ -34,7 +34,7 @@ const clearHandler = ()=>{
 } 
 
   return (
-    <Paper component="form" className={classes.root}>
+    <Paper component="form">
   
       <InputBase
         className={classes.input}

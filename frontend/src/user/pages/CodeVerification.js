@@ -16,6 +16,7 @@ import { AuthContext } from '../../shared/context/auth-context';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import { Redirect } from 'react-router'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -59,6 +60,7 @@ export default function CodeVerification(props) {
     const auth = useContext(AuthContext);
     const [success, setSuccess] = useState(false);
     const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+    const [isForgotPass, setForgotPass] = useState(false);
     const userEmail = props.location.state.email;
 
     const paperStyle = {
@@ -113,17 +115,21 @@ export default function CodeVerification(props) {
                     'Content-Type': 'application/json'
                 }
             );
-            if (responseData.isVerified) {
 
-                auth.login(responseData.userId, responseData.token, responseData.resume, responseData.setting);
+           
+            if(responseData.isVerified && !props.location.state.forgotpassword){
+               auth.login(responseData.userId, responseData.token, responseData.resume, responseData.setting);
             }
-            else {
+
+            if (responseData.isVerified && props.location.state.forgotpassword) {
+                setForgotPass(true);
             }
         }
         catch (err) {
         }
 
     };
+
 
     const onCancelHandler = (e) => {
         console.log("cancel")
@@ -167,6 +173,15 @@ export default function CodeVerification(props) {
         SetIsPlay(true);
         setDisableBtn(true);
     }
+    console.log("useStateL "+ isForgotPass)
+    if (isForgotPass) {
+        return <Redirect
+          to={{
+            pathname: "/Reset",
+            state: { email: userEmail , forgotpassword: props.location.state.forgotpassword}
+          }}
+        />
+      }
     return (
         <Container component="main" maxWidth="xs" >
             <LoadingSpinner open={isLoading} />

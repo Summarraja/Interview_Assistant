@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from "react";
-// import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import InterviewList from "../components/InterviewList";
 import bgInterview5 from "../../shared/components/UIElements/Images/bgInterview5.jpg";
@@ -69,7 +68,6 @@ const Interview = () => {
   
 
   const auth = useContext(AuthContext);
-  // const [reloadPage, setReloadPage] = useState(false);
   const { uid } = useParams();
 
   useEffect(() => {
@@ -138,13 +136,6 @@ const Interview = () => {
       getCandidateRequestsData();
     }
   }, []);
-
-
- 
-
-  // const deleteInterviewHandler =(deletedInterviewId)=>{
-  //       setInterviews(prevInterviews => prevInterviews.filter(inter => inter.id !== deletedInterviewId))
-  //     }
 
   const hasAccess = uid && uid == auth.userId;
 
