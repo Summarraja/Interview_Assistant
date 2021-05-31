@@ -15,19 +15,24 @@ import { Toolbar } from "@material-ui/core";
 
 
 function App() {
+
+const appstyle={
+marginTop:"40px"
+
+}
+
+
   return (
-    <div className="app">
-      <Toolbar/>
+    <div className="app" style={appstyle}>
       <ResumeContextProvider>
         <BrowserRouter>
           <Switch>
             <Route path="/resume" component={Templates} exact />
-            <Route path="/resume/basic" component={Basic} />
+            <Route path="/resume/header" component={Basic} />
           </Switch>
         </BrowserRouter>
         <Right />
       </ResumeContextProvider>
-      
     </div>
   );
 }

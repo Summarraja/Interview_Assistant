@@ -1,12 +1,10 @@
 
 import React, { useContext } from "react";
 import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
 import classes from "./Left.module.css";
 import { useForm } from "react-hook-form";
 import { ResumeContext } from "../../Contexts/ResumeContext";
-import { Paper } from "@material-ui/core";
-import Education from "./Education";
+;
 
 export default function Header() {
   const { content, updateHeaderData, removeFakeData } = useContext(
@@ -112,15 +110,7 @@ export default function Header() {
           onChange={handleSubmit(onSubmit)}
           style={{ marginTop: 12, marginLeft: 8, marginRight: 8 }}
         />
-        {/* <Button
-          variant="contained"
-          color="secondary"
-          type="submit"
-          style={{ margin: 8 }}
-        //  onClick={onclickhandler}
-        >
-          Update
-        </Button> */}
+       
       </form>
       
    </>
