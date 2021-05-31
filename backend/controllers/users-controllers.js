@@ -122,6 +122,7 @@ const sendCode = async (req, res, next) => {
   try {
     await user.save();
   } catch (err) {
+    console.log(err)
     const error = new HttpError(
       "Something went wrong, could not send code.",
       500
@@ -193,6 +194,7 @@ const verifyCode = async (req, res, next) => {
   try {
     await user.save();
   } catch (err) {
+    console.log(err)
     const error = new HttpError(
       "Something went wrong, could not verify email",
       500
@@ -340,7 +342,6 @@ const signup = async (req, res, next) => {
   });
 
   const createdSetting = new Setting({
-    notiStatus: false,
     status: "available",
     role: "Candidate",
     blockedUsers: [],
@@ -490,7 +491,7 @@ const deleteuser = async (req, res, next) => {
 
   let user;
   try {
-    user = await User.findById(userid)
+    user = await User.findById({_id : userid}, null)
       .populate({ path: 'resume', model: Resume })
       .populate({ path: 'setting', model: Setting })
       .populate({ path: 'createdInterviews', model: Interview })
@@ -541,10 +542,11 @@ const deleteuser = async (req, res, next) => {
     user.notifications.map(async (notification) => {
       await notification.remove({ session: sess });
     })
-    await Message.remove({ sender: user.id, session: sess })
-    await Message.remove({ receiver: user.id, session: sess })
+    await Message.remove({ sender: user.id} , {session: sess })
+    await Message.remove({ receiver: user.id} , {session: sess })
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err)
     const error = new HttpError(
       'Something went wrong, could not delete user.',
       500

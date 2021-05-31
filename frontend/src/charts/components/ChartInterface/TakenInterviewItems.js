@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import "../../pages/Charts.css";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,19 +13,15 @@ const useStyles = makeStyles((theme) => ({
 const TakenInterviewItems = (props) => {
   const classes = useStyles();
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-
-  let interCandidates = [];
-
-  if (props.selectedInterview && props.selectedInterview == props.id) {
-    props.candidates.map((cand) => interCandidates.push(cand));
-  }
+  const [interCandidates, setinterCandidates] = useState([]);
 
   useEffect(() => {
-    props.setCandidates(interCandidates);
+    if (props.selectedInterview)
+      props.setCandidates(props.selectedInterview.candidates);
   }, [props.selectedInterview]);
 
   const getClass = () => {
-    if (props.selectedInterview && props.selectedInterview == props.id)
+    if (props.selectedInterview && props.selectedInterview == props.interview)
       return "selected";
     return "contact-box";
   };
@@ -34,12 +30,16 @@ const TakenInterviewItems = (props) => {
       <LoadingSpinner open={isLoading} />
       <div
         className={getClass()}
-        onClick={() => props.setSelectedInterview(props.id)}
+
+        onClick={() => {
+          props.setSelectedInterview(props.interview)
+          props.setSelectedCand(null)
+        }}
       >
         <div className="right-section">
           <div className="contact-box-header">
             <Typography variant="h6" className={classes.typoStyle}>
-              {props.title}
+              {props.interview.title}
             </Typography>
           </div>
           <div className="last-msg">
@@ -48,7 +48,7 @@ const TakenInterviewItems = (props) => {
               variant="body2"
               className={classes.typoStyle}
             >
-              {props.date}
+              {props.interview.date}
             </Typography>
           </div>
         </div>

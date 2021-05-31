@@ -8,12 +8,14 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import UserSearchedResumes from "../components/UserSearchedResumes";
-
+import homeimage from "../../shared/components/UIElements/Images/homeimage.jpg";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme) => ({
   bgCard: {
     marginTop: "50px",
     width: "60%",
+    zIndex: 9999999,
     alignItems: "center",
     marginLeft: "20%",
     [theme.breakpoints.down("xs")]: {
@@ -26,8 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
   searchedItems: {
     backgroundColor: "white",
-    padding: 10
-
+    padding: 10,
   },
   list: {
     padding: 0,
@@ -39,6 +40,30 @@ const useStyles = makeStyles((theme) => ({
   },
   listItem: {
     padding: "4px 8px",
+  },
+  content: {
+    width: "100%",
+    height: "100%",
+    textAlign: "center",
+  },
+  preview: {
+    alignContent: "center",
+    height: "90vh",
+    zIndex: -1,
+  },
+
+  hero: {
+    height: "91vh",
+    marginTop: 0,
+    backgroundImage: `linear-gradient(
+        to bottom,
+        rgba(0, 27.8, 46.7, 0.5),
+        rgba(78, 120, 160, 0.5)
+      ), url(${homeimage})`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    display: "flex",
   },
 }));
 
@@ -62,7 +87,6 @@ export default function Home(props) {
     setSearchItem("");
     setCloseIcon(false);
   };
-  
 
   const getSearchItem = () => {
     setCloseIcon(!closeIcon);
@@ -82,44 +106,49 @@ export default function Home(props) {
         console.log(err);
       }
     };
-    fetchSearchedResumes(); 
+    fetchSearchedResumes();
   };
 
-
-
   return (
-    <Container>
+    <>
       <Toolbar />
+      <div className={classes.hero}>
+        <Container>
+          <div className={classes.bgCard}>
+            <SearchCandidates
+              className={classes.searchBar}
+              setSearchItem={setSearchItem}
+              searchItem={searchItem}
+              getSearchItem={getSearchItem}
+              closeIcon={closeIcon}
+              setCloseIcon={setCloseIcon}
+            />
+            {closeIcon && (
+              <Card className={classes.searchedItems}>
+                {resume.length === 0 ? (
+                  <Typography variant="h6">
+                    {isLoading ? "Searching User..." : "No user found"}
+                  </Typography>
+                ) : (
+                  resume.map((resume) => (
+                    <UserSearchedResumes
+                      key={resume._id}
+                      id={resume._id}
+                      name={resume.firstname + " " + resume.lastname}
+                      userId={resume.user.id}
+                      image={resume.image}
+                    />
+                  ))
+                )}
+              </Card>
+            )}
+          </div>
+          <br />
     
-      <Card className={classes.bgCard}>
-        <SearchCandidates
-          className={classes.searchBar}
-          setSearchItem={setSearchItem}
-          searchItem={searchItem}
-          getSearchItem={getSearchItem}
-          closeIcon={closeIcon}
-          setCloseIcon={setCloseIcon}
-        />
-
-        {closeIcon && (
-            <Card className={classes.searchedItems}>
-            { resume.length === 0  ? 
-             <Typography variant="h6">{isLoading ? "Searching User..." : "No user found"}</Typography> 
-            :
-            resume.map((resume) => (
-              <UserSearchedResumes
-                key={resume._id}
-                id={resume._id}
-                name={resume.firstname + " " + resume.lastname}
-                userId={resume.user}
-              />
-            ))}
-          </Card>
-        ) }
+          <CssBaseline />
+        </Container>
       
-      </Card>
-
-      <CssBaseline />
-    </Container>
+      </div>
+    </>
   );
 }

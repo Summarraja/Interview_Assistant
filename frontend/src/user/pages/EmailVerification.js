@@ -94,11 +94,12 @@ export default function ForgetPassword(props) {
 
   };
   const classes = useStyles();
+ 
   if (success) {
     return <Redirect
       to={{
         pathname: "/verifycode",
-        state: { email: userEmail }
+        state: { email: userEmail , forgotpassword: props.location.state.forgotpassword}
       }}
     />
   }

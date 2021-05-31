@@ -65,9 +65,7 @@ const getResumeByUserName = async (req, res, next) => {
 
   let userWithResume;
   try {
-    userWithResume = await Resume.find({
-      $or: [{ fullname: new RegExp(userName, "i") }],
-    }).exec();
+    userWithResume = await Resume.find({ fullname: new RegExp(userName, "i") }).populate('user')
   } catch (err) {
     const error = new HttpError(
       "Fetching resume failed, please try again later.",
@@ -76,7 +74,7 @@ const getResumeByUserName = async (req, res, next) => {
     return next(error);
   }
 
-  // userWithResume.map((resume) => resumeIDs.push(resume._id));
+   userWithResume = userWithResume.filter( (ResUsr) =>ResUsr.user.email_verified !== false );
 
   let userWithSetting;
   try {
@@ -142,9 +140,7 @@ const getAllResumesByUsername = async (req, res, next) => {
 
   let userWithResume;
   try {
-    userWithResume = await Resume.find({
-      $or: [{ fullname: new RegExp(userName, "i") }],
-    }).exec();
+    userWithResume = await Resume.find({ fullname: new RegExp(userName, "i") }).populate('user')
   } catch (err) {
     const error = new HttpError(
       "Fetching resume failed, please try again later.",
@@ -153,10 +149,10 @@ const getAllResumesByUsername = async (req, res, next) => {
     return next(error);
   }
 
-  
+  let verifiedResumes = userWithResume.filter( (ResUsr) =>ResUsr.user.email_verified !== false );
   
   res.json({
-    resumes: userWithResume.map((resume) =>
+    resumes: verifiedResumes.map((resume) =>
       resume.toObject({ getters: true })
     ),
   });

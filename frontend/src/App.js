@@ -130,7 +130,10 @@ const App = () => {
           exact
           component={(props) => <CodeVerification {...props} />}
         />
-        <Route path="/Reset" exact component={ResetPassword} />
+        <Route path="/Reset"
+         exact 
+         component={(props) => <ResetPassword {...props}/>} 
+        />
         <Route path="/Faq" exact component={Faq} />
         <Redirect to="/auth" />
       </Switch>

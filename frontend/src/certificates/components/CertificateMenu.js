@@ -1,8 +1,6 @@
-import React, { useState, useContext , useEffect} from "react";
+import React, { useState, useContext } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { TiEdit } from "react-icons/ti";
-import { MenuItem, Divider } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { MenuItem } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { useHttpClient } from "../../shared/hooks/http-hook";

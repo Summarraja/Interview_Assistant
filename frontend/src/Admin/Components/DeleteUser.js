@@ -29,14 +29,15 @@ export default function DeleteUser (props) {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const [success, setSuccess] = useState(false);
+  const [responseStatus, setResponseStatus] = useState("");
 
   const clearSuccess = () => {
     setSuccess(false);
-    // props.setOpen(false);
+    props.setOpenDeleteDialog(false);
   };
   useEffect(() => {
     setSuccess(status == 200);
-  }, [status]);
+  }, [status, responseStatus]);
 
   const CloseDeleteDialogHandler = () => {
     props.setOpenDeleteDialog(false);
@@ -53,8 +54,8 @@ export default function DeleteUser (props) {
           Authorization: "Bearer " + auth.token,
         }
       );
-    //   props.getData();
-      props.setOpenDeleteDialog(false);
+      setResponseStatus(responseData.message)
+     
     } catch (err) {
       console.log(err);
     }
@@ -62,7 +63,6 @@ export default function DeleteUser (props) {
   
   return (
     <>
-  {isLoading && <LoadingSpinner open={isLoading} />}
           <Snackbar
             open={success || !!error}
             autoHideDuration={6000}
@@ -74,7 +74,7 @@ export default function DeleteUser (props) {
               severity={status == "200" ? "success" : "error"}
               onClose={status == "200" ? clearSuccess : clearError}
             >
-              {status == "200" ? "User Deleted Successfully!" : error}
+              {status == "200" && responseStatus === "User Account Deleted" ? "User Deleted Successfully!" : error}
             </MuiAlert>
           </Snackbar>
       <Dialog
@@ -106,6 +106,7 @@ export default function DeleteUser (props) {
           >
             Cancel
           </Button>
+          <LoadingSpinner open={isLoading}/>
           <Button
             onClick={confirmDeleteHandler}
             variant="contained"

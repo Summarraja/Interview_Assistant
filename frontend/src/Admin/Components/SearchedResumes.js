@@ -84,7 +84,7 @@ props.userId != auth.userId && (
           >
            Delete
           </Button>
-
+     
           {OpenDeleteDialog && (
                         <DeleteUser
                         OpenDeleteDialog={OpenDeleteDialog}

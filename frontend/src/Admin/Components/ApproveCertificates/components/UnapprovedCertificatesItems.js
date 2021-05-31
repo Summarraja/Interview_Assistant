@@ -143,25 +143,6 @@ const UnapprovedCertificatesItems = (props) => {
       RejectCertificate();
   }
 
-  //for getting field of loaded Certificate from the dababase
-  //   useEffect(() => {
-  //     const fetchField = async () => {
-  //       try {
-  //         const responseData = await sendRequest(
-  //           `http://localhost:5000/api/fields/${props.field}`,
-  //           "GET",
-  //           null,
-  //           {
-  //             "Content-Type": "application/json",
-  //             Authorization: "Bearer " + auth.token,
-  //           }
-  //         );
-  //         setLoadedField(responseData.field);
-  //       } catch (err) {}
-  //     };
-  //     if (!loadedField)
-  //     fetchField();
-  //   }, [loadedField]);
 
   const [CertificateMobAnchorEl, setCertificateMobAnchorEl] = useState(null);
   const isCertificateMenuOpen = Boolean(CertificateMobAnchorEl);

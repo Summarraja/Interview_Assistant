@@ -8,20 +8,18 @@
   }
   
   .app {
-    display: flex;
-    min-height: 100vh;
-    margin-top:"0px";
+    /* display: flex;
+    
+    margin-top:"0px"; */
+    height: 100vh;
   }
   
  
   .contact-boxes {
-    overflow-y: auto;
+    /* overflow-y: auto; */
     flex: 1;
   }
  
- 
-  
-  
   main header,
   aside header {
     background: #ededed;

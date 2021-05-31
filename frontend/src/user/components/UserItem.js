@@ -212,7 +212,7 @@ const UserItem = (props) => {
             className={classes.Avatar}
 
             alt={props.resume.fullname}
-            src={"http://localhost:5000/" + auth.resume.image}
+            src={"http://localhost:5000/" + props.resume.image}
 
           />
 

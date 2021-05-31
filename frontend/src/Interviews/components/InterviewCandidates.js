@@ -115,7 +115,7 @@ const CustomizedDialogs = (props) => {
                     id={resume._id}
                     name={resume.fullname}
                     interId={props.interId}
-                    userId={resume.user}
+                    userId={resume.user.id}
                     searchItem={searchItem}
                     interCandidates={props.interCandidates}
                     interReceivedRequests = {props.interReceivedRequests}

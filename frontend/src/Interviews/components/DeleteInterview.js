@@ -28,7 +28,17 @@ const DeleteInterview = (props) => {
   const classes = useStyles();
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const [success, setSuccess] = useState(false);
+  const [responseStatus, setResponseStatus] = useState("");
 
+
+  const clearSuccess = () => {
+    setSuccess(false);
+    props.setOpenDeleteDialog(false);
+  };
+  useEffect(() => {
+    setSuccess(status == 200 || responseStatus === "Interview Deleted");
+  }, [status, responseStatus]);
 
   const CloseDeleteDialogHandler = () => {
     props.setOpenDeleteDialog(false);
@@ -46,7 +56,7 @@ const DeleteInterview = (props) => {
         }
       );
 
-      props.setOpenDeleteDialog(false);
+      setResponseStatus(responseData.message)
       props.getData(auth.userId);
     } catch (err) {
       console.log(err);
@@ -55,7 +65,23 @@ const DeleteInterview = (props) => {
 
   return (
     <>
-  
+    {console.log("status: "+ success)}
+    {console.log("response: "+ responseStatus)}
+  <Snackbar
+            open={success || !!error}
+            autoHideDuration={6000}
+            onClose={status == "200" ? clearSuccess : clearError}
+          >
+            <MuiAlert
+              elevation={6}
+              variant="filled"
+              severity={status == "200" ? "success" : "error"}
+              onClose={status == "200" ? clearSuccess : clearError}
+            >
+              {status == "200" && responseStatus === "Interview Deleted" ? "Interview Deleted Successfully!" : error}
+            </MuiAlert>
+          </Snackbar>
+
       <Dialog
         onClose={CloseDeleteDialogHandler}
         open={props.OpenDeleteDialog}

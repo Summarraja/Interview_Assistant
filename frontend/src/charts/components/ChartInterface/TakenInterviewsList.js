@@ -31,18 +31,13 @@ const TakenInterviewsList = (props) => {
     props.items.map((interview) => (
     <TakenInterviewItems
       key={interview.id}
-      id={interview.id}
-      title={interview.title}
-      description={interview.description}
-      date={interview.date}
-      isCancelled={interview.isCancelled}
-      field={interview.field}
-      candidates={interview.candidates}
-      creatorId={interview.creator}
+      interview = {interview}
       selectedInterview={props.selectedInterview} 
       setSelectedInterview={props.setSelectedInterview}
       setCandidates = {props.setCandidates}
-      
+      candidates = {props.candidates}
+      setSelectedCand={props.setSelectedCand}
+
     />
 
   ))
