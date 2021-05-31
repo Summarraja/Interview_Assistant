@@ -100,6 +100,7 @@ export default function Home(props) {
           closeIcon={closeIcon}
           setCloseIcon={setCloseIcon}
         />
+
         {closeIcon && (
             <Card className={classes.searchedItems}>
             { resume.length === 0  ? 
