@@ -1,4 +1,4 @@
-* {
+/* * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -21,8 +21,6 @@
     display: block;
     flex-direction: column;
     flex-wrap: wrap;
-    /* height: 120px;
-    width: 516px; */
 }
 
 .LeftSmallDiv {
@@ -68,4 +66,4 @@
   .avatar-component {
     display: flex;
     align-items: center;
-  }
+  } */
