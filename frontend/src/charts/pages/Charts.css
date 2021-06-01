@@ -7,7 +7,6 @@
 
 .Chartapp {
   display: flex;
-  min-height: 91vh;
   margin-top:"0px";
 }
 
@@ -26,12 +25,20 @@
 
 .LeftSmallDiv {
   flex: 0 0 50px;
-  height: 45vh;
+  height: 37vh;
   overflow-y: auto;
 }
 
+.charts{
+  height: 83vh;
+  overflow-y: auto;
+  margin-left: 0.8rem;
+
+
+}
 .contact-box {
   background: #fff;
+  overflow-y: auto;
   border: 1px solid lightgray;
   padding: 0.75rem 0.75rem;
   display: flex;

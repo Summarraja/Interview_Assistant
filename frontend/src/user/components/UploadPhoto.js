@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 const UploadPhoto = (props) => {
     const [file, setFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState();
-    const { isLoading, error, sendRequest, clearError } = useHttpClient();
+    const { isLoading, sendRequest } = useHttpClient();
     const auth = useContext(AuthContext);
 
     useEffect(() => {
@@ -116,7 +116,7 @@ const UploadPhoto = (props) => {
                 </DialogTitle>
                 <DialogContent dividers>
                     <div className={classes.content}>
-                        <img className={classes.preview} src={previewUrl} />
+                        <img className={classes.preview} src={previewUrl} alt="User's profile" />
                         <br />
                         {file && (<Fab color="secondary" size="small" component="span" aria-label="add" variant="extended" onClick={uploadPhoto}>Upload</Fab>)}
                         {isLoading&&(<><br/><br/><CircularProgress /></>)}

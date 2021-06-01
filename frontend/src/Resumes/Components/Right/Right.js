@@ -17,8 +17,8 @@ import { useHttpClient } from "../../../shared/hooks/http-hook";
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "absolute",
-   marginTop:"3%",
-   marginLeft:"1%"
+    marginTop:"2%",
+    marginLeft:"0.5%"
 
   },
   pink: {

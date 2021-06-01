@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Paper from "@material-ui/core/Paper";
@@ -10,7 +10,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import * as yup from "yup";
 import SignupForm from '../components/SignupForm'
-import { AuthContext } from '../../shared/context/auth-context';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -108,8 +107,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function SignUp() {
-  const auth = useContext(AuthContext);
-  const { isLoading, error,status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [gender, setGender] = useState("other");
   const [country, setCountry] = useState("Afghanistan");
   const [dob, setdob] = useState("1900-01-01");

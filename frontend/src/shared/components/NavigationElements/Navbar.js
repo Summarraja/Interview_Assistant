@@ -10,21 +10,19 @@ import {
   Divider,
   Avatar,
   Hidden,
-  Card,
-  Grid,
 } from "@material-ui/core";
 import OutsideClickHandler from "react-outside-click-handler";
 import MenuIcon from "@material-ui/icons/Menu";
 import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import IconButton from "@material-ui/core/IconButton";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import { Link, Redirect, useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Badge from "@material-ui/core/Badge";
 import { FaQuestionCircle, FaBell, FaUserLock } from "react-icons/fa";
 import { IoLogOut } from "react-icons/io5";
 import { MdArrowDropDownCircle } from "react-icons/md";
-import { AiFillLock, AiOutlineUserSwitch } from "react-icons/ai";
+import { AiFillLock } from "react-icons/ai";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { AuthContext } from "../../../shared/context/auth-context";
 import { useAuth } from "../../../shared/hooks/auth-hook";
@@ -39,8 +37,7 @@ import { SocketContext } from "../../../shared/context/socket-context";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import UserBlockedListDialog from "../../../user/components/UserBlockedListDialog";
 import Notification from './Notifications';
-import { VscClearAll } from "react-icons/vsc";
-import { AiFillCloseSquare } from "react-icons/ai";
+
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -133,7 +130,7 @@ export default function Navbar(props) {
 
   const history = useHistory();
   const [success, setSuccess] = useState(false);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {  error, status, sendRequest, clearError } = useHttpClient();
   const [role, setRole] = useState("Candidate");
   const [switchResMsg, setSwitchResMsg] = useState("");
   const [callblockedDialog, setCallblockedDialog] = useState(false);
@@ -198,7 +195,7 @@ export default function Navbar(props) {
     } catch (err) {}
   };
   useEffect(() => {
-    setSuccess(status == 200 && switchResMsg);
+    setSuccess(status === 200 && switchResMsg);
   }, [status]);
 
   useEffect(() => {
@@ -213,10 +210,6 @@ export default function Navbar(props) {
     marginRight: "10px",
   };
 
-  const paper = {
-    width: "1000px",
-    height: "800px"
-  };
 
   const classes = useStyles();
 
@@ -279,7 +272,7 @@ export default function Navbar(props) {
           `http://localhost:5000/api/settings/role/${auth.setting._id}`,
           "PATCH",
           JSON.stringify({
-            role: role == "Candidate" ? "Interviewer" : "Candidate",
+            role: role === "Candidate" ? "Interviewer" : "Candidate",
           }),
           {
             "Content-Type": "application/json",
@@ -462,7 +455,7 @@ export default function Navbar(props) {
             <IoIosSwitch />
           </IconButton>
           <Typography variant="subtitle1">
-            Switch to {role == "Candidate" ? "Interviewer" : "Candidate"}
+            Switch to {role === "Candidate" ? "Interviewer" : "Candidate"}
           </Typography>
         </MenuItem>
         <Divider variant="middle" />
@@ -494,17 +487,17 @@ export default function Navbar(props) {
       <Snackbar
         open={success || !!error}
         autoHideDuration={1200}
-        onClose={status == "200" ? clearSuccess : clearError}
+        onClose={status === 200 ? clearSuccess : clearError}
       >
         <MuiAlert
           elevation={6}
 
           variant="filled"
-          severity={status == "200" ? "success" : "error"}
-          onClose={status == "200" ? clearSuccess : clearError}
+          severity={status === 200 ? "success" : "error"}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
-          {status == "200" && switchResMsg
-            ? `Your role has been swtiched to ${role == "Candidate" ? "Interviewer" : "Candidate"
+          {status === 200 && switchResMsg
+            ? `Your role has been swtiched to ${role === "Candidate" ? "Interviewer" : "Candidate"
             }`
             : error}
         </MuiAlert>

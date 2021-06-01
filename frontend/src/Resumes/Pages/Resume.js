@@ -11,12 +11,13 @@ import { Toolbar } from "@material-ui/core";
 
 function App() {
 const appstyle={
-  marginTop:"4%",
+  marginLeft:"3%",
 }
 
   return (
+    <>
+    <Toolbar/>
     <div className="app" style={appstyle}>
-      <Toolbar/>
       <ResumeContextProvider>
         <BrowserRouter>
           <Switch>
@@ -28,6 +29,7 @@ const appstyle={
       </ResumeContextProvider>
       
     </div>
+    </>
   );
 }
 

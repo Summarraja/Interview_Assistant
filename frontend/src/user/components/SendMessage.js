@@ -1,6 +1,5 @@
-import React, { Fragment, useState, useContext, useEffect } from "react";
+import React, { Fragment, useState, useContext } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import AddIcon from "@material-ui/icons/Add";
 import { Fab } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";

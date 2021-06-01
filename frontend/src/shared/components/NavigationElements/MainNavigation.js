@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
 const MainNavigation = () => {
   const auth = useContext(AuthContext);
   const socket = useContext(SocketContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {  sendRequest } = useHttpClient();
 
   const classes = useStyles();
   const [OpenDrawer, SetOpenDrawer] = useState(false);
@@ -266,7 +266,7 @@ const MainNavigation = () => {
         </ListItem>
       </Tooltip>
 
-      {auth.setting && auth.setting.role == "Interviewer" && (
+      {auth.setting && auth.setting.role === "Interviewer" && (
         <>
           <Divider variant="middle" className={classes.divider} />
 

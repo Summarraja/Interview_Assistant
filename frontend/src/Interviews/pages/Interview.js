@@ -16,6 +16,8 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    height: "100vh",
+    overflowY: "auto",
     backgroundColor: "#fff",
     paddingLeft: 60,
     [theme.breakpoints.down("xs")]: {
@@ -46,7 +48,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   paper: {
-    margin: "30px auto",
+    marginTop: "20px",
+    // marginBottom: "10px",
     padding: "20px 20px",
     backgroundColor: "#d3d3d3",
   },
