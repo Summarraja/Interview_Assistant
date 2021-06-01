@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useContext, useEffect } from "react";
+import React, { Fragment, useEffect } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AddIcon from "@material-ui/icons/Add";
 import { Fab } from "@material-ui/core";
@@ -89,7 +89,7 @@ const UploadPhoto = (props) => {
                 </DialogTitle>
                 <DialogContent dividers>
                     <div className={classes.content}>
-                        <img className={classes.preview} src={props.previewUrl} />
+                        <img className={classes.preview} src={props.previewUrl} alt="User's Profile"/>
                         <br />
                         {props.file && (
                             <>

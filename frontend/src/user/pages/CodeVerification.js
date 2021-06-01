@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CodeVerification(props) {
     const auth = useContext(AuthContext);
     const [success, setSuccess] = useState(false);
-    const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
     const [isForgotPass, setForgotPass] = useState(false);
     const userEmail = props.location.state.email;
 

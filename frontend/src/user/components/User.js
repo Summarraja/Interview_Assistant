@@ -6,7 +6,7 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 const Users = (props) => {
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
  const [myResume, setMyResume] = useState(auth.resume);
  const [setting, setSetting] = useState("");
  useEffect(()=>{

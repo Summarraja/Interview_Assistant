@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
 
 const InterCandidatesList = (props) => {
   const classes = useStyles();
-  const [candidResume, setCandidResume] = useState([]);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
   if (props.items.length === 0) {
@@ -39,7 +38,6 @@ const InterCandidatesList = (props) => {
           <InterCandidatesItems
             key={candidate}
             id={candidate}
-
             selectedCand={props.selectedCand}
             setSelectedCand={props.setSelectedCand}
           />

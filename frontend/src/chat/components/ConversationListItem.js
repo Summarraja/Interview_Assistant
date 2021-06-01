@@ -74,7 +74,6 @@ function ConversationList(props) {
           <div className="last-msg">
             <Typography className="text" variant="body2" >{getMessage(props.chat.lastMessage)}</Typography >
             <span className="time-mark">{getTime(props.chat.lastMessageTime)}</span>
-
           </div>
         </div>
       </div>

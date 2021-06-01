@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import "./Charts.css";
-import { Toolbar, Typography } from "@material-ui/core";
+import { Toolbar, Typography, Card } from "@material-ui/core";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
@@ -31,10 +31,12 @@ const useStyles = makeStyles((theme) => ({
       width: "40%",
     },
     [theme.breakpoints.up("md")]: {
-      width: "35%",
+      width: "32%",
     },
   },
-
+  noData:{
+    padding: 10
+  },
   mainChat: {
     background: "#d3d3d3",
     display: "flex",
@@ -47,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
       width: "60%",
     },
     [theme.breakpoints.up("md")]: {
-      width: "75%",
+      width: "68%",
     },
   },
   Headers: {
@@ -68,9 +70,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#004777",
     margin: "0% 38%",
   },
-  charts:{
-    margin:'1rem'
-  }
+ 
 }));
 
 const Charts = () => {
@@ -147,7 +147,7 @@ const Charts = () => {
       <Toolbar />
       <div className="Chartapp">
         <div className="LeftBigDiv" className={classes.aside}>
-          <div className="LeftSmallDiv">
+         
             <header className={classes.Headers}>
               <Typography
                 align="center"
@@ -157,6 +157,7 @@ const Charts = () => {
                 Select Interviews
               </Typography>
             </header>
+            <div className="LeftSmallDiv">
             <div>
               {interviews && (
                 <TakenInterviewsList
@@ -170,7 +171,7 @@ const Charts = () => {
               )}
             </div>
           </div>
-          <div className="LeftSmallDiv">
+         
             <header className={classes.Headers}>
               <Typography
                 align="center"
@@ -180,9 +181,8 @@ const Charts = () => {
                 Select Candidate
               </Typography>
             </header>
+            <div className="LeftSmallDiv">
             <div>
-
-              {/* { console.log("Chart candidates: " + candidates)} */}
               {interviews && candidates && (
                 <InterCandidatesList
                   items={candidates}
@@ -195,7 +195,7 @@ const Charts = () => {
             </div>
           </div>
         </div>
-        <div className={classes.mainChat}>
+        <div className={classes.mainChat} >
           <header>
             <Typography
               variant="h4"
@@ -206,9 +206,10 @@ const Charts = () => {
             </Typography>
           </header>
           {selectedCand && (
-            <div className={classes.charts}>
+            <div className="charts">
               {(stats.length == 0) && (
-                <>No Data Found</>
+                <Card className={classes.noData}>
+                  <Typography variant="h5" align="center">No Data Found</Typography></Card>
               )}
               {(stats.length > 0) && (
                 <>

@@ -3,11 +3,9 @@ import "./Faq.css";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
-import { makeStyles, fade } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
+import { makeStyles } from "@material-ui/core/styles";
 import SearchCandidates from "../../Interviews/components/SearchCandidates";
 import { Card, Toolbar } from "@material-ui/core";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import { Fragment } from "react";
@@ -86,7 +84,7 @@ export default function FAQ(props) {
   const [searchItem, setSearchItem] = useState("");
   const auth = useContext(AuthContext);
   const [faqs, setFaqs] = useState();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {  sendRequest } = useHttpClient();
   useEffect(() => {
     setCloseIcon(false);
   }, [searchItem]);
@@ -109,7 +107,7 @@ export default function FAQ(props) {
         console.log(err)
       }
     }
-    if (!faqs || closeIcon == false)
+    if (!faqs || closeIcon === false)
       getData();
 
   }, [faqs, closeIcon])

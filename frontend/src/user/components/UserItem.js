@@ -7,7 +7,6 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Typography from "@material-ui/core/Typography";
 import { Grid } from "@material-ui/core";
-import { Fab } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import CallIcon from "@material-ui/icons/Call";
 import VideocamIcon from "@material-ui/icons/Videocam";
@@ -29,7 +28,6 @@ import { useHttpClient } from '../../shared/hooks/http-hook';
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-import { setNestedObjectValues } from "formik";
 import { useHistory } from 'react-router-dom'
 
 
@@ -80,11 +78,11 @@ const UserItem = (props) => {
 
 
   const clearSuccess = () => {
-    setSuccess(status != 200);
+    setSuccess(status !== 200);
 
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status, showBlockBtn]);
 
 
@@ -124,7 +122,7 @@ const UserItem = (props) => {
             Authorization: "Bearer " + auth.token,
           }
         );
-        if (responseData.responseMessage == "blocked") {
+        if (responseData.responseMessage === "blocked") {
           setResMsg(responseData.responseMessage)
           setShowBlockBtn(true);
         }
@@ -136,7 +134,7 @@ const UserItem = (props) => {
   }
 
   function findBlockedUsers(arr1, arr2) {
-    return arr1.some((item) => arr2 == item);
+    return arr1.some((item) => arr2 === item);
   }
 
 
@@ -192,15 +190,15 @@ const UserItem = (props) => {
         <Snackbar
           open={success || !!error}
           autoHideDuration={3000}
-          onClose={status == 200 ? clearSuccess : clearError}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
           <MuiAlert
             elevation={6}
             variant="filled"
-            severity={status == 200 ? "success" : "error"}
-            onClose={status == 200 ? clearSuccess : clearError}
+            severity={status ===  200 ? "success" : "error"}
+            onClose={status === 200 ? clearSuccess : clearError}
           >
-            {(status == 200 && resMsg == "blocked") ? "User has blocked successfully!" : error}
+            {(status === 200 && resMsg === "blocked") ? "User has blocked successfully!" : error}
           </MuiAlert>
         </Snackbar>
 

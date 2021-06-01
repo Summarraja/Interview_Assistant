@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {  useContext } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -27,7 +27,7 @@ export default function UserSearchedResumes(props) {
 const auth = useContext(AuthContext);
     const classes = useStyles();
 return(
-props.userId != auth.userId && (
+props.userId !== auth.userId && (
   <List className={classes.list}>
   <Grid container>
     <Grid item xs={12} className={classes.responsive}>

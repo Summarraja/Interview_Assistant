@@ -339,6 +339,9 @@ const signup = async (req, res, next) => {
     country,
     address,
     gender,
+    professional: { desc1: ["", "", ""], desc2: ["", "", ""] },
+    education: {},
+    additional: [],
   });
 
   const createdSetting = new Setting({

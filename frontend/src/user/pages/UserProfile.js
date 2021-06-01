@@ -9,7 +9,7 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 export default function UserProfile() {
   const auth = useContext(AuthContext);
-  const {isLoading, error, status, sendRequest, clearError} = useHttpClient();
+  const {isLoading, sendRequest} = useHttpClient();
   const [interviews, setInterviews] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [setting, setSetting] = useState("");
@@ -118,11 +118,11 @@ export default function UserProfile() {
   const countApprovedCert = () =>{
     if(uid){
      certificates.map((cert)=>{
-      cert.isApproved == true && setApprovedCertCount(approvedCertCount+1);
+      return  cert.isApproved === true && setApprovedCertCount(approvedCertCount+1);
     })
   }
   else{
-    setApprovedCertCount(certificates.length)
+   return setApprovedCertCount(certificates.length)
     
   }}
     if (certificates){

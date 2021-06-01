@@ -43,7 +43,7 @@ const UserBlockedListDialog = (props) => {
     backgroundColor: "primary",
   };
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
 
   const handleCloseDialog = () => {
     props.setOpenBlockedDialog(false);
