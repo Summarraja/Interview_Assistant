@@ -9,7 +9,6 @@ import {
     Button,
 } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
-import { VscClearAll } from "react-icons/vsc";
 import { AiFillCloseSquare } from "react-icons/ai";
 import { AuthContext } from "../../context/auth-context";
 import { SocketContext } from "../../context/socket-context";
@@ -42,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 const ITEM_HEIGHT = 130;
 
 const Notifications = (props) => {
-    const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+    const { isLoading, sendRequest } = useHttpClient();
     const notiRef = useRef();
     const auth = useContext(AuthContext);
     const socket = useContext(SocketContext);
@@ -162,7 +161,7 @@ const Notifications = (props) => {
                         <Typography variant="h5" style={{ paddingLeft: "10px" }}>Notifications</Typography>
                     </Grid>
                     <Grid item sm={5} align="center"  >
-                        <Button onClick={clearNotifications} style={{ visibility: (notifications && notifications.length == 0) ? 'hidden' : 'visible' }} color="primary">Clear All</Button>
+                        <Button onClick={clearNotifications} style={{ visibility: (notifications && notifications.length === 0) ? 'hidden' : 'visible' }} color="primary">Clear All</Button>
                         <IconButton color="primary" float="left" onClick={props.closeNotiMenu}>
                             <AiFillCloseSquare />
                         </IconButton>
@@ -170,7 +169,7 @@ const Notifications = (props) => {
                 </Grid>
 
                 <Divider variant="middle" />
-                {(notifications && notifications.length == 0) && (
+                {(notifications && notifications.length === 0) && (
                     <MenuItem className={classes.noNoti}>
                         <Grid item sm={9} className={classes.NotiTitle}>
                             <Typography variant="h5" >{isLoading ? "Loading..." : "You have no new Notification.."}</Typography>

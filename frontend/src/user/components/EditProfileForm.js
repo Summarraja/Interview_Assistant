@@ -277,7 +277,7 @@ const EditProfileForm = (props) => {
     setSuccess(false);
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status]);
 
   const onSubmitHandler = async (values) => {
@@ -317,15 +317,15 @@ const EditProfileForm = (props) => {
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}
-        onClose={status == "200" ? clearSuccess : clearError}
+        onClose={status === 200 ? clearSuccess : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "200" ? "success" : "error"}
-          onClose={status == "200" ? clearSuccess : clearError}
+          severity={status === 200 ? "success" : "error"}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
-          {status == "200" ? "Profile Updated Successfully!" : error}
+          {status === 200 ? "Profile Updated Successfully!" : error}
         </MuiAlert>
       </Snackbar>
 

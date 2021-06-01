@@ -11,8 +11,9 @@ import { AuthContext } from "../../shared/context/auth-context";
 function App(props) {
   const auth = useContext(AuthContext);
   const appstyle = {
-    marginTop: "4%",
+    marginTop: "7%",
   }
+
 
   let Routes,Data;
   if(!(props.location.state && props.location.state.resume.id!=auth.resume.id)){
@@ -25,9 +26,12 @@ function App(props) {
     </Switch>
     )
   }
+
   return (
+  <>
+    <Toolbar/>
     <div className="app" style={appstyle}>
-      <Toolbar />
+      {/* <Toolbar /> */}
       <ResumeContextProvider>
         <BrowserRouter>
           {Routes}
@@ -36,6 +40,7 @@ function App(props) {
       </ResumeContextProvider>
 
     </div>
+    </>
   );
 }
 

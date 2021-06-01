@@ -1,23 +1,18 @@
 import React, { useContext, useState, useEffect } from "react";
-import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import ListItemText from "@material-ui/core/ListItemText";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
-import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
-import { BsUnlockFill } from "react-icons/bs";
 import Typography from "@material-ui/core/Typography";
-import { FaUserCheck, FaUserTimes } from "react-icons/fa";
 import { AiFillUnlock } from "react-icons/ai";
 
 const useStyles = makeStyles((theme) => ({
@@ -73,7 +68,7 @@ const UserBlockedListDialogItems = (props) => {
     setSuccess(false);
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status]);
 
   const UnblockUserHandler = () =>{
@@ -90,7 +85,7 @@ const UserBlockedListDialogItems = (props) => {
             Authorization: "Bearer " + auth.token,
           }
         );
-        if(responseData.responseMessage == "Unblocked"){
+        if(responseData.responseMessage === "Unblocked"){
             setResponseStatus(responseData.responseMessage)
           
         }
@@ -107,15 +102,15 @@ const UserBlockedListDialogItems = (props) => {
         <Snackbar
           open={success || !!error}
           autoHideDuration={6000}
-          onClose={status == "200" ? clearSuccess : clearError}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
           <MuiAlert
             elevation={6}
             variant="filled"
-            severity={status == "200" ? "success" : "error"}
-            onClose={status == "200 " ? clearSuccess : clearError}
+            severity={status === 200 ? "success" : "error"}
+            onClose={status === 200  ? clearSuccess : clearError}
           >
-            {status == "200" && responseStatus == "Unblocked"
+            {status === 200 && responseStatus === "Unblocked"
               ? "User has unblocked successfully!"
               : error}
           </MuiAlert>
@@ -144,7 +139,7 @@ const UserBlockedListDialogItems = (props) => {
             {isLoading && <LoadingSpinner open={isLoading} />}
 
             <Grid item  xs={4} >
-               {status == "200" && responseStatus == "Unblocked"? (
+               {status === 200 && responseStatus === "Unblocked"? (
                 <Typography variant="subtitle2" className={classes.statusStyle}>
                     <AiFillUnlock className={classes.statusIconStyle} />
                     Unblocked

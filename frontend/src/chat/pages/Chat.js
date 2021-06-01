@@ -66,7 +66,7 @@ function Chat() {
   const auth = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   const classes = useStyles();
   const [data, setData] = useState();
   const [searchedData, setSearchedData] = useState();

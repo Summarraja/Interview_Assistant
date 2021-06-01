@@ -16,7 +16,6 @@ import { useHttpClient } from '../../shared/hooks/http-hook';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import {useHistory} from 'react-router';
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(2),
@@ -52,9 +51,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ForgetPassword(props) {
-  const history = useHistory();
  
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [success, setSuccess] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const paperStyle = {

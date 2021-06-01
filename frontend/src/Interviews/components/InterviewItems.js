@@ -41,7 +41,10 @@ const useStyles = makeStyles((theme) => ({
       float: "right",
     },
     [theme.breakpoints.down("sm")]: {
-      display: "none",
+      marginRight: "0px",
+    },
+    [theme.breakpoints.down("xs")]: {
+      marginRight: "10px",
     },
   },
   statusStyle: {
@@ -72,7 +75,7 @@ const InterviewItems = (props) => {
   const classes = useStyles();
 
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  // const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const today = new Date();
 
   const date =
@@ -130,7 +133,8 @@ const InterviewItems = (props) => {
       // }}
       getContentAnchorEl={null}
     >
-      {matches && (
+      {/* {matches && (
+        
         <MenuItem
           style={{ height: 40 }}
           component={Link}
@@ -142,7 +146,8 @@ const InterviewItems = (props) => {
           <Typography variant="subtitle1">View Details</Typography>
         </MenuItem>
       )}
-          <Divider variant="middle" />
+          <Divider variant="middle" /> */}
+      <>
     {props.hasAccess && props.role == "Interviewer" && (
     
           <InterviewMenu
@@ -159,8 +164,12 @@ const InterviewItems = (props) => {
           />
 
           )}
+
+          </>
+
       </Menu>
     
+
     
   );
 
@@ -205,7 +214,8 @@ const InterviewItems = (props) => {
             </Button>
           </Grid>
         </Grid>
-        { (
+        { props.hasAccess && (
+          
           <OutsideClickHandler onOutsideClick={closeInterviewMenu}>
             <IconButton onClick={openInterviewMenu}>
               <MoreVertIcon style={MoreIconStyle} />

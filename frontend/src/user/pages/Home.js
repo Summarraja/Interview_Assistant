@@ -9,7 +9,7 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import UserSearchedResumes from "../components/UserSearchedResumes";
 import homeimage from "../../shared/components/UIElements/Images/homeimage.jpg";
-import Box from "@material-ui/core/Box";
+import CardMedia from '@material-ui/core/CardMedia';
 
 const useStyles = makeStyles((theme) => ({
   bgCard: {
@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
   searchedItems: {
     backgroundColor: "white",
     padding: 10,
+    zIndex: 999999
   },
   list: {
     padding: 0,
@@ -64,6 +65,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center",
     backgroundSize: "cover",
     display: "flex",
+    minHeight: "100%",
+    position: "relative"
   },
 }));
 
@@ -114,40 +117,55 @@ export default function Home(props) {
       <Toolbar />
       <div className={classes.hero}>
         <Container>
-          <div className={classes.bgCard}>
-            <SearchCandidates
-              className={classes.searchBar}
-              setSearchItem={setSearchItem}
-              searchItem={searchItem}
-              getSearchItem={getSearchItem}
-              closeIcon={closeIcon}
-              setCloseIcon={setCloseIcon}
-            />
-            {closeIcon && (
-              <Card className={classes.searchedItems}>
-                {resume.length === 0 ? (
-                  <Typography variant="h6">
-                    {isLoading ? "Searching User..." : "No user found"}
-                  </Typography>
-                ) : (
-                  resume.map((resume) => (
-                    <UserSearchedResumes
-                      key={resume._id}
-                      id={resume._id}
-                      name={resume.firstname + " " + resume.lastname}
-                      userId={resume.user.id}
-                      image={resume.image}
-                    />
-                  ))
-                )}
-              </Card>
-            )}
+          <div >
+            <div className={classes.bgCard}>
+              <SearchCandidates
+                className={classes.searchBar}
+                setSearchItem={setSearchItem}
+                searchItem={searchItem}
+                getSearchItem={getSearchItem}
+                closeIcon={closeIcon}
+                setCloseIcon={setCloseIcon}
+              />
+              {closeIcon && (
+                <Card className={classes.searchedItems}>
+                  {resume.length === 0 ? (
+                    <Typography variant="h6">
+                      {isLoading ? "Searching User..." : "No user found"}
+                    </Typography>
+                  ) : (
+                    resume.map((resume) => (
+                      <UserSearchedResumes
+                        key={resume._id}
+                        id={resume._id}
+                        name={resume.firstname + " " + resume.lastname}
+                        userId={resume.user.id}
+                        image={resume.image}
+                      />
+                    ))
+                  )}
+                </Card>
+              )}
+            </div>
+            <br />
           </div>
-          <br />
-    
+
+          <div style={{
+            position: 'absolute',
+            color: 'white',
+            marginRight: "70px",
+            bottom: 45,
+
+          }} >
+            <Typography variant="h5" align="center" style={{ fontSize: "2rem" }}>
+              "Interview Assistant is a web-based chat application which is supposed to aid the process
+              of interviewing utilizing voice and video analyses to give feedback to the interviewer
+              regarding the emotions of an interviewee"
+                            </Typography></div>
+
           <CssBaseline />
         </Container>
-      
+
       </div>
     </>
   );

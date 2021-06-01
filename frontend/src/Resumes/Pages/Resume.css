@@ -6,6 +6,7 @@
   .left {
     background-color: #fff;
     width: 25vw;
+  
     /* box-shadow: 0 0 0.5cm #7b7d7d; */
     margin-left: 100px;
     margin-top: 50px;
@@ -13,7 +14,7 @@
   }
   
   .right {
-    width: 75vw;
+    width: 100vw;
     min-height: 100vh;
     font-family: "Lora", serif;
   }
@@ -27,10 +28,10 @@
     display: block;
     margin: 0 auto;
     margin-top: 50px;
-    margin-bottom: 0.5cm;
+    margin-bottom: 5cm;
     box-shadow: 0 0 0.5cm #7b7d7d;
     width: 21cm;
-    height: 21cm;
+    height: 20cm;
   }
   
   @media print {
