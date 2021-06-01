@@ -104,6 +104,8 @@ const UpdateInterview = (props) => {
   };
   useEffect(() => {
     setSuccess(status == 200 || status == 201);
+    if(status == 200)
+       props.setDisableField(true)
   }, [status]);
 
   const classes = useStyles();
@@ -135,10 +137,6 @@ const UpdateInterview = (props) => {
           Authorization: "Bearer " + auth.token,
         }
       );
-      status == 200 && props.setDisableField(true)
-        ? setSuccess(true)
-        : setSuccess(false);
-      status == 200 ? setSuccess(true) : setSuccess(false);
     } catch (err) {}
   };
 
@@ -166,7 +164,6 @@ const UpdateInterview = (props) => {
   return (
     <>
       {isLoading && <LoadingSpinner open={isLoading} />}
-
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}

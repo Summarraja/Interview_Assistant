@@ -17,8 +17,8 @@ import { useHttpClient } from "../../../shared/hooks/http-hook";
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "absolute",
-    marginLeft:"4%",
-    marginTop:"3%"
+   marginTop:"3%",
+   marginLeft:"2.5%"
 
   },
   pink: {
@@ -99,7 +99,7 @@ function Right() {
     catch (err) {
     }
   };
-  const handleSaveToPDF = (event) => {
+  const handleSaveToPDF = (event) => {    
     // event.preventDefault();
     window.print();
   };
