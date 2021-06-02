@@ -379,8 +379,12 @@ const UserItem = (props) => {
             size="medium"
             style={resumeButtonStyle}
             startIcon={<FaRegAddressCard />}
-            component = {Link}
-            to ="/resume"
+            onClick={()=>{
+              history.push({
+                pathname: '/resume',
+                state: { resume: props.resume}
+              });
+            }}
           >
             {props.otherUser ? `${props.resume.firstname} Resume` : "My Resume"}
           </Button>

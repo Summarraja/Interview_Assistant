@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 import myClasses from "./../Components/Left/Left.module.css";
 import { useHistory } from 'react-router-dom'
 import { Paper, Typography } from '@material-ui/core';
-function Templates() {
+function Templates(props) {
   const history = useHistory();
 
   const useStyles = makeStyles({
@@ -19,6 +19,8 @@ useEffect(()=>{
   if(history)
   history.push({
     pathname: '/resume/header',
+    state: props.location.state?{resume: props.location.state.resume}:null
+
   });
 },[history])
   const classes = useStyles();

@@ -130,8 +130,7 @@ function Left() {
               {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
               <Switch>
-                <Route path="/resume/header">
-                  <Header />
+                <Route path="/resume/header" component={Header}>
                 </Route>
                 <Route path="/resume/professional">
                   <Professional />

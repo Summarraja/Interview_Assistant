@@ -17,6 +17,7 @@ import { useHttpClient } from "../../../shared/hooks/http-hook";
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "absolute",
+
    marginTop:"3%",
    marginLeft:"2.5%"
 
@@ -33,13 +34,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Right() {
-  const { setContent, content} = useContext(ResumeContext);
+function Right(props) {
+  const { setContent, content } = useContext(ResumeContext);
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
   const [success, setSuccess] = useState(false);
   const [responsemessage, setresponsemessage] = useState();
+
+  useEffect(() => {
+    if (!props.data)
+      return;
+    let user = props.data;
+    setContent({
+      id: user.resume.id,
+      header: {
+        firstname: user.resume.firstname,
+        lastname: user.resume.lastname,
+        address: user.resume.address,
+        email: user.resume.email,
+        country: user.resume.country,
+        city: user.resume.city,
+        phone: user.resume.phone,
+      },
+      professional: user.resume.professional ? user.resume.professional : { desc1: ["", "", ""], desc2: ["", "", ""] },
+      education: user.resume.education ? user.resume.education : {},
+      additional: user.resume.additional ? user.resume.additional : [],
+    });
+  }, []);
 
   const clearSuccess = () => {
     setSuccess(false);
@@ -74,11 +96,11 @@ function Right() {
           Authorization: "Bearer " + auth.token,
         }
       );
-      if (responseData.resume ) {
+      if (responseData.resume) {
         setresponsemessage("")
         const storedData = JSON.parse(localStorage.getItem("userData"));
-        storedData.resume = {...responseData.resume};
-        auth.setResume({...responseData.resume});
+        storedData.resume = { ...responseData.resume };
+        auth.setResume({ ...responseData.resume });
         localStorage.setItem("userData", JSON.stringify(storedData));
         setContent({
           header: {
@@ -130,8 +152,8 @@ function Right() {
       if (responseData.resume) {
         setresponsemessage(responseData.message)
         const storedData = JSON.parse(localStorage.getItem("userData"));
-        storedData.resume = {...responseData.resume};
-        auth.setResume({...responseData.resume});
+        storedData.resume = { ...responseData.resume };
+        auth.setResume({ ...responseData.resume });
         localStorage.setItem("userData", JSON.stringify(storedData));
         setContent({
           header: {
@@ -143,9 +165,9 @@ function Right() {
             city: responseData.resume.city,
             phone: responseData.resume.phone,
           },
-          professional: responseData.resume.professional?responseData.resume.professional:{ desc1: ["", "", ""], desc2: ["", "", ""] },
-          education: responseData.resume.education?responseData.resume.education:{},
-          additional: responseData.resume.additional?responseData.resume.additional:[],
+          professional: responseData.resume.professional ? responseData.resume.professional : { desc1: ["", "", ""], desc2: ["", "", ""] },
+          education: responseData.resume.education ? responseData.resume.education : {},
+          additional: responseData.resume.additional ? responseData.resume.additional : [],
         });
       }
     }
@@ -156,7 +178,7 @@ function Right() {
 
   return (
     <div className="right">
-      
+
       {isLoading && <LoadingSpinner open={isLoading} />}
       <Snackbar
         open={success || !!error}
@@ -170,32 +192,36 @@ function Right() {
           onClose={status == "200" ? clearSuccess : clearError}
         >
 
-          {status == "200"&& responsemessage=="Updated resume."  ? "Resume Saved Sucessfully!": status == "200"&& responsemessage==""  ? "Resume Deleted Sucessfully!" : error}
-      
+          {status == "200" && responsemessage == "Updated resume." ? "Resume Saved Sucessfully!" : status == "200" && responsemessage == "" ? "Resume Deleted Sucessfully!" : error}
+
         </MuiAlert>
       </Snackbar>
       <div className={classes.root}>
-        <Link  onClick={handleSaveToPDF}>
+        <Link onClick={handleSaveToPDF}>
           <Tooltip title="Save to PDF" placement="right">
             <Avatar className={classes.green}>
               <PictureAsPdfIcon />
             </Avatar>
           </Tooltip>
         </Link>
-        <Link  onClick={handleDeleteData}>
-          <Tooltip title="Delete Resume" placement="right">
-            <Avatar className={classes.green}>
-              <DeleteIcon />
-            </Avatar>
-          </Tooltip>
-        </Link>
-        <Link onClick={handleSaveResume}>
-          <Tooltip title="Save Resume" placement="right">
-            <Avatar className={classes.green}>
-              <SaveIcon />
-            </Avatar>
-          </Tooltip>
-        </Link>
+        {((!props.data) || (props.data && props.data.resume.id==auth.resume.id)) && (
+          <>
+            <Link onClick={handleDeleteData}>
+              <Tooltip title="Delete Resume" placement="right">
+                <Avatar className={classes.green}>
+                  <DeleteIcon />
+                </Avatar>
+              </Tooltip>
+            </Link>
+            <Link onClick={handleSaveResume}>
+              <Tooltip title="Save Resume" placement="right">
+                <Avatar className={classes.green}>
+                  <SaveIcon />
+                </Avatar>
+              </Tooltip>
+            </Link>
+          </>
+        )}
       </div>
       <Paper />
     </div>
