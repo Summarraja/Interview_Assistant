@@ -11,7 +11,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 function App(props) {
   const auth = useContext(AuthContext);
   const appstyle = {
-    marginTop: "7%",
+    // marginTop: "7%",
   }
 
 

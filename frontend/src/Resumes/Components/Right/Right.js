@@ -32,6 +32,15 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#004777",
     margin: 10,
   },
+
+  pdficon: {
+    color: "#fffff",
+    backgroundColor: "#004777",
+    marginTop: 40,
+    marginLeft: 370
+  },
+
+  
 }));
 
 function Right(props) {
@@ -176,6 +185,12 @@ function Right(props) {
 
   };
 
+  const getClass=()=>{
+if((!props.data) || (props.data && props.data.resume.id==auth.resume.id))
+    return classes.green
+return classes.pdficon
+  }
+
   return (
     <div className="right">
 
@@ -199,7 +214,7 @@ function Right(props) {
       <div className={classes.root}>
         <Link onClick={handleSaveToPDF}>
           <Tooltip title="Save to PDF" placement="right">
-            <Avatar className={classes.green}>
+            <Avatar className={getClass()}>
               <PictureAsPdfIcon />
             </Avatar>
           </Tooltip>
