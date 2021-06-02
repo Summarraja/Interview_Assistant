@@ -27,12 +27,12 @@
 
 .LeftSmallDiv {
   flex: 0 0 50px;
-  height: 37vh;
+  height: 36.5vh;
   overflow-y: auto;
 }
 
 .charts{
-  height: 83vh;
+  height: 80vh;
   overflow-y: auto;
   margin-left: 0.8rem;
 
