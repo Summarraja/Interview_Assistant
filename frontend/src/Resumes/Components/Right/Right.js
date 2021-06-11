@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
 
    marginTop:"3%",
-   marginLeft:"2.5%"
+   marginLeft:"1.3%"
 
   },
   pink: {
@@ -36,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
   pdficon: {
     color: "#fffff",
     backgroundColor: "#004777",
-    marginTop: 40,
-    marginLeft: 370
+    marginTop: 30,
+    marginLeft: 310
   },
 
   
