@@ -26,14 +26,14 @@ const CertificateList = (props) => {
       <Container maxWidth="md" component="main">
         <Paper elevation={5} className={classes.paper}>
           <Typography variant="h4" color="primary" align="center">
-           {auth.setting.role == "Candidate" ? "No certificates has been added by this User": " No certificates found. Maybe create one?"} 
+           {auth.setting.role === "Candidate" ? "No certificates has been added by this User": " No certificates found. Maybe create one?"} 
           </Typography>
         </Paper>
       </Container>
     );
   }
 
-  if (props.approvedCertCount == 0 && props.uid != auth.userId ){
+  if (props.approvedCertCount === 0 && props.uid !== auth.userId ){
     return (
       <Container maxWidth="md" component="main">
         <Paper elevation={5} className={classes.paper}>
@@ -52,7 +52,7 @@ const CertificateList = (props) => {
      </AppBar>
 
      { props.items.map((certificate) => (
-         ((props.hasDeleteAccess) || (!props.hasDeleteAccess && certificate.isApproved == true ))&& (
+         ((props.hasDeleteAccess) || (!props.hasDeleteAccess && certificate.isApproved === true ))&& (
         <CertificateItems
           key={certificate.id}
           id={certificate.id}

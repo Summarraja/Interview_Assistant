@@ -23,7 +23,7 @@ export default function UserProfile() {
     const fetchInterviews = async (usID) => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/interviews/user/" + usID,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/user/` + usID,
           'GET',
           null,
           {
@@ -42,13 +42,13 @@ export default function UserProfile() {
     else
        fetchInterviews(auth.userId)
 
-  }, [uid]);
+  }, [uid,auth.token,auth.userId,sendRequest]);
 
   useEffect(() => {
     const fetchCertificates = async (usID) => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/certificates/user/" + usID,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/user/` + usID,
           'GET',
           null,
           {
@@ -65,13 +65,13 @@ export default function UserProfile() {
        fetchCertificates(uid);
    else
       fetchCertificates(auth.userId)
-  }, [uid]);
+  }, [uid,auth.token,auth.userId,sendRequest]);
 
   useEffect(() => {
     const fetchSetting = async (usID) => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/settings/user/" + usID,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/user/` + usID,
           'GET',
           null,
           {
@@ -87,13 +87,13 @@ export default function UserProfile() {
     if(uid)
        fetchSetting(uid);
 
-  }, [uid]);
+  }, [uid,auth.token,sendRequest]);
 
   useEffect(() => {
     const fetchResume = async (usID) => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/resumes/user/" + usID,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/resumes/user/` + usID,
           'GET',
           null,
           {
@@ -111,7 +111,7 @@ export default function UserProfile() {
     else
        setResume("")
 
-  }, [uid]);
+  }, [uid,auth.token,sendRequest]);
 
 
  useEffect (()=>{
@@ -129,7 +129,7 @@ export default function UserProfile() {
        countApprovedCert();
     
     }
- }, [uid, certificates]) 
+ }, [uid, certificates,approvedCertCount]) 
  
 
 
@@ -138,7 +138,7 @@ export default function UserProfile() {
       <CssBaseline />
       <LoadingSpinner open={isLoading}/>
       {!isLoading && 
-       <User approvedCertCount = {approvedCertCount} otherUser = {(uid==auth.userId)?null:uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>
+       <User approvedCertCount = {approvedCertCount} otherUser = {(uid===auth.userId)?null:uid} userInterviews = {interviews} userSetting = {setting} userResume = {resume}/>
       
       }
          </Container>

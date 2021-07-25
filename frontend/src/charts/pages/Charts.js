@@ -11,7 +11,6 @@ import Polar from '../components/Polar';
 import HorizontalBar from '../components/HorizontalBar';
 import MultiAxisLine from '../components/MultiAxisLine';
 import LineChart from '../components/LineChart';
-import { AiFillPropertySafety } from "react-icons/ai";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,7 +79,7 @@ const Charts = () => {
   const [selectedInterview, setSelectedInterview] = useState();
   const [selectedCand, setSelectedCand] = useState();
   const [stats, setStats] = useState([]);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   const auth = useContext(AuthContext);
   const today = new Date();
   const date =
@@ -96,7 +95,7 @@ const Charts = () => {
       try {
 
         const responseData = await sendRequest(
-          `http://localhost:5000/api/emotionStats/${selectedInterview.id}/${selectedCand}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/emotionStats/${selectedInterview.id}/${selectedCand}`,
           "GET",
           null,
           {
@@ -110,12 +109,12 @@ const Charts = () => {
       }
     };
     getStats();
-  }, [selectedCand]);
+  }, [selectedCand,auth.token,selectedInterview,sendRequest]);
   useEffect(() => {
     const getData = async () => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/interviews/user/" + auth.userId,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/user/` + auth.userId,
           "GET",
           null,
           {
@@ -129,7 +128,7 @@ const Charts = () => {
       }
     };
     getData();
-  }, []);
+  }, [auth.userId,auth.token,sendRequest]);
 
   let takenInterviews = [];
 
@@ -146,7 +145,8 @@ const Charts = () => {
       <LoadingSpinner open={isLoading} />
       <Toolbar />
       <div className="Chartapp">
-        <div className="LeftBigDiv" className={classes.aside}>
+        <div className={classes.aside}>
+        {/* <div className="LeftBigDiv" className={classes.aside}> */}
          
             <header className={classes.Headers}>
               <Typography
@@ -207,7 +207,7 @@ const Charts = () => {
           </header>
           {selectedCand && (
             <div className="charts">
-              {(stats.length == 0) && (
+              {(stats.length === 0) && (
                 <Card className={classes.noData}>
                   <Typography variant="h5" align="center">No Data Found</Typography></Card>
               )}

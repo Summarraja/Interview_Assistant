@@ -43,7 +43,6 @@ const ResumeContextProvider = (props) => {
   function updateEducationData(data) {
  
     setContent({ ...content, education: data });
-   // console.log("EDUCATION: "+ data.city)
   }
 
   function updateAdditionalData(data) {

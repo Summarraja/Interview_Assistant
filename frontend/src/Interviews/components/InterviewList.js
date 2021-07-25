@@ -60,7 +60,7 @@ root:{
 const InterviewList = (props) => {
   const classes = useStyles();
 
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { sendRequest } = useHttpClient();
   const auth = useContext(AuthContext);
   const today = new Date();
   const date =
@@ -74,12 +74,12 @@ const InterviewList = (props) => {
   };
 
 
-  if (props.uid == auth.userId && auth.setting.role == "Candidate") {
+  if (props.uid === auth.userId && auth.setting.role === "Candidate") {
 
     const getCandidateRequestsData = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/users/${auth.userId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/users/${auth.userId}`,
           "GET",
           null,
           {
@@ -196,7 +196,7 @@ const InterviewList = (props) => {
       <Container maxWidth="md" component="main">
         <Paper elevation={5} className={classes.paper}>
           <Typography variant="h4" color="primary" align="center">
-           {auth.setting.role == "Candidate" ? "No interview has been created by this User": "No Interviews found. Maybe create one?" } 
+           {auth.setting.role === "Candidate" ? "No interview has been created by this User": "No Interviews found. Maybe create one?" } 
           </Typography>
         </Paper>
       </Container>

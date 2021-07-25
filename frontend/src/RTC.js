@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -24,13 +24,12 @@ const RTC = () => {
     const [receivingCall, setReceivingCall] = useState(false);
     const [callerSignal, setCallerSignal] = useState();
     const [callType, setCallType] = useState('');
-    const [callMessage, setCallMessage] = useState('is calling you..');
+    const [callMessage] = useState('is calling you..');
 
     const socket = useContext(SocketContext);
     const history = useHistory();
 
     useEffect(() => {
-        console.log('rtc')
         if (!socket)
             return;
         socket.on("hey", (data) => {
@@ -60,7 +59,7 @@ const RTC = () => {
             socket.off("hey");
             socket.off("close");
         };
-    }, [socket]);
+    }, [socket,receivingCall]);
 
 
     function acceptCall() {
@@ -89,10 +88,10 @@ const RTC = () => {
             >
 
                 <DialogTitle id="alert-dialog-slide-title">
-                    {(callType == 'interview') ? "Interview Call" : "Friend's " + callType + " Call"}
+                    {(callType === 'interview') ? "Interview Call" : "Friend's " + callType + " Call"}
                 </DialogTitle>
                 <div style={{ display: 'flex', alignItems: 'center', alignContent: 'center', margin: '5%' }}>
-                    <Avatar src={'http://localhost:5000/' + callerData.image} style={{
+                    <Avatar src={process.env.REACT_APP_BACKEND_ASSET_URL + callerData.image} style={{
                         display: "flex",
                         alignItems: "center",
                         border: '1px solid lightgray',

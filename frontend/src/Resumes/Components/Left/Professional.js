@@ -4,7 +4,6 @@ import Button from "@material-ui/core/Button";
 import classes from "./Left.module.css";
 import { useForm } from "react-hook-form";
 import { ResumeContext } from "../../Contexts/ResumeContext";
-import { Paper } from "@material-ui/core";
 
 function Professional() {
   const { content, updateProfessionalData, removeFakeData } = useContext(

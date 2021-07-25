@@ -62,16 +62,7 @@ export default function ResetPassword() {
       .oneOf([yup.ref("NewPass"), null], "Passwords must match"),
   });
 
-  // const onSubmitHandler = (values, props) => {
-  //   console.log("Has been submitted");
-  //   console.log(values);
-  //   window.location = '/login';
-  // setTimeout(() => {
-  //    props.resetForm();
-  //  props.setSubmitting(false);
-  //    }, 1000);
-  //  console.log(props);
-  //   };
+
   const classes = useStyles();
 
   return (

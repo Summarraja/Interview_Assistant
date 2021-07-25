@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 import myClasses from "./../Components/Left/Left.module.css";
 import { useHistory } from 'react-router-dom'
 import { Paper, Typography } from '@material-ui/core';
@@ -22,7 +22,7 @@ useEffect(()=>{
     state: props.location.state?{resume: props.location.state.resume}:null
 
   });
-},[history])
+},[history,props.location.state])
   const classes = useStyles();
 
   return (

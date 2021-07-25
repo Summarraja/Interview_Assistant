@@ -7,7 +7,6 @@
     background-color: #fff;
     width: 25vw;
   
-    /* box-shadow: 0 0 0.5cm #7b7d7d; */
     margin-left: 100px;
     margin-top: 50px;
     height: fit-content;
@@ -51,7 +50,6 @@
     }
   }
   
-  /* Smartphones (portrait and landscape) ----------- */
   @media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
     .app {
       display: flex;

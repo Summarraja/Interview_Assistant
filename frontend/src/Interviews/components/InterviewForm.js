@@ -3,7 +3,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
@@ -43,7 +43,6 @@ const fields = [
 const InterviewForm = (props) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-  const theme = useTheme();
   const classes = useStyles();
   const [success, setSuccess] = useState(false);
 
@@ -54,7 +53,7 @@ const InterviewForm = (props) => {
 
 
   useEffect(() => {
-    setSuccess(status==201);
+    setSuccess(status===201);
   }, [status]);
 
  
@@ -78,8 +77,8 @@ const InterviewForm = (props) => {
 
   const onSubmitHandler = async (values) => {
     try {
-      const responseData = await sendRequest(
-        "http://localhost:5000/api/interviews/",
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/`,
         "POST",
         JSON.stringify({
           title: values.title,
@@ -104,15 +103,15 @@ const InterviewForm = (props) => {
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}
-        onClose={status == "201" ? clearSuccess   : clearError}
+        onClose={status === 201 ? clearSuccess   : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "201" ? "success" : "error"}
-          onClose={status == "201" ? clearSuccess : clearError}
+          severity={status === 201 ? "success" : "error"}
+          onClose={status === 201 ? clearSuccess : clearError}
         >
-          {status == "201" ? "Interview Created Successfully!" : error}
+          {status === 201 ? "Interview Created Successfully!" : error}
         </MuiAlert>
       </Snackbar>
 

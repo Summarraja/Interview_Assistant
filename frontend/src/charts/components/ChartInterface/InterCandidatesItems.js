@@ -6,6 +6,7 @@ import Avatar from "@material-ui/core/Avatar";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { AuthContext } from "../../../shared/context/auth-context";
+import { useCallback } from "react";
 
 const useStyles = makeStyles((theme) => ({
   typoStyle: {
@@ -24,14 +25,14 @@ const useStyles = makeStyles((theme) => ({
 
 const InterCandidatesItems = (props) => {
   const classes = useStyles();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   const [candidate, setcandidate] = useState();
   const auth = useContext(AuthContext);
 
-  const fetchCandidResume = async () => {
+  const fetchCandidResume =useCallback( async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/resumes/user/${props.id}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/resumes/user/${props.id}`,
         "GET",
         null,
         {
@@ -43,12 +44,12 @@ const InterCandidatesItems = (props) => {
     } catch (err) {
       console.log(err);
     }
-  };
+  },[auth.token, props.id,sendRequest]);
   useEffect(() => {
     fetchCandidResume();
-  }, [])
+  }, [fetchCandidResume])
   const getClass = () => {
-    if (props.selectedCand && props.selectedCand == props.id)
+    if (props.selectedCand && props.selectedCand === props.id)
       return "selected"
     return "contact-box"
   }
@@ -58,7 +59,7 @@ const InterCandidatesItems = (props) => {
       {candidate && (
         <div className={getClass()} onClick={() => props.setSelectedCand(props.id)}>
           <div className="avatar-component">
-            <Avatar src={'http://localhost:5000/' + candidate.image} className={classes.Avatar}>
+            <Avatar src={process.env.REACT_APP_BACKEND_ASSET_URL + candidate.image} className={classes.Avatar}>
             </Avatar>
           </div>
           <div className="right-section">

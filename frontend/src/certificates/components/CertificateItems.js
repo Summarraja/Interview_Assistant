@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
 
 const CertificateItem = (props) => {
  
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { sendRequest } = useHttpClient();
   const auth = useContext(AuthContext);
   const [loadedField, setLoadedField ] = useState();
   const MoreIconStyle = {
@@ -94,7 +94,7 @@ const CertificateItem = (props) => {
         const fetchField = async () => {
           try {
             const responseData = await sendRequest(
-              `http://localhost:5000/api/fields/${props.field}`,
+              `${process.env.REACT_APP_BACKEND_NODE_URL}/fields/${props.field}`,
               "GET",
               null,
               {
@@ -107,7 +107,7 @@ const CertificateItem = (props) => {
         };
         if (!loadedField) 
         fetchField();
-      }, [loadedField]);
+      }, [loadedField,auth.token, props.field, sendRequest]);
     
 
   const [CertificateMobAnchorEl, setCertificateMobAnchorEl] = useState(null);

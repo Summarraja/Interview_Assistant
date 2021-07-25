@@ -13,7 +13,7 @@ const Users = (props) => {
   const BlockUser = async () => {
     try {
       const responseData = await sendRequest(
-        "http://localhost:5000/api/settings/" + auth.setting._id,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/` + auth.setting._id,
         'GET',
         null,
         {
@@ -27,7 +27,7 @@ const Users = (props) => {
     }
   }
   BlockUser();
-},[])
+},[auth.setting._id,auth.token,sendRequest])
 
   return (
     <>

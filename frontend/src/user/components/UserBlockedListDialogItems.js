@@ -75,7 +75,7 @@ const UserBlockedListDialogItems = (props) => {
     const UnblockUser = async () => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/settings/UnblockUser/" + auth.setting._id,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/UnblockUser/` + auth.setting._id,
           'PATCH',
           JSON.stringify({
            uid: props.userId

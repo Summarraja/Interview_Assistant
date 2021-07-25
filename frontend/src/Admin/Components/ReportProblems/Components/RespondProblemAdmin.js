@@ -31,11 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 const RespondProblemAdmin = (props) => {
 
-  const paperStyle = {
-    width: 400,
-    padding: 20,
-    margin: "100px auto",
-  };
+
   const avatarStyle = {
     backgroundColor: "primary",
   };

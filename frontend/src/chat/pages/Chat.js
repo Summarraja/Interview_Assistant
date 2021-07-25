@@ -12,6 +12,7 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
 import "./Chat.css"
+import { useCallback } from "react";
 const useStyles = makeStyles((theme) => ({
 
   aside: {
@@ -75,11 +76,37 @@ function Chat() {
   const [newMessage, setNewMessage] = useState('');
   const [file, setFile] = useState('');
   const[previewUrl,setPreviewUrl]=useState('');
-
+  const openChat =useCallback( async () => {
+    try {
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/openChat/${auth.userId}`,
+        "PATCH",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+    } catch (err) { }
+  },[auth.token, auth.userId,sendRequest]);
+  const fetchChats = useCallback( async () => {
+    try {
+      const responseData = await sendRequest(
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/chats/${auth.userId}`,
+        "GET",
+        null,
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setData(responseData.chats);
+    } catch (err) { }
+  },[auth.token,auth.userId,sendRequest]);
   useEffect(() => {
     socket.on("message", (msg) => {
       if (selectedChat) {
-        if (selectedChat.with == msg.sender || selectedChat.with == msg.receiver)
+        if (selectedChat.with === msg.sender || selectedChat.with === msg.receiver)
           setMessages([...messages, msg]);
       }
       if (data) {
@@ -90,18 +117,18 @@ function Chat() {
     return () => {
       socket.off("message");
     };
-  }, [data, selectedChat, messages]);
+  }, [data, selectedChat, messages,fetchChats,openChat,socket]);
   useEffect(() => {
 
     socket.on("deleteMessage", (msg) => {
       if (selectedChat) {
-        if (messages[messages.length - 1].id == msg.id) {
+        if (messages[messages.length - 1].id === msg.id) {
           let chat = selectedChat;
           chat.lastMessage = messages[messages.length - 2].content?messages[messages.length - 2].content:'image';
           chat.lastMessageTime = messages[messages.length - 2].time;
           setSelectedChat(chat);
         }
-        setMessages(messages.filter(m => m.id != msg.id));
+        setMessages(messages.filter(m => m.id !== msg.id));
       } else {
         fetchChats();
       }
@@ -109,43 +136,17 @@ function Chat() {
     return () => {
       socket.off("deleteMessage");
     };
-  }, [messages, selectedChat]);
+  }, [messages, selectedChat,fetchChats,socket]);
 
   useEffect(() => {
     fetchChats();
-  }, [])
-  const openChat = async () => {
-    try {
-      const responseData = await sendRequest(
-        `http://localhost:5000/api/settings/openChat/${auth.userId}`,
-        "PATCH",
-        null,
-        {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + auth.token,
-        }
-      );
-    } catch (err) { }
-  }
-  const fetchChats = async () => {
-    try {
-      const responseData = await sendRequest(
-        `http://localhost:5000/api/chats/${auth.userId}`,
-        "GET",
-        null,
-        {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + auth.token,
-        }
-      );
-      setData(responseData.chats);
-    } catch (err) { }
-  };
+  }, [fetchChats])
+
   function pushMessage() {
     if (!(/^ *$/.test(newMessage)) || file) {
       let message = {
         sender: auth.userId,
-        receiver: (selectedChat.with == auth.userId) ? selectedChat.from : selectedChat.with,
+        receiver: (selectedChat.with === auth.userId) ? selectedChat.from : selectedChat.with,
         content: newMessage,
         time: (new Date()).toISOString(),
         chat: selectedChat.id,
@@ -171,14 +172,14 @@ function Chat() {
       if (data) {
         let index;
         data.forEach(chat => {
-          if (chat.id == msg.chat) {
+          if (chat.id === msg.chat) {
             index = data.indexOf(chat);
           }
         });
         if (index > -1) {
           data[index].lastMessage = msg.content?msg.content:'image';
           data[index].lastMessageTime = msg.time;
-          if (data[index].from != auth.userId)
+          if (data[index].from !== auth.userId)
             data[index].withUnread = 0;
           else
             data[index].fromUnread = 0;

@@ -23,17 +23,6 @@ hr {
   justify-content: space-evenly;
 }
 
-/* .headerLeft {
-  display: flex;
-  justify-content: space-between;
-  margin:"50px";
-}
-
-.templatesH2 {
-  margin-left: 15px;
-  margin:"50px";
-} */
-
 .hr2 {
   width: 90%;
   border: 0;
@@ -63,17 +52,3 @@ hr {
   width: 170px;
   margin-left: 20px;
 }
-
-/* .templateCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.cards {
-  display: flex;
-  width: 80%;
-  margin: 25px;
-  justify-content: space-between;
-  flex-wrap: wrap;
-} */

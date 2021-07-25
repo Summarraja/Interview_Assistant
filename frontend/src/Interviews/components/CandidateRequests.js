@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -6,7 +6,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import { useHttpClient } from "../../shared/hooks/http-hook";
-import { AuthContext } from "../../shared/context/auth-context";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import CandidateRequestsDialogItems from "./CandidateRequestsDialogItems";
 
@@ -26,8 +25,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CandidateRequests = (props) => {
-  const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, } = useHttpClient();
 
   const handleCloseDialog = () => {
     props.setOpen(false);

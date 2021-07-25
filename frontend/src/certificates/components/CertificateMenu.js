@@ -9,7 +9,7 @@ import DeleteCertificate from "./DeleteCertificate";
 
 const CertificateMenu = (props) => {
   const [OpenDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {sendRequest} = useHttpClient();
   const auth = useContext(AuthContext);
   const OpenDeleteDialogHandler = () => {
     setOpenDeleteDialog(true);
@@ -20,7 +20,7 @@ const CertificateMenu = (props) => {
     const fetchCertificates = async () => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/certificates/user/" + auth.userId,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/user/` + auth.userId,
           "GET",
           null,
           {

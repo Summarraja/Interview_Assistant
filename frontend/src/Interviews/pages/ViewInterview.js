@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 const ViewInterview = (props) => {
   const auth = useContext(AuthContext);
   const { interId } = useParams();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   const [loadedInterview, setLoadedInterview] = useState();
   const [loadedField, setLoadedField] = useState();
   const [disableField, setDisableField] = useState(true);
@@ -72,7 +72,7 @@ const ViewInterview = (props) => {
     const getCandidateSentReq = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/users/${auth.userId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/users/${auth.userId}`,
           "GET",
           null,
           {
@@ -92,13 +92,13 @@ const ViewInterview = (props) => {
   
       getCandidateSentReq();
     
-  }, []);
+  }, [auth.token,auth.userId,sendRequest]);
   // Request to get sepcific Interview Details
   useEffect(() => {
     const fetchInterview = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/${interId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/${interId}`,
           "GET",
           null,
           {
@@ -110,7 +110,7 @@ const ViewInterview = (props) => {
       } catch (err) {}
     };
     if (!loadedInterview) fetchInterview();
-  }, [loadedInterview]);
+  }, [loadedInterview,auth.token,interId,sendRequest]);
 
   // Request to get field title of fetched Interview
 
@@ -118,7 +118,7 @@ const ViewInterview = (props) => {
     const fetchField = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/fields/${loadedInterview.field}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/fields/${loadedInterview.field}`,
           "GET",
           null,
           {
@@ -130,9 +130,9 @@ const ViewInterview = (props) => {
       } catch (err) {}
     };
     if (!loadedField) fetchField();
-  }, [loadedField, loadedInterview]);
+  }, [loadedField, loadedInterview,auth.token,sendRequest]);
 
-  const hasEditAccess = loadedInterview && loadedInterview.creator == auth.userId;
+  const hasEditAccess = loadedInterview && loadedInterview.creator === auth.userId;
   const InterviewStatus =  loadedInterview && loadedInterview.isCancelled
       ? "CANCELLED"
       : new Date(loadedInterview && loadedInterview.date) > CurrentDate
@@ -176,7 +176,7 @@ const ViewInterview = (props) => {
         )}
        
       <Grid  className={classes.submit}>
-        {disableField && hasEditAccess && InterviewStatus == "PENDING" && (
+        {disableField && hasEditAccess && InterviewStatus === "PENDING" && (
           <Button
             onClick={EnableFieldsHandler}
             variant="contained"

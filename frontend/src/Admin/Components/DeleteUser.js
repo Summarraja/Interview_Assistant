@@ -36,7 +36,7 @@ export default function DeleteUser (props) {
     props.setOpenDeleteDialog(false);
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status, responseStatus]);
 
   const CloseDeleteDialogHandler = () => {
@@ -46,7 +46,7 @@ export default function DeleteUser (props) {
   const confirmDeleteHandler = async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/users/${props.userId}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/users/${props.userId}`,
         "DELETE",
         null,
         {
@@ -66,15 +66,15 @@ export default function DeleteUser (props) {
           <Snackbar
             open={success || !!error}
             autoHideDuration={6000}
-            onClose={status == "200" ? clearSuccess : clearError}
+            onClose={status === 200 ? clearSuccess : clearError}
           >
             <MuiAlert
               elevation={6}
               variant="filled"
-              severity={status == "200" ? "success" : "error"}
-              onClose={status == "200" ? clearSuccess : clearError}
+              severity={status === 200 ? "success" : "error"}
+              onClose={status === 200 ? clearSuccess : clearError}
             >
-              {status == "200" && responseStatus === "User Account Deleted" ? "User Deleted Successfully!" : error}
+              {status === 200 && responseStatus === "User Account Deleted" ? "User Deleted Successfully!" : error}
             </MuiAlert>
           </Snackbar>
       <Dialog

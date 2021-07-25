@@ -41,21 +41,18 @@ const useStyles = makeStyles((theme) => ({
 const ViewCertificate = (props) => {
   const auth = useContext(AuthContext);
   const { certId } = useParams();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   const [loadedCertificate, setLoadedCertificate] = useState();
   const [loadedField, setLoadedField] = useState();
   const [disableField, setDisableField] = useState(true);
 
-  const EnableFieldsHandler = () => {
-    setDisableField(false);
-  };
 
   // Request to get sepcific Certificate Details
   useEffect(() => {
     const fetchCertificate = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/certificates/${certId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/${certId}`,
           "GET",
           null,
           {
@@ -69,7 +66,7 @@ const ViewCertificate = (props) => {
     };
     if (!loadedCertificate) 
         fetchCertificate();
-  }, [loadedCertificate]);
+  }, [loadedCertificate,auth.token,certId,sendRequest]);
 
   // Request to get field title of fetched Interview
 
@@ -77,7 +74,7 @@ const ViewCertificate = (props) => {
     const fetchField = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/fields/${loadedCertificate.field}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/fields/${loadedCertificate.field}`,
           "GET",
           null,
           {
@@ -89,9 +86,9 @@ const ViewCertificate = (props) => {
       } catch (err) {}
     };
     if (!loadedField) fetchField();
-  }, [loadedField, loadedCertificate]);
+  }, [loadedField, loadedCertificate,auth.token,sendRequest]);
 
-  const hasEditAccess = loadedCertificate && loadedCertificate.creator == auth.userId
+  const hasEditAccess = loadedCertificate && loadedCertificate.creator === auth.userId
   const paperStyle = {
     width: "100%",
     padding: 20,
@@ -111,7 +108,8 @@ const ViewCertificate = (props) => {
   return (
     <Container component="main" maxWidth="sm">
       <Toolbar/>
-      <Paper elevation={10} style={paperStyle} style={auth.setting.role == "Admin" ? AdminPaperStyle : paperStyle}>
+      <Paper elevation={10} style={auth.setting.role === "Admin" ? AdminPaperStyle : paperStyle}>
+      {/* <Paper elevation={10} style={paperStyle} style={auth.setting.role == "Admin" ? AdminPaperStyle : paperStyle}> */}
         <Typography align="center" variant="h4">
           Certificate Details
         </Typography>

@@ -57,7 +57,7 @@ const UserBlockedListDialog = (props) => {
     const fetchblockedUserResume = async (candID) => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/resumes/user/${candID}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/resumes/user/${candID}`,
           "GET",
           null,
           {
@@ -72,7 +72,7 @@ const UserBlockedListDialog = (props) => {
       }
     };
     props.blockedUsers.length !== 0 && props.blockedUsers.map((user) => fetchblockedUserResume(user._id));
-  }, [props.blockedUsers]);
+  }, [props.blockedUsers,auth.token,sendRequest]);
 
   return (
     <div>

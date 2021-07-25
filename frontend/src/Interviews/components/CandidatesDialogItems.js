@@ -88,7 +88,7 @@ const CandidatesDialogItems = (props) => {
     const fetchInterview = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/${props.interId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/${props.interId}`,
           "GET",
           null,
           {
@@ -100,17 +100,17 @@ const CandidatesDialogItems = (props) => {
       } catch (err) { }
     };
     props.interId && fetchInterview();
-  }, []);
+  }, [auth.token,props.interId,sendRequest]);
 
   function findAddedCandidates(arr1, arr2) {
-    return arr1.some((item) => arr2 == item.id);
+    return arr1.some((item) => arr2 === item.id);
   }
   function findRequestedCandidates(arr1, arr2) {
-    return arr1.some((item) => arr2 == item);
+    return arr1.some((item) => arr2 === item);
   }
 
   function findAcceptingCandidates(arr1, arr2) {
-    return arr1.some((item) => arr2 == item.id);
+    return arr1.some((item) => arr2 === item.id);
   }
 
 
@@ -118,7 +118,7 @@ const CandidatesDialogItems = (props) => {
     const sendInvitationRequest = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/invitecandidate/${props.interId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/invitecandidate/${props.interId}`,
           "PATCH",
           JSON.stringify({
             uid: props.userId,
@@ -141,7 +141,7 @@ const CandidatesDialogItems = (props) => {
     const removeAddedCand = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/removecandidate/${props.interId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/removecandidate/${props.interId}`,
           "PATCH",
           JSON.stringify({
             uid: props.userId,
@@ -163,7 +163,7 @@ const CandidatesDialogItems = (props) => {
     const AcceptCandRequest = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/acceptcandidatereq/${props.interId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/acceptcandidatereq/${props.interId}`,
           "PATCH",
           JSON.stringify({
             uid: props.userId,
@@ -185,16 +185,16 @@ const CandidatesDialogItems = (props) => {
     setSuccess(false);
   };
   useEffect(() => {
-    setSuccess(status == 201);
+    setSuccess(status === 201);
   }, [status]);
   return (
     <>
       {
         <Snackbar
-          open={success || responseStatus == "removed" || !!error}
+          open={success || responseStatus === "removed" || !!error}
           autoHideDuration={6000}
           onClose={
-            status == "201" || responseStatus == "removed"
+            status === 201 || responseStatus === "removed"
               ? clearSuccess
               : clearError
           }
@@ -203,28 +203,28 @@ const CandidatesDialogItems = (props) => {
             elevation={6}
             variant="filled"
             severity={
-              status == "201" || responseStatus == "removed"
+              status === 201 || responseStatus === "removed"
                 ? "success"
                 : "error"
             }
             onClose={
-              status == "201" || responseStatus == "removed"
+              status === 201 || responseStatus === "removed"
                 ? clearSuccess
                 : clearError
             }
           >
-            {status == "201"
+            {status === 201
               ? "Invitation has sent successfully!"
-              : responseStatus == "removed"
+              : responseStatus === "removed"
                 ? "Candidate has been removed from the Interview successfully!"
-                : responseStatus == "accepted"
+                : responseStatus === "accepted"
                   ? "Candidate Request has been accepted successfully!"
                   : error}
           </MuiAlert>
         </Snackbar>
       }
 
-      {props.userId != auth.userId && (
+      {props.userId !== auth.userId && (
         <List className={classes.list}>
           <Grid container>
             <Grid item xs={6} sm={6} className={classes.responsive}>
@@ -308,7 +308,7 @@ const CandidatesDialogItems = (props) => {
                       </Typography>
                     ) : //  else if
                       findRequestedCandidates(interview.sentRequests, id) ||
-                        status == 201 ? (
+                        status === 201 ? (
                         <Typography
                           variant="subtitle2"
                           className={classes.statusStyle}
@@ -322,8 +322,8 @@ const CandidatesDialogItems = (props) => {
                         </Typography>
                       ) : //else
                         findAcceptingCandidates(props.interReceivedRequests, id) &&
-                          status == "200" ? (
-                          responseStatus == "accepted" ? (
+                          status === 200 ? (
+                          responseStatus === "accepted" ? (
                             <Typography
                               variant="subtitle2"
                               className={classes.statusStyle}

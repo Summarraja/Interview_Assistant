@@ -70,13 +70,13 @@ function Right(props) {
       education: user.resume.education ? user.resume.education : {},
       additional: user.resume.additional ? user.resume.additional : [],
     });
-  }, []);
+  }, [props.data,setContent]);
 
   const clearSuccess = () => {
     setSuccess(false);
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status, responsemessage]);
   const classes = useStyles();
 
@@ -85,7 +85,7 @@ function Right(props) {
 
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/resumes/${auth.resume._id}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/resumes/${auth.resume._id}`,
         'PATCH',
         JSON.stringify({
           dob: auth.resume.dob,
@@ -138,7 +138,7 @@ function Right(props) {
   const handleSaveResume = async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/resumes/${auth.resume._id}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/resumes/${auth.resume._id}`,
         'PATCH',
         JSON.stringify({
           dob: auth.resume.dob,
@@ -186,7 +186,7 @@ function Right(props) {
   };
 
   const getClass=()=>{
-if((!props.data) || (props.data && props.data.resume.id==auth.resume.id))
+if((!props.data) || (props.data && props.data.resume.id===auth.resume.id))
     return classes.green
 return classes.pdficon
   }
@@ -198,16 +198,16 @@ return classes.pdficon
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}
-        onClose={status == "200" ? clearSuccess : clearError}
+        onClose={status === 200 ? clearSuccess : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "200" ? "success" : "error"}
-          onClose={status == "200" ? clearSuccess : clearError}
+          severity={status === 200 ? "success" : "error"}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
 
-          {status == "200" && responsemessage == "Updated resume." ? "Resume Saved Sucessfully!" : status == "200" && responsemessage == "" ? "Resume Deleted Sucessfully!" : error}
+          {status === 200 && responsemessage === "Updated resume." ? "Resume Saved Sucessfully!" : status === 200 && responsemessage === "" ? "Resume Deleted Sucessfully!" : error}
 
         </MuiAlert>
       </Snackbar>
@@ -219,7 +219,7 @@ return classes.pdficon
             </Avatar>
           </Tooltip>
         </Link>
-        {((!props.data) || (props.data && props.data.resume.id==auth.resume.id)) && (
+        {((!props.data) || (props.data && props.data.resume.id===auth.resume.id)) && (
           <>
             <Link onClick={handleDeleteData}>
               <Tooltip title="Delete Resume" placement="right">

@@ -9,14 +9,11 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Typography from "@material-ui/core/Typography";
 import OutsideClickHandler from "react-outside-click-handler";
 import Grid from "@material-ui/core/Grid";
-import { useTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import IconButton from "@material-ui/core/IconButton";
 import LoadingSpinner from "../../../../shared/components/UIElements/LoadingSpinner";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-import { grey } from "@material-ui/core/colors";
 import Button from "@material-ui/core/Button";
 import {  GiStamper } from "react-icons/gi";
 
@@ -84,7 +81,6 @@ const UnapprovedCertificatesItems = (props) => {
 
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
-  const [loadedField, setLoadedField] = useState();
   const [responseStatus, setResponseStatus] = useState("");
   const [success, setSuccess] = useState(false);
   const MoreIconStyle = {
@@ -96,14 +92,14 @@ const UnapprovedCertificatesItems = (props) => {
     setSuccess(false);
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status]);
 
   const ApproveCertificateHandler = () =>{
     const ApproveCertificate = async () => {
         try {
           const responseData = await sendRequest(
-            `http://localhost:5000/api/certificates/accept/${props.id}`,
+            `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/accept/${props.id}`,
             "PATCH",
              null,
             {
@@ -125,7 +121,7 @@ const UnapprovedCertificatesItems = (props) => {
     const RejectCertificate = async () => {
         try {
           const responseData = await sendRequest(
-            `http://localhost:5000/api/certificates/reject/${props.id}`,
+            `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/reject/${props.id}`,
             "PATCH",
              null,
             {
@@ -154,8 +150,6 @@ const UnapprovedCertificatesItems = (props) => {
     setCertificateMobAnchorEl(null);
   };
 
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   const CertificateMobileMenu = (
     <Menu
@@ -190,17 +184,17 @@ const UnapprovedCertificatesItems = (props) => {
         <Snackbar
           open={success || !!error}
           autoHideDuration={6000}
-          onClose={status == "200" ? clearSuccess : clearError}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
           <MuiAlert
             elevation={6}
             variant="filled"
-            severity={status == "200" ? "success" : "error"}
-            onClose={status == "200 " ? clearSuccess : clearError}
+            severity={status === 200 ? "success" : "error"}
+            onClose={status === "200 " ? clearSuccess : clearError}
           >
-            {status == "200" && responseStatus == "approved"
+            {status === 200 && responseStatus === "approved"
               ? "User's Certificate has been approved successfully!"
-              : responseStatus == "rejected"
+              : responseStatus === "rejected"
               ? "User's Certificate has been rejected successfully!"
               : error}
           </MuiAlert>
@@ -213,22 +207,20 @@ const UnapprovedCertificatesItems = (props) => {
             <Typography variant="h5" align="justify">
               {props.title}
             </Typography>
-            <Typography variant="subtitle1" style={{ color: grey[900] }}>
-              {loadedField && loadedField.title}
-            </Typography>
+
           </div>
         </Grid>
 
         <Grid item sm={6} lg={5} >
-        {status == "200" ? (
+        {status === 200 ? (
                 <Typography variant="subtitle2" className={classes.statusStyle}>
-                  {responseStatus == "approved" ? (
+                  {responseStatus === "approved" ? (
                     <GiStamper className={classes.statusIconStyle} />
                   ) : (
                     <FiShieldOff className={classes.statusIconStyle} />
                   )}
 
-                  {responseStatus == "approved" ? "APPROVED" : "REJECTED"}
+                  {responseStatus === "approved" ? "APPROVED" : "REJECTED"}
                 </Typography>
                 
                 ) : (

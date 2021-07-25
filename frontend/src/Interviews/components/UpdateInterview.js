@@ -16,14 +16,12 @@ import Button from "@material-ui/core/Button";
 import { AuthContext } from "../../shared/context/auth-context";
 import { BiSave } from "react-icons/bi";
 import { FiCheckSquare } from "react-icons/fi";
-import { SiCheckmarx } from "react-icons/si";
 import Typography from "@material-ui/core/Typography";
 import {
   BsBoxArrowInUpLeft,
   BsPersonCheckFill,
   BsPersonPlusFill,
 } from "react-icons/bs";
-import { GrUserExpert } from "react-icons/gr";
 
 const useStyles = makeStyles((theme) => ({
   GridStyle: {
@@ -93,20 +91,19 @@ const UpdateInterview = (props) => {
   const [doi, setDoi] = useState(props.loadedInterview.date);
   const [time, setTime] = useState(props.loadedInterview.time);
   const [success, setSuccess] = useState(false);
-  const [interview, setInterview] = useState();
 
   function onCandidateSentRequest(arr1, arr2) {
-    return arr1.some((item) => arr2 == item._id);
+    return arr1.some((item) => arr2 === item._id);
   }
 
   const clearSuccess = () => {
     setSuccess(false);
   };
   useEffect(() => {
-    setSuccess(status == 200 || status == 201);
-    if(status == 200)
+    setSuccess(status === 200 || status === 201);
+    if(status === 200)
        props.setDisableField(true)
-  }, [status]);
+  }, [status,props]);
 
   const classes = useStyles();
   const today = new Date();
@@ -121,8 +118,8 @@ const UpdateInterview = (props) => {
 
   const onSubmitHandler = async (values) => {
     try {
-      const responseData = await sendRequest(
-        `http://localhost:5000/api/interviews/${interviewId}`,
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/${interviewId}`,
         "PATCH",
         JSON.stringify({
           title: values.title,
@@ -143,8 +140,8 @@ const UpdateInterview = (props) => {
   const sendInterviewRequestHandler = () => {
     const sendInterviewRequest = async () => {
       try {
-        const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/sendinterrequest/${props.interId}`,
+        await sendRequest(
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/sendinterrequest/${props.interId}`,
           "PATCH",
           JSON.stringify({
             uid: auth.userId,
@@ -154,7 +151,6 @@ const UpdateInterview = (props) => {
             Authorization: "Bearer " + auth.token,
           }
         );
-        setInterview(responseData.interview);
       } catch (err) {
         console.log(err);
       }
@@ -167,19 +163,19 @@ const UpdateInterview = (props) => {
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}
-        onClose={status == "200" || status == "201" ? clearSuccess : clearError}
+        onClose={status === 200 || status === 201 ? clearSuccess : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "200" || status == "201" ? "success" : "error"}
+          severity={status === 200 || status === 201 ? "success" : "error"}
           onClose={
-            status == "200" || status == "201" ? clearSuccess : clearError
+            status === 200 || status === 201 ? clearSuccess : clearError
           }
         >
-          {status == "200"
+          {status === 200
             ? "Interview Updated Successfully!"
-            : status == "201"
+            : status === 201
             ? "Request has been sent to the Interview"
             : error}
         </MuiAlert>
@@ -309,7 +305,7 @@ const UpdateInterview = (props) => {
                 </Button>
               )}
 
-              {auth.setting.role == "Candidate" && (
+              {auth.setting.role === "Candidate" && (
                     onCandidateSentRequest(
                       props.userAddedInterviews,
                       props.interId
@@ -323,7 +319,7 @@ const UpdateInterview = (props) => {
                           You are already ADDED to this Interview
                         </Typography>
                       </div>
-                    ) : status == "201" ||
+                    ) : status === 201 ||
                       onCandidateSentRequest(
                         props.userSentRequests,
                         props.interId
@@ -342,8 +338,8 @@ const UpdateInterview = (props) => {
                         props.userReceivedRequests,
                         props.interId
                       ) &&
-                      props.InterviewStatus == "PENDING" &&
-                      auth.setting.role == "Candidate" &&
+                      props.InterviewStatus === "PENDING" &&
+                      auth.setting.role === "Candidate" &&
                       !props.hasEditAccess ? (
                       <Button
                         onClick={sendInterviewRequestHandler}

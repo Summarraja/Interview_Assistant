@@ -112,7 +112,7 @@ const UserItem = (props) => {
     const BlockUser = async () => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/settings/blockUser/" + auth.setting._id,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/blockUser/` + auth.setting._id,
           'PATCH',
           JSON.stringify({
             uid: props.resume.user
@@ -210,7 +210,7 @@ const UserItem = (props) => {
             className={classes.Avatar}
 
             alt={props.resume.fullname}
-            src={"http://localhost:5000/" + props.resume.image}
+            src={process.env.REACT_APP_BACKEND_ASSET_URL + props.resume.image}
 
           />
 

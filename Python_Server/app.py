@@ -21,7 +21,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['CORS_HEADERS'] = 'Content-Type'
 socketio = SocketIO(app, cors_allowed_origins="*")
-AudioModel = pickle.load(open("models/mlp_classifier3.model", "rb"))
+AudioModel = pickle.load(open("models/mlp_classifier2.model", "rb"))
 
 # app.debug=True
 app.host='localhost'

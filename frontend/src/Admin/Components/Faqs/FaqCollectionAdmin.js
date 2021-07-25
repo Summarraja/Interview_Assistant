@@ -7,13 +7,13 @@ import { useHttpClient } from "../../../shared/hooks/http-hook";
 
 const FaqCollectionAdmin = () => {
   const [faqs, setFaqs] = useState();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
 
   useEffect(() => {
     const getData = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/api/faqs/'
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/faqs/`
         );
         setFaqs(responseData.faqs);
       } catch (err) {
@@ -24,11 +24,10 @@ const FaqCollectionAdmin = () => {
     if (!faqs)
       getData();
 
-  }, [faqs])
+  }, [faqs,sendRequest])
 
   return (
   <React.Fragment>
-    {console.log("faqs are" +faqs)}
     <LoadingSpinner open={isLoading} />
     {faqs && (<FaqListAdmin items={faqs}   setFaqs ={setFaqs}
     />)}

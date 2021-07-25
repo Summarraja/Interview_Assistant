@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState, useContext } from "react";
+import React, { useEffect, useRef, useContext, useCallback } from "react";
 import Message from "./Message";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import { SocketContext } from "../../shared/context/socket-context";
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import './Message.css';
-function MessageBox(props) {
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+function MessageBox({selectedChat,setSelectedChat,messages,setMessages}) {
+  const { isLoading, sendRequest } = useHttpClient();
   const auth = useContext(AuthContext);
   const socket = useContext(SocketContext);
   // useEffect(()=>{
@@ -17,14 +17,10 @@ function MessageBox(props) {
   //     }
   //   };
   // },[])
-  useEffect(() => {
-    fetchMessageData();
-    markRead();
-  }, [props.selectedChat])
-  const fetchMessageData = async () => {
+  const fetchMessageData = useCallback( async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/messages/chat/${props.selectedChat.id}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/messages/chat/${selectedChat.id}`,
         "GET",
         null,
         {
@@ -32,17 +28,17 @@ function MessageBox(props) {
           Authorization: "Bearer " + auth.token,
         }
       );
-      props.setMessages(responseData.messages)
+      setMessages(responseData.messages)
     } catch (err) { }
-  };
-  const markRead = async () => {
+  },[auth.token,sendRequest,selectedChat.id,setMessages]);
+  const markRead = useCallback( async () => {
     try {
       await sendRequest(
-        `http://localhost:5000/api/chats/`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/chats/`,
         "POST",
         JSON.stringify({
           uid: auth.userId,
-          cid: props.selectedChat.id,
+          cid: selectedChat.id,
         }),
         {
           "Content-Type": "application/json",
@@ -50,7 +46,11 @@ function MessageBox(props) {
         }
       );
     } catch (err) { }
-  };
+  },[auth.token,auth.userId,selectedChat.id,sendRequest]);
+  useEffect(() => {
+    fetchMessageData();
+    markRead();
+  }, [selectedChat,fetchMessageData,markRead])
   const deleteMessage = (msg) => {
     let d = {
       msg,
@@ -59,13 +59,13 @@ function MessageBox(props) {
     socket.emit("deleteMessage", d,(error,success)=>{
       console.log(error,success)
     });
-    if (props.messages[props.messages.length - 1].id == msg.id) {
-      let chat = props.selectedChat;
-      chat.lastMessage = props.messages[props.messages.length - 2].content;
-      chat.lastMessageTime = props.messages[props.messages.length - 2].time;
-      props.setSelectedChat(chat);
+    if (messages[messages.length - 1].id === msg.id) {
+      let chat = selectedChat;
+      chat.lastMessage = messages[messages.length - 2].content;
+      chat.lastMessageTime = messages[messages.length - 2].time;
+      setSelectedChat(chat);
     }
-    props.setMessages(props.messages.filter(m => m.id != msg.id));
+    setMessages(messages.filter(m => m.id !== msg.id));
 
   }
 
@@ -77,8 +77,7 @@ function MessageBox(props) {
     // console.log(window.innerHeight)
     // console.log(endDiv.current.getBoundingClientRect().bottom)
     // console.log(event.target.scrollHeight)
-    if (event.target.scrollTop == 0) {
-      console.log("top");
+    if (event.target.scrollTop === 0) {
       // fetchMessageData();
     }
     // console.log(event.target.clientHeight)
@@ -88,7 +87,7 @@ function MessageBox(props) {
     <LoadingSpinner open={isLoading}/>
       <div className="chats" onScroll={scrollHandler}>
 
-        {props.messages.map((msg, idx) => (
+        {messages.map((msg, idx) => (
           <Message
             key={idx}
             message={msg}

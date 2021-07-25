@@ -37,7 +37,7 @@ const DeleteInterview = (props) => {
     props.setOpenDeleteDialog(false);
   };
   useEffect(() => {
-    setSuccess(status == 200 || responseStatus === "Interview Deleted");
+    setSuccess(status === 200 || responseStatus === "Interview Deleted");
   }, [status, responseStatus]);
 
   const CloseDeleteDialogHandler = () => {
@@ -47,7 +47,7 @@ const DeleteInterview = (props) => {
   const confirmDeleteHandler = async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/interviews/${props.selectedInterviewId}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/${props.selectedInterviewId}`,
         "DELETE",
         null,
         {
@@ -65,20 +65,18 @@ const DeleteInterview = (props) => {
 
   return (
     <>
-    {console.log("status: "+ success)}
-    {console.log("response: "+ responseStatus)}
   <Snackbar
             open={success || !!error}
             autoHideDuration={6000}
-            onClose={status == "200" ? clearSuccess : clearError}
+            onClose={status === 200 ? clearSuccess : clearError}
           >
             <MuiAlert
               elevation={6}
               variant="filled"
-              severity={status == "200" ? "success" : "error"}
-              onClose={status == "200" ? clearSuccess : clearError}
+              severity={status === 200 ? "success" : "error"}
+              onClose={status === 200 ? clearSuccess : clearError}
             >
-              {status == "200" && responseStatus === "Interview Deleted" ? "Interview Deleted Successfully!" : error}
+              {status === 200 && responseStatus === "Interview Deleted" ? "Interview Deleted Successfully!" : error}
             </MuiAlert>
           </Snackbar>
 

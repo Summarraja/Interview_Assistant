@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import SearchBar from "material-ui-search-bar";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -28,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 const CustomizedDialogs = (props) => {
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
 
   const [searchItem, setSearchItem] = useState("");
   const [resume, setResume] = useState([]);
@@ -50,7 +49,7 @@ const CustomizedDialogs = (props) => {
     const fetchSearchedResumes = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/resumes/resume/${searchItem}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/resumes/resume/${searchItem}`,
           "GET",
           null,
           {

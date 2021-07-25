@@ -130,16 +130,16 @@ function VideoCall(props) {
     const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
 
     const [audioMuted, setAudioMuted] = useState(false);
-    const [videoMuted, setVideoMuted] = useState(props.location.state.type == 'audio');
+    const [videoMuted, setVideoMuted] = useState(props.location.state.type === 'audio');
     const [stream, setStream] = useState();
-    const [caller, setCaller] = useState("");
+    const [caller, setCaller] = useState();
     const [callerSignal, setCallerSignal] = useState();
     const [callAccepted, setCallAccepted] = useState(false);
+    const [callConnected,setCallConnected] = useState(false);
     const [message, setMessage] = useState('');
     const [mediaMessage, setMediaMessage] = useState('');
     const [showFaceEmotions, setShowFaceEmotions] = useState(false);
     const [showVoiceEmotions, setShowVoiceEmotions] = useState(false);
-    const [partnerStream, setPartnerSstream] = useState(false);
     const [facialEmotionState, setFacialEmotionState] = useState([0, 0, 0, 0, 0, 0, 0]);
     const [vocalEmotionState, setVocalEmotionState] = useState([0, 0, 0, 0, 0, 0, 0]);
     const [isInterviewer, setIsInterviewer] = useState(false);
@@ -167,7 +167,17 @@ function VideoCall(props) {
     };
 
     useEffect(() => {
-
+        const goBack =  () => {
+            if (myPeer.current)
+                myPeer.current.destroy()
+            socket.emit('close', { to: caller })
+            if (stream) {
+                stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
+    
+            }
+        };
         window.addEventListener("popstate", goBack);
         window.addEventListener("beforeunload", alertUser);
 
@@ -175,26 +185,168 @@ function VideoCall(props) {
             window.removeEventListener("beforeunload", alertUser);
             // window.removeEventListener("popstate", goBack);
         };
-    }, [myPeer, stream, socket]);
+    }, [myPeer, stream, socket,caller]);
     const alertUser = (e) => {
         e.preventDefault();
         e.returnValue = "";
     };
-    const goBack = () => {
+    const endCall=()=> {
         if (myPeer.current)
             myPeer.current.destroy()
         socket.emit('close', { to: caller })
-        if (stream) {
-            stream.getTracks().forEach((track) => {
-                track.stop();
-            });
-
-        }
-    };
+        setMessage("Call Ended..");
+        setTimeout(() => {
+            if (stream) {
+                stream.getTracks().forEach((track) => {
+                    track.stop();
+                });
+            }
+            history.goBack();
+        }, 2000);
+    }
     useEffect(() => {
-        if (props.location.state && props.location.state.to) {
+        function callPeer(id, type) {
+            if (id !== '' && id !== auth.userId) {
+                navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+                    setStream(stream);
+                    setCaller(id)
+                    setMessage("Calling...");
+                    if (userVideo.current) {
+                        userVideo.current.srcObject = stream;
+                    }
+                    const peer = new Peer({
+                        initiator: true,
+                        trickle: false,
+                        config: {
+    
+                            iceServers: [
+                                // {
+                                //     urls: "stun:numb.viagenie.ca",
+                                //     username: "sultan1640@gmail.com",
+                                //     credential: "98376683"
+                                // },
+                                // {
+                                //     urls: "turn:numb.viagenie.ca",
+                                //     username: "sultan1640@gmail.com",
+                                //     credential: "98376683"
+                                // }
+                                { url: 'stun:stun01.sipphone.com' },
+                                { url: 'stun:stun.ekiga.net' },
+                                { url: 'stun:stun.fwdnet.net' },
+                                { url: 'stun:stun.ideasip.com' },
+                                { url: 'stun:stun.iptel.org' },
+                                { url: 'stun:stun.rixtelecom.se' },
+                                { url: 'stun:stun.schlund.de' },
+                                { url: 'stun:stun.l.google.com:19302' },
+                                { url: 'stun:stun1.l.google.com:19302' },
+                                { url: 'stun:stun2.l.google.com:19302' },
+                                { url: 'stun:stun3.l.google.com:19302' },
+                                { url: 'stun:stun4.l.google.com:19302' },
+                                { url: 'stun:stunserver.org' },
+                                { url: 'stun:stun.softjoys.com' },
+                                { url: 'stun:stun.voiparound.com' },
+                                { url: 'stun:stun.voipbuster.com' },
+                                { url: 'stun:stun.voipstunt.com' },
+                                { url: 'stun:stun.voxgratia.org' },
+                                { url: 'stun:stun.xten.com' },
+                                {
+                                    url: 'turn:numb.viagenie.ca',
+                                    credential: 'muazkh',
+                                    username: 'webrtc@live.com'
+                                },
+                                {
+                                    url: 'turn:192.158.29.39:3478?transport=udp',
+                                    credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+                                    username: '28224511:1379330808'
+                                },
+                                {
+                                    url: 'turn:192.158.29.39:3478?transport=tcp',
+                                    credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+                                    username: '28224511:1379330808'
+                                }
+                            ]
+                        },
+                        stream: stream,
+                    });
+    
+                    myPeer.current = peer;
+    
+                    peer.on("signal", data => {
+                        socket.emit("callUser", { userToCall: props.location.state.to, signalData: data, fromId: auth.userId, fromName: auth.resume.fullname, fromImage: auth.resume.image, type: type })
+                    })
+    
+                    peer.on("stream", stream => {
+                        setMessage("");
+                        setCallConnected(true);
+                        if (partnerVideo.current) {
+                            partnerVideo.current.srcObject = stream;
+                        }
+                    });
+    
+                    peer.on('error', (err) => {
+                        if (myPeer.current)
+                            myPeer.current.destroy()
+                        socket.emit('close', { to: caller })
+                        setMessage("Call Ended..");
+                        setCallConnected(false);
+                        setTimeout(() => {
+                            if (stream) {
+                                stream.getTracks().forEach((track) => {
+                                    track.stop();
+                                });
+                            }
+                            history.goBack();
+                        }, 2000);
+                    })
+    
+                    socket.on("callAccepted", signal => {
+                        setCallAccepted(true);
+                        peer.signal(signal);
+                    })
+    
+                    socket.on('close', () => {
+                        myPeer.current.destroy()
+                        setMessage("Call Ended..");
+                        setCallConnected(false);
+                        setTimeout(() => {
+                            stream.getTracks().forEach((track) => {
+                                track.stop();
+                            });
+                            history.goBack();
+                        }, 2000);
+                    })
+    
+                    socket.on('rejected', () => {
+                        setMessage("Call Declined..");
+                        setTimeout(() => {
+                            stream.getTracks().forEach((track) => {
+                                track.stop();
+                            });
+                            history.goBack();
+                        }, 2000);
+                    })
+                    socket.on('busy', () => {
+                        setMessage("User is Busy..");
+                        setTimeout(() => {
+                            stream.getTracks().forEach((track) => {
+                                track.stop();
+                            });
+                            history.goBack();
+                        }, 2000);
+                    })
+                })
+                    .catch(() => {
+                        alert('You cannot place/ receive a call without granting video and audio permissions! Please change your settings.')
+                    })
+            } else {
+                console.log("error")
+                return
+            }
+        }
+    
+        if (props.location.state && props.location.state.to &&!caller) {
             callPeer(props.location.state.to, props.location.state.type);
-            if (props.location.state.type == 'interview')
+            if (props.location.state.type === 'interview')
                 setIsInterviewer(true);
 
         }
@@ -202,16 +354,77 @@ function VideoCall(props) {
             setCaller(props.location.state.caller);
             setCallerSignal(props.location.state.callerSignal);
         }
-    }, []);
+    }, [auth.resume.fullname,auth.resume.image,auth.userId,history,socket,props.location.state,caller]);
     useEffect(() => {
         if (videoMuted && stream) {
             stream.getVideoTracks()[0].enabled = !videoMuted;
         }
-    }, [stream])
+    }, [stream,videoMuted])
     useEffect(() => {
+        function acceptCall() {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+                setStream(stream);
+                if (userVideo.current) {
+                    userVideo.current.srcObject = stream;
+                }
+                setCallAccepted(true);
+                const peer = new Peer({
+                    initiator: false,
+                    trickle: false,
+                    stream: stream,
+                });
+    
+                myPeer.current = peer
+    
+                peer.on("signal", data => {
+    
+                    socket.emit("acceptCall", { signal: data, to: caller })
+                })
+    
+                peer.on("stream", stream => {
+                    setCallConnected(true);
+                    partnerVideo.current.srcObject = stream;
+                });
+    
+                peer.on('error', (err) => {
+
+                    if (myPeer.current)
+                        myPeer.current.destroy()
+                    socket.emit('close', { to: caller })
+                    setMessage("Call Ended..");
+                    setCallConnected(false);
+                    setTimeout(() => {
+                        if (stream) {
+                            stream.getTracks().forEach((track) => {
+                                track.stop();
+                            });
+                        }
+                        history.goBack();
+                    }, 2000);                })
+    
+                peer.signal(callerSignal);
+    
+                socket.on('close', () => {
+                    myPeer.current.destroy()
+                    setMessage("Call Ended..");
+                    setCallConnected(false);
+                    setTimeout(() => {
+                        stream.getTracks().forEach((track) => {
+                            track.stop();
+                        });
+                        history.goBack();
+                    }, 2000);
+                    // window.location.reload()
+                })
+            })
+                .catch((err) => {
+                    alert('You cannot place/ receive a call without granting video and audio permissions! Please change your settings.')
+                    console.log(err)
+                })
+        }
         if (caller && callerSignal)
             acceptCall();
-    }, [caller, callerSignal]);
+    }, [caller, callerSignal,socket,history]);
 
     useEffect(() => {
         if (audioMuted || videoMuted)
@@ -226,208 +439,9 @@ function VideoCall(props) {
             socket.off("close");
             socket.off("rejected");
         };
-    }, [])
-    function callPeer(id, type) {
-        if (id !== '' && id !== auth.userId) {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-                setStream(stream);
-                setCaller(id)
-                setMessage("Calling...");
-                if (userVideo.current) {
-                    userVideo.current.srcObject = stream;
-                }
-                const peer = new Peer({
-                    initiator: true,
-                    trickle: false,
-                    config: {
+    }, [socket])
 
-                        iceServers: [
-                            // {
-                            //     urls: "stun:numb.viagenie.ca",
-                            //     username: "sultan1640@gmail.com",
-                            //     credential: "98376683"
-                            // },
-                            // {
-                            //     urls: "turn:numb.viagenie.ca",
-                            //     username: "sultan1640@gmail.com",
-                            //     credential: "98376683"
-                            // }
-                            { url: 'stun:stun01.sipphone.com' },
-                            { url: 'stun:stun.ekiga.net' },
-                            { url: 'stun:stun.fwdnet.net' },
-                            { url: 'stun:stun.ideasip.com' },
-                            { url: 'stun:stun.iptel.org' },
-                            { url: 'stun:stun.rixtelecom.se' },
-                            { url: 'stun:stun.schlund.de' },
-                            { url: 'stun:stun.l.google.com:19302' },
-                            { url: 'stun:stun1.l.google.com:19302' },
-                            { url: 'stun:stun2.l.google.com:19302' },
-                            { url: 'stun:stun3.l.google.com:19302' },
-                            { url: 'stun:stun4.l.google.com:19302' },
-                            { url: 'stun:stunserver.org' },
-                            { url: 'stun:stun.softjoys.com' },
-                            { url: 'stun:stun.voiparound.com' },
-                            { url: 'stun:stun.voipbuster.com' },
-                            { url: 'stun:stun.voipstunt.com' },
-                            { url: 'stun:stun.voxgratia.org' },
-                            { url: 'stun:stun.xten.com' },
-                            {
-                                url: 'turn:numb.viagenie.ca',
-                                credential: 'muazkh',
-                                username: 'webrtc@live.com'
-                            },
-                            {
-                                url: 'turn:192.158.29.39:3478?transport=udp',
-                                credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-                                username: '28224511:1379330808'
-                            },
-                            {
-                                url: 'turn:192.158.29.39:3478?transport=tcp',
-                                credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-                                username: '28224511:1379330808'
-                            }
-                        ]
-                    },
-                    stream: stream,
-                });
 
-                myPeer.current = peer;
-
-                peer.on("signal", data => {
-                    console.log("signal")
-                    socket.emit("callUser", { userToCall: props.location.state.to, signalData: data, fromId: auth.userId, fromName: auth.resume.fullname, fromImage: auth.resume.image, type: type })
-                })
-
-                peer.on("stream", stream => {
-                    console.log("stream got", stream)
-                    setMessage("");
-                    if (partnerVideo.current) {
-                        partnerVideo.current.srcObject = stream;
-                        setPartnerSstream(true);
-                    }
-                });
-
-                peer.on('error', (err) => {
-                    console.log('on error')
-                    endCall()
-                })
-
-                socket.on("callAccepted", signal => {
-                    setCallAccepted(true);
-                    console.log("accepted")
-                    peer.signal(signal);
-                })
-
-                socket.on('close', () => {
-                    console.log('on close')
-                    myPeer.current.destroy()
-                    setMessage("Call Ended..");
-                    setTimeout(() => {
-                        stream.getTracks().forEach((track) => {
-                            track.stop();
-                        });
-                        history.goBack();
-                    }, 2000);
-                })
-
-                socket.on('rejected', () => {
-                    console.log('on rejected')
-                    setMessage("Call Declined..");
-                    setTimeout(() => {
-                        stream.getTracks().forEach((track) => {
-                            track.stop();
-                        });
-                        history.goBack();
-                    }, 2000);
-                })
-                socket.on('busy', () => {
-                    console.log('on busy')
-                    setMessage("User is Busy..");
-                    setTimeout(() => {
-                        stream.getTracks().forEach((track) => {
-                            track.stop();
-                        });
-                        history.goBack();
-                    }, 2000);
-                })
-            })
-                .catch(() => {
-                    console.log("error")
-                    alert('You cannot place/ receive a call without granting video and audio permissions! Please change your settings.')
-                })
-        } else {
-            console.log("error2")
-            return
-        }
-    }
-    function acceptCall() {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-            setStream(stream);
-            if (userVideo.current) {
-                userVideo.current.srcObject = stream;
-            }
-            setCallAccepted(true);
-            const peer = new Peer({
-                initiator: false,
-                trickle: false,
-                stream: stream,
-            });
-
-            myPeer.current = peer
-
-            peer.on("signal", data => {
-                console.log('on signal')
-
-                socket.emit("acceptCall", { signal: data, to: caller })
-            })
-
-            peer.on("stream", stream => {
-                console.log('stream got', stream)
-                partnerVideo.current.srcObject = stream;
-                setPartnerSstream(true);
-            });
-
-            peer.on('error', (err) => {
-                console.log('on error')
-                endCall()
-            })
-
-            peer.signal(callerSignal);
-
-            socket.on('close', () => {
-                console.log('on close')
-                myPeer.current.destroy()
-                setMessage("Call Ended..");
-                setTimeout(() => {
-                    stream.getTracks().forEach((track) => {
-                        track.stop();
-                    });
-                    history.goBack();
-                }, 2000);
-                // window.location.reload()
-            })
-        })
-            .catch((err) => {
-                //   setModalMessage('You cannot place/ receive a call without granting video and audio permissions! Please change your settings to use Cuckoo.')
-                //   setModalVisible(true)
-                console.log(err)
-            })
-    }
-    function endCall() {
-        console.log("ended")
-        if (myPeer.current)
-            myPeer.current.destroy()
-        socket.emit('close', { to: caller })
-        setMessage("Call Ended..");
-        setTimeout(() => {
-            if (stream) {
-                stream.getTracks().forEach((track) => {
-                    track.stop();
-                });
-            }
-            history.goBack();
-        }, 2000);
-    }
     function showFaceEmotionsHandler() {
         setShowFaceEmotions(!showFaceEmotions);
         handleClose();
@@ -451,8 +465,8 @@ function VideoCall(props) {
     }
     const sendVocalStats = async () => {
         try {
-            const responseData = await sendRequest(
-                "http://localhost:5000/api/emotionStats/",
+            await sendRequest(
+                `${process.env.REACT_APP_BACKEND_NODE_URL}/emotionStats/`,
                 'POST',
                 JSON.stringify({
                     interview:props.location.state.interview,
@@ -465,7 +479,6 @@ function VideoCall(props) {
                     Authorization: "Bearer " + auth.token,
                 }
             );
-            console.log(responseData.stats.emotions)
             setVoiceStats([]);
             setSuccess(true);
 
@@ -475,8 +488,8 @@ function VideoCall(props) {
     }
     const sendFacialStats = async () => {
         try {
-            const responseData = await sendRequest(
-                "http://localhost:5000/api/emotionStats/",
+            await sendRequest(
+                `${process.env.REACT_APP_BACKEND_NODE_URL}/emotionStats/`,
                 'POST',
                 JSON.stringify({
                     interview:props.location.state.interview,
@@ -489,7 +502,6 @@ function VideoCall(props) {
                     Authorization: "Bearer " + auth.token,
                 }
             );
-            console.log(responseData.stats.emotions)
             setFacialStats([]);
             setSuccess(true);
         } catch (err) {
@@ -505,15 +517,15 @@ function VideoCall(props) {
         <Snackbar
         open={success || !!error}
         autoHideDuration={3000}
-        onClose={status == "200" ? clearSuccess : clearError}
+        onClose={status === 200 ? clearSuccess : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "200" ? "success" : "error"}
-          onClose={status == "200" ? clearSuccess : clearError}
+          severity={status === 200 ? "success" : "error"}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
-          {status == "200" ? "Data Saved Successfully!" : error}
+          {status === 200 ? "Data Saved Successfully!" : error}
         </MuiAlert>
       </Snackbar>
             <div className={classes.topdiv}>
@@ -531,11 +543,11 @@ function VideoCall(props) {
                 )}
                 <div className={classes.message}>{message}</div>
                 <div className={classes.mediaMessage}>{mediaMessage}</div>
-                <div className={classes.partnerVideoStyles}>
-                    {callAccepted && (<video width='100%' height='100%' playsInline ref={partnerVideo} poster={Black} autoPlay />)}
-                </div>
                 <div className={classes.userVideoStyles}>
                     {stream && (<video id="userVideo" className={classes.userVideo} playsInline muted ref={userVideo} poster={Black} autoPlay />)}
+                </div>
+                <div className={classes.partnerVideoStyles}>
+                    {callAccepted && (<video id="partnerVideo" width='100%' height='100%' playsInline ref={partnerVideo} poster={Black} autoPlay />)}
                 </div>
                 <div className={classes.bottomDiv}>
                     <Grid align="center">
@@ -548,7 +560,7 @@ function VideoCall(props) {
                         <IconButton className={classes.IconStyles} onClick={() => endCall()}>
                             <CallEndIcon color="primary" style={{ fontSize: "2rem" }} />
                         </IconButton>
-                        {isInterviewer && (
+                        {isInterviewer && callConnected && (
                             <IconButton
                                 aria-label="more"
                                 aria-controls="long-menu"

@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ApproveCertificate = () => {
   const [loadedCertificates, setLoadedCertificates] = useState([]);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading,  sendRequest } = useHttpClient();
   const auth = useContext(AuthContext);
   const classes = useStyles();
 
@@ -47,7 +47,7 @@ const ApproveCertificate = () => {
     const fetchUnapprovedCertificates = async () => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/certificates/",
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/`,
           "GET",
           null,
           {
@@ -61,7 +61,7 @@ const ApproveCertificate = () => {
       }
     };
     fetchUnapprovedCertificates();
-  }, []);
+  }, [auth.token,sendRequest]);
 
 
   return (

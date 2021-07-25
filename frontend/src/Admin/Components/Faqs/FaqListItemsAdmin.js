@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     }));
 const FaqListItemsAdmin = (props) =>{
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {  sendRequest } = useHttpClient();
     const classes = useStyles();
     const [loadedFaqs, setLoadedFaqs]= useState();
     const [open, setOpen] = useState(false);
@@ -67,7 +67,7 @@ const FaqListItemsAdmin = (props) =>{
     const getData = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/api/faqs/'
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/faqs/`
         );
         props.setFaqs(responseData.faqs);
       } catch (err) {
@@ -83,7 +83,7 @@ const FaqListItemsAdmin = (props) =>{
       const fetchFaq = async () => {
         try {
           const responseData = await sendRequest(
-            `http://localhost:5000/api/faqs/${props.id}`,
+            `${process.env.REACT_APP_BACKEND_NODE_URL}/faqs/${props.id}`,
             "GET",
             null,
             {
@@ -95,7 +95,7 @@ const FaqListItemsAdmin = (props) =>{
         } catch (err) {}
       } ;
       fetchFaq()
-    }, [open, loadedFaqs]);
+    }, [open, loadedFaqs,auth.token,props.id,sendRequest]);
 
 return (
 

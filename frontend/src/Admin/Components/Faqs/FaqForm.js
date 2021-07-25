@@ -3,7 +3,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
 const FaqForm = (props) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-  const theme = useTheme();
   const classes = useStyles();
   const [success, setSuccess] = useState(false);
 
@@ -39,7 +38,7 @@ const FaqForm = (props) => {
     
   };
   useEffect(() => {
-    setSuccess(status==201);
+    setSuccess(status===201);
   }, [status]);
 
   const initialValues = {
@@ -60,8 +59,8 @@ const FaqForm = (props) => {
 
   const onSubmitHandler = async (values) => {
     try {
-      const responseData = await sendRequest(
-        "http://localhost:5000/api/faqs/",
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/faqs/`,
         "POST",
         JSON.stringify({
           question: values.question,
@@ -81,15 +80,15 @@ const FaqForm = (props) => {
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}
-        onClose={status == "201" ? clearSuccess   : clearError}
+        onClose={status === 201 ? clearSuccess   : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "201" ? "success" : "error"}
-          onClose={status == "201" ? clearSuccess : clearError}
+          severity={status === 201 ? "success" : "error"}
+          onClose={status === 201 ? clearSuccess : clearError}
         >
-          {status == "201" ? "FAQ added Successfully!" : error}
+          {status === 201 ? "FAQ added Successfully!" : error}
         </MuiAlert>
       </Snackbar>
 

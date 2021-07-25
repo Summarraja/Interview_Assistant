@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     }));
 const ProblemListItemsAdmin = (props) =>{
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {sendRequest} = useHttpClient();
     const classes = useStyles();
     const [loadedproblems, setLoadedproblems]= useState();
     const [open, setOpen] = useState(false);
@@ -59,7 +59,7 @@ const ProblemListItemsAdmin = (props) =>{
     const getData = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/api/problems/unanswer'
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/problems/unanswer`
         );
         props.setproblems(responseData.unanswerdproblems);
       } catch (err) {
@@ -72,7 +72,7 @@ const ProblemListItemsAdmin = (props) =>{
       const fetchProblem = async () => {
         try {
           const responseData = await sendRequest(
-            `http://localhost:5000/api/problems/${props.id}`,
+            `${process.env.REACT_APP_BACKEND_NODE_URL}/problems/${props.id}`,
             "GET",
             null,
             {
@@ -84,7 +84,7 @@ const ProblemListItemsAdmin = (props) =>{
         } catch (err) {}
       } ;
       fetchProblem()
-    }, [open, loadedproblems]);
+    }, [open, loadedproblems,auth.token,props.id,sendRequest]);
 
 return (
 

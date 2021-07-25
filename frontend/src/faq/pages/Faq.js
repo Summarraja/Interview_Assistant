@@ -100,7 +100,7 @@ export default function FAQ(props) {
     const getData = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/api/faqs/'
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/faqs/`
         );
         setFaqs(responseData.faqs);
       } catch (err) {
@@ -110,14 +110,14 @@ export default function FAQ(props) {
     if (!faqs || closeIcon === false)
       getData();
 
-  }, [faqs, closeIcon])
+  }, [faqs, closeIcon,sendRequest])
 
   const getSearchItem = () => {
     setCloseIcon(!closeIcon);
     const fetchSearchedFaqs = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/faqs/faq/${searchItem}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/faqs/faq/${searchItem}`,
           "GET",
           null,
           {

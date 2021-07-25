@@ -1,8 +1,6 @@
 import React, { useContext } from "react";
 import Avatar from "@material-ui/core/Avatar";
-import { Grid, IconButton, Typography } from "@material-ui/core";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import SettingsIcon from '@material-ui/icons/Settings';
+import { Typography } from "@material-ui/core";
 import './LeftTopBar.css';
 import { AuthContext } from '../../shared/context/auth-context';
 import { Link } from 'react-router-dom';
@@ -16,7 +14,7 @@ function LeftTopBar(props) {
         <div className="avatar-component">
 
           <Avatar
-            src={"http://localhost:5000/" + auth.resume.image}
+            src={process.env.REACT_APP_BACKEND_ASSET_URL + auth.resume.image}
             style={{
               display: "flex",
               alignItems: "center",

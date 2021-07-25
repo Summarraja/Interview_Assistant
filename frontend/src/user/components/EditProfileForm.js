@@ -283,7 +283,7 @@ const EditProfileForm = (props) => {
   const onSubmitHandler = async (values) => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/resumes/${auth.resume._id}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/resumes/${auth.resume._id}`,
         "PATCH",
         JSON.stringify({
           firstname: values.firstName,

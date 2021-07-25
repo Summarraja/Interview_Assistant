@@ -1,12 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import ListItemText from "@material-ui/core/ListItemText";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
@@ -15,10 +13,8 @@ import Button from "@material-ui/core/Button";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
-import { BsFillPersonCheckFill } from "react-icons/bs";
 import Typography from "@material-ui/core/Typography";
 import { FaUserCheck, FaUserTimes } from "react-icons/fa";
-import { ImUserPlus } from "react-icons/im";
 
 const useStyles = makeStyles((theme) => ({
   ActionButton: {
@@ -76,7 +72,7 @@ const CandidateRequestsDialogItems = (props) => {
     const AcceptCandRequest = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/acceptcandidatereq/${props.interId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/acceptcandidatereq/${props.interId}`,
           "PATCH",
           JSON.stringify({
             uid: props.userId,
@@ -99,7 +95,7 @@ const CandidateRequestsDialogItems = (props) => {
     const RejectCandRequest = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/rejectcandidatereq/${props.interId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/rejectcandidatereq/${props.interId}`,
           "PATCH",
           JSON.stringify({
             uid: props.userId,
@@ -123,7 +119,7 @@ const CandidateRequestsDialogItems = (props) => {
     setSuccess(false);
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status]);
   return (
     <>
@@ -131,24 +127,24 @@ const CandidateRequestsDialogItems = (props) => {
         <Snackbar
           open={success || !!error}
           autoHideDuration={6000}
-          onClose={status == "200" ? clearSuccess : clearError}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
           <MuiAlert
             elevation={6}
             variant="filled"
-            severity={status == "200" ? "success" : "error"}
-            onClose={status == "200 " ? clearSuccess : clearError}
+            severity={status === 200 ? "success" : "error"}
+            onClose={status === "200 " ? clearSuccess : clearError}
           >
-            {status == "200" && responseStatus == "accepted"
+            {status === 200 && responseStatus === "accepted"
               ? "Candidate Request has been accepted successfully!"
-              : responseStatus == "rejected"
+              : responseStatus === "rejected"
               ? "Candidate Request has been rejected successfully!"
               : error}
           </MuiAlert>
         </Snackbar>
       }
 
-      {props.userId != auth.userId && (
+      {props.userId !== auth.userId && (
         <List className={classes.list}>
           <Grid container>
             <Grid item sm={6} xs={6} className={classes.responsive}>
@@ -174,15 +170,15 @@ const CandidateRequestsDialogItems = (props) => {
             {isLoading && <LoadingSpinner open={isLoading} />}
 
             <Grid item sm={6} xs={6} align="center">
-              {status == "200" ? (
+              {status === 200 ? (
                 <Typography variant="subtitle2" className={classes.statusStyle}>
-                  {responseStatus == "accepted" ? (
+                  {responseStatus === "accepted" ? (
                     <FaUserCheck className={classes.statusIconStyle} />
                   ) : (
                     <FaUserTimes className={classes.statusIconStyle} />
                   )}
 
-                  {responseStatus == "accepted" ? "ACCEPTED" : "REJECTED"}
+                  {responseStatus === "accepted" ? "ACCEPTED" : "REJECTED"}
                 </Typography>
               ) : (
                 <>

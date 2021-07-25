@@ -16,6 +16,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
+import { useMemo } from "react";
 
 function Copyright() {
   return (
@@ -52,10 +53,12 @@ const SignIn = () => {
   const [rememberme, setRememberme] = useState(false);
 
   const auth = useContext(AuthContext);
-  const initialValues = {
-    username: "",
-    password: "",
-  };
+  const initialValues = useMemo(() => {
+    return {
+      username: "",
+      password: "",
+    }
+  }, [])
   useEffect(() => {
     if (localStorage.checkbox === "true") {
       setRememberme(true);
@@ -64,7 +67,7 @@ const SignIn = () => {
     } else {
       setRememberme(false);
     }
-  }, []);
+  }, [initialValues]);
   const paperStyle = {
     width: "80%",
     padding: 20,
@@ -86,7 +89,7 @@ const SignIn = () => {
     }
     try {
       const responseData = await sendRequest(
-        'http://localhost:5000/api/users/login',
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/users/login`,
         'POST',
         JSON.stringify({
           email: values.username,
@@ -98,10 +101,11 @@ const SignIn = () => {
       );
       auth.login(responseData.userId, responseData.token, responseData.resume, responseData.setting);
     } catch (err) {
+      console.log(err)
     }
 
   };
-  if (error == 'Email_not_verified') {
+  if (error === 'Email_not_verified') {
 
     return <Redirect
       to={{
@@ -115,7 +119,7 @@ const SignIn = () => {
   return (
     <Fragment>
       <LoadingSpinner open={isLoading} />
-      {status != 401 && (
+      {status !== 401 && (
         <Snackbar open={!!error} autoHideDuration={6000} onClose={clearError}>
           <MuiAlert elevation={6} variant="filled" severity="error" onClose={clearError}>
             {error}
@@ -135,7 +139,7 @@ const SignIn = () => {
               </Avatar>
               <Typography component="h1" variant="h5">
                 Sign in
-             </Typography>
+              </Typography>
               <AuthForm
                 setRememberme={setRememberme}
                 rememberme={rememberme}
@@ -147,17 +151,17 @@ const SignIn = () => {
               <Grid container>
                 <Grid item xs>
                   <Link
-                    style={{ textDecoration: 'none',  }}
+                    style={{ textDecoration: 'none', }}
                     to={{
                       pathname: "/forgotpassword",
                       state: { forgotpassword: true }
                     }} variant="body2">
                     Forgot password?
-               </Link>
+                  </Link>
                 </Grid>
                 <Grid item>
                   <Link
-                    style={{ textDecoration: 'none',  }}
+                    style={{ textDecoration: 'none', }}
                     to={{
                       pathname: "/signup",
                     }} variant="body2">

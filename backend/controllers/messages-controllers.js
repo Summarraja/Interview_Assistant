@@ -16,7 +16,6 @@ const getMessageById = async (req, res, next) => {
     try {
         message = await Message.findById(messageid);
     } catch (err) {
-        // console.log(err)
         const error = new HttpError(
             'Something went wrong, could not find a message.',
             500
@@ -175,7 +174,6 @@ const createMessage = async (req, res, next) => {
             await chat.save({ session: sess });
             await sess.commitTransaction();
         } catch (err) {
-            console.log(err)
             const error = new HttpError(
                 'Creating message failed, please try again.',
                 500
@@ -296,7 +294,6 @@ const deleteMessage = async (req, res, next) => {
         await message.remove({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
-        console.log(err)
         const error = new HttpError(
             'Something went wrong, could not delete message.',
             500

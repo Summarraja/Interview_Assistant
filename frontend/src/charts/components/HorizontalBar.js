@@ -14,7 +14,7 @@ const HorizontalBarChart = (props) => {
     datasets: [
       {
         label: '# of Votes',
-        data: createData((props.data[0].type=='facial')?props.data[0].emotions:props.data[1].emotions),
+        data: createData((props.data[0].type==='facial')?props.data[0].emotions:props.data[1].emotions),
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',
@@ -43,7 +43,7 @@ const HorizontalBarChart = (props) => {
     datasets: [
       {
         label: '# of Votes',
-        data: createData((props.data[0].type=='vocal')?props.data[0].emotions:props.data[1].emotions),
+        data: createData((props.data[0].type==='vocal')?props.data[0].emotions:props.data[1].emotions),
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',

@@ -3,7 +3,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
@@ -61,10 +61,8 @@ const fields = [
 const CertificateForm = (props) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-  const [open, setOpen] = useState(false);
   const [file, setFile] = useState(false);
   const [previewUrl, setPreviewUrl] = useState();
-  const theme = useTheme();
   const classes = useStyles();
   const [success, setSuccess] = useState(false);
 
@@ -87,35 +85,21 @@ const CertificateForm = (props) => {
     }
   };
 
-  const handleOpenDialog = () => {
-    setOpen(true);
-  };
-  const handleCloseDialog = () => {
-    setOpen(false);
-  };
 
   const clearSuccess = () => {
     setSuccess(false);
     props.setOpen(false);
   };
   useEffect(() => {
-    setSuccess(status == 201);
+    setSuccess(status === 201);
   }, [status]);
 
   const initialValues = {
     title: "",
     description: "",
     institute: "",
-    //   CertificateImage: "",
   };
 
-  // const FILE_SIZE = 160 * 1024;
-  // const SUPPORTED_FORMATS = [
-  //   "image/jpg",
-  //   "image/jpeg",
-  //   "image/gif",
-  //   "image/png",
-  // ];
 
   const validationSchema = yup.object().shape({
     title: yup
@@ -130,21 +114,9 @@ const CertificateForm = (props) => {
       .string()
       .min(10, "Institute must be atleast 10 characters long")
       .required("Institute is required"),
-     //CertificateImage: yup.mixed().required("A Certificate Image is required"),
-    //   .test(
-    //     "fileSize",
-    //     "File too large",
-    //     value => value && value.size <= FILE_SIZE
-    //   )
-    //   .test(
-    //     "fileFormat",
-    //     "Unsupported Format",
-    //     value => value && SUPPORTED_FORMATS.includes(value.type)
-    //   )
   });
 
   const onSubmitHandler = async (values) => {
-    console.log("File: " + file)
     try {
       const formData = new FormData();
       formData.append( 'title', values.title);
@@ -152,8 +124,8 @@ const CertificateForm = (props) => {
       formData.append( 'institute', values.institute);
       formData.append( 'fieldTitle', props.field);
       formData.append('file', file);
-      const responseData = await sendRequest(
-        "http://localhost:5000/api/certificates/",
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/`,
         "POST",
         formData,
         {
@@ -161,9 +133,11 @@ const CertificateForm = (props) => {
           Authorization: "Bearer " + auth.token,
         }
       );
-      console.log(responseData.certificate)
+
       props.fetchCertificates();
-    } catch (err) {}
+    } catch (err) {
+      console.log(err)
+    }
   };
 
   return (
@@ -172,15 +146,15 @@ const CertificateForm = (props) => {
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}
-        onClose={status == "201" ? clearSuccess : clearError}
+        onClose={status === 201 ? clearSuccess : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "201" ? "success" : "error"}
-          onClose={status == "201" ? clearSuccess : clearError}
+          severity={status === 201 ? "success" : "error"}
+          onClose={status === 201 ? clearSuccess : clearError}
         >
-          {status == "201" ? "Certificate Added Successfully!" : error}
+          {status === 201 ? "Certificate Added Successfully!" : error}
         </MuiAlert>
       </Snackbar>
 
@@ -291,7 +265,7 @@ const CertificateForm = (props) => {
                 />
 
                 <div className={classes.content}>
-                  <img className={classes.preview} src={previewUrl} />
+                  <img className={classes.preview} src={previewUrl} alt="certificate_pic" />
                   <br />
                 </div>
 
@@ -328,7 +302,6 @@ const CertificateForm = (props) => {
                 </div>
               </Grid>
             </Grid>
-           {/* {console.log("file: "+       (!(fProps.isValid || !props.field || fProps.isSubmitting ) && file))} */}
             <Button
               type="submit"
               fullWidth

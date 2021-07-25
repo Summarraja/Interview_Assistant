@@ -1,32 +1,16 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import io from 'socket.io-client';
 import Recorder from 'recorder-js';
-import { AuthContext } from "../shared/context/auth-context";
+import { useCallback } from "react";
 
-let socket = io.connect("http://localhost:5001");
+let socket = io.connect(process.env.REACT_APP_BACKEND_PYTHON_URL);
 
 function VocalEmotionsExtractor(props) {
-    const auth = useContext(AuthContext);
 
-    const [audioContext, setAudiocontext] = useState(new (window.AudioContext || window.webkitAudioContext)());
+    const [audioContext ] = useState(new (window.AudioContext || window.webkitAudioContext)());
     const [recorder, setRecorder] = useState(null);
     const [isRecording, setIsRecording] = useState(true);
 
-    useEffect(() => {
-        if (audioContext && !recorder)
-            setRecorder(new Recorder(audioContext, {}));
-        if (recorder) {
-            var userVideo = document.getElementById("userVideo");
-            recorder.init(userVideo.srcObject);
-            startRecording();
-        }
-    }, [audioContext, recorder])
-
-    useEffect(() => {
-        if (!isRecording) {
-            startRecording();
-        }
-    }, [isRecording])
 
     useEffect(() => {
         socket.on("voice-emotions", arg => {
@@ -43,7 +27,7 @@ function VocalEmotionsExtractor(props) {
             }
             let arr = [0, 0, 0, 0, 0, 0, 0];
 
-            if (emotion[arg.emotion] != 7) {
+            if (emotion[arg.emotion] !== 7) {
                 arr[emotion[arg.emotion]] = 1;
                 props.setStats([...props.stats, emotion[arg.emotion]]);
             }
@@ -52,19 +36,8 @@ function VocalEmotionsExtractor(props) {
         return () => {
             socket.off("voice-emotions");
         };
-    }, [props.stats])
-
-    function startRecording() {
-        recorder.start()
-            .then(() => {
-                setIsRecording(true);
-                setTimeout(() => {
-                    stopRecording()
-                }, 3000);
-            });
-    }
-
-    function stopRecording() {
+    }, [props.stats,props])
+    const stopRecording= useCallback( ()=> {
         recorder.stop()
             .then(({ blob, buffer }) => {
                 socket.emit("voice-emotions", blob);
@@ -72,7 +45,33 @@ function VocalEmotionsExtractor(props) {
                 // Recorder.download(blob, 'my-audio-file'); // downloads a .wav file
                 // buffer is an AudioBuffer
             });
-    }
+    },[recorder])
+    const startRecording= useCallback(()=> {
+        recorder.start()
+            .then(() => {
+                setIsRecording(true);
+                setTimeout(() => {
+                    stopRecording()
+                }, 3000);
+            });
+    },[recorder,stopRecording])
+
+    useEffect(() => {
+        if (audioContext && !recorder)
+            setRecorder(new Recorder(audioContext, {}));
+        if (recorder) {
+            var userVideo = document.getElementById("partnerVideo");
+            recorder.init(userVideo.srcObject);
+            startRecording();
+        }
+    }, [audioContext, recorder,startRecording])
+
+    useEffect(() => {
+        if (!isRecording) {
+            startRecording();
+        }
+    }, [isRecording,startRecording])
+
 
     return (
         <>

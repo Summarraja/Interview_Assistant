@@ -3,7 +3,6 @@ import TextField from "@material-ui/core/TextField";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -49,7 +48,7 @@ const EditFaqs= (props) => {
    
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status]);
 
   const classes = useStyles();
@@ -60,11 +59,10 @@ const EditFaqs= (props) => {
   };
 
   const onSubmitHandler = async (values) => {
-    console.log(values.question);
-    console.log(values.answer);
+
     try {
-      const responseData = await sendRequest(
-        `http://localhost:5000/api/faqs/${props.faqid}`,
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/faqs/${props.faqid}`,
         "PATCH",
         JSON.stringify({
           question: values.question,
@@ -89,15 +87,15 @@ const EditFaqs= (props) => {
             <Snackbar
               open={success|| !!error}
               autoHideDuration={6000}
-              onClose={status == "200" ? clearSuccess : clearError}
+              onClose={status === 200 ? clearSuccess : clearError}
             >
               <MuiAlert
                 elevation={6}
                 variant="filled"
-                severity={status == "200" ? "success" : "error"}
-                onClose={status == "200" ? clearSuccess : clearError}
+                severity={status === 200 ? "success" : "error"}
+                onClose={status === 200 ? clearSuccess : clearError}
               >
-                {status == "200" ? "FAQ Updated Successfully!" : error}
+                {status === 200 ? "FAQ Updated Successfully!" : error}
               </MuiAlert>
             </Snackbar>
           

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import CandidateRequests from "./CandidateRequests";
 
 const CandidateRequestsList = (props) => {
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
 
   const [receivedCandResume, setReceivedCandResume] = useState([]);
 
@@ -15,7 +14,7 @@ const CandidateRequestsList = (props) => {
     const fetchReceiveCandResume = async (candID) => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/resumes/user/${candID}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/resumes/user/${candID}`,
           "GET",
           null,
           {
@@ -32,7 +31,7 @@ const CandidateRequestsList = (props) => {
     props.interReceivedRequests.map((candidate) =>
       fetchReceiveCandResume(candidate.id)
     );
-  }, [props.interReceivedRequests]);
+  }, [props.interReceivedRequests,auth.token,sendRequest]);
 
   return (
     !isLoading &&

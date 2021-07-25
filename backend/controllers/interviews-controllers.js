@@ -16,7 +16,6 @@ const getInterviewById = async (req, res, next) => {
   try {
     interview = await Interview.findById(interviewId);
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       "Something went wrong, could not find a interview.",
       500
@@ -91,20 +90,6 @@ const getInterviewerRequests = async (req, res, next) => {
     return next(error);
   }
 
-  // try {
-  // candidateResumes = await interviewerRequests.candidates.map(candidate => User.findById(candidate._id).populate('resume'))
-
-  // } catch (err) {
-  //     console.log("Interveiw resume: "+err)
-  //   const error = new HttpError(
-  //     "Fetching candidate resumes failed, please try again later.",
-  //     500
-  //   );
-  //   return next(error);
-  // }
-
-  //candidateResumes = await User.findById(interviewerRequests.candidates.id).populate('resume')
-
   res.json({
     sentRequests: interviewerRequests.sentRequests.map((candidate) =>
       candidate.toObject({ getters: true })
@@ -138,7 +123,6 @@ const createInterview = async (req, res, next) => {
     return next(error);
   }
 
-  console.log("created field: " + field);
   if (!field) {
     const error = new HttpError(
       "Could not find field for the provided title.",
@@ -204,7 +188,6 @@ const updateInterview = async (req, res, next) => {
   try {
     field = await Field.findOne({ title: fieldTitle });
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       "Something went wrong, could not find a field.",
       500
@@ -224,7 +207,6 @@ const updateInterview = async (req, res, next) => {
   try {
     interview = await Interview.findById(interviewId);
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       "could not find interview of specified id.",
       500
@@ -820,7 +802,6 @@ const inviteCandidate = async (req, res, next) => {
     await candidate.setting.save({session:sess});
     await sess.commitTransaction();
   } catch (err) {
-    console.log("Interview: " + err);
     const error = new HttpError(
       "Something went wrong, could not send request to the Candidate for interview.",
       500

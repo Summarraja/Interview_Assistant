@@ -7,7 +7,7 @@ import { Grid } from "@material-ui/core";
 
 function Paper() {
   return (
-    <Grid item lg= "12">
+    <Grid item >
       <div className="page">
         <HeaderP />
         <ProfessionalP />

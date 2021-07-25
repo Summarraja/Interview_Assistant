@@ -37,7 +37,7 @@ const CancelInterview = (props) => {
   };
 
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status]);
 
   // Request to get sepcific Interview Details
@@ -45,7 +45,7 @@ const CancelInterview = (props) => {
     const fetchInterview = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/${interviewId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/${interviewId}`,
           "GET",
           null,
           {
@@ -57,7 +57,7 @@ const CancelInterview = (props) => {
       } catch (err) {}
     };
     if (!loadedInterview) fetchInterview();
-  }, []);
+  }, [auth.token,interviewId,loadedInterview,sendRequest]);
 
 
 
@@ -66,7 +66,7 @@ const CancelInterview = (props) => {
       const fetchField = async () => {
         try {
           const responseData = await sendRequest(
-            `http://localhost:5000/api/fields/${loadedInterview.field}`,
+            `${process.env.REACT_APP_BACKEND_NODE_URL}/fields/${loadedInterview.field}`,
             "GET",
             null,
             {
@@ -78,12 +78,12 @@ const CancelInterview = (props) => {
         } catch (err) {}
       };
       if (!loadedField) fetchField();
-    }, [loadedField, loadedInterview]);
+    }, [loadedField, loadedInterview,auth.token,sendRequest]);
 
   const CancelInterviewHandler = async() => {
      try {
-      const responseData = await sendRequest(
-        `http://localhost:5000/api/interviews/${interviewId}`,
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/${interviewId}`,
         "PATCH",
         JSON.stringify({
           title: loadedInterview.title,
@@ -108,15 +108,15 @@ const CancelInterview = (props) => {
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}
-        onClose={status == "200" ? clearSuccess : clearError}
+        onClose={status === 200 ? clearSuccess : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "200" ? "success" : "error"}
-          onClose={status == "200" ? clearSuccess : clearError}
+          severity={status === 200 ? "success" : "error"}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
-          {status == "200" ? "Interview Cancelled Successfully!" : error}
+          {status === 200 ? "Interview Cancelled Successfully!" : error}
         </MuiAlert>
       </Snackbar>
       <Dialog

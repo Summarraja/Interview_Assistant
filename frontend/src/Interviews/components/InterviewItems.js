@@ -1,25 +1,21 @@
 import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Menu, MenuItem, Divider, withStyles } from "@material-ui/core";
+import { Menu} from "@material-ui/core";
 import { IoMdEye } from "react-icons/io";
 import { FaRegCheckCircle, FaRegClock } from "react-icons/fa";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Typography from "@material-ui/core/Typography";
 import OutsideClickHandler from "react-outside-click-handler";
 import Grid from "@material-ui/core/Grid";
-import { useTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import IconButton from "@material-ui/core/IconButton";
 import { grey } from "@material-ui/core/colors";
 import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
 import BlockIcon from "@material-ui/icons/Block";
 import InterviewMenu from "./InterviewMenu";
-import ViewInterview from "../pages/ViewInterview";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -71,16 +67,12 @@ const InterviewItems = (props) => {
     marginTop: "5px",
   };
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { sendRequest } = useHttpClient();
   const classes = useStyles();
 
-  const theme = useTheme();
+ 
   // const matches = useMediaQuery(theme.breakpoints.down("sm"));
-  const today = new Date();
 
-  const date =
-    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-  const CurrentDate = new Date(date);
 
   const [InterviewMobAnchorEl, setInterviewMobAnchorEl] = useState(null);
   const isInterviewMenuOpen = Boolean(InterviewMobAnchorEl);
@@ -100,7 +92,7 @@ const InterviewItems = (props) => {
     const getInterviewRequestsData = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/interviews/interviewreq/${props.id}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/interviewreq/${props.id}`,
           "GET",
           null,
           {
@@ -116,10 +108,10 @@ const InterviewItems = (props) => {
       }
     };
 
-    if (auth.setting.role == "Interviewer") {
+    if (auth.setting.role === "Interviewer") {
       getInterviewRequestsData();
     }
-  }, []);
+  }, [auth.setting.role,auth.userId,auth.token, props.id,sendRequest]);
 
   const InterviewMobileMenu = (
     <Menu
@@ -147,8 +139,8 @@ const InterviewItems = (props) => {
         </MenuItem>
       )}
           <Divider variant="middle" /> */}
-      <>
-    {props.hasAccess && props.role == "Interviewer" && (
+      
+    {props.hasAccess && props.role === "Interviewer" && (
     
           <InterviewMenu
             closeInterviewMenu={closeInterviewMenu}
@@ -165,7 +157,7 @@ const InterviewItems = (props) => {
 
           )}
 
-          </>
+          
 
       </Menu>
     

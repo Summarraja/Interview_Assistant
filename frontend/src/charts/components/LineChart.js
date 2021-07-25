@@ -3,11 +3,11 @@ import { Line } from 'react-chartjs-2';
 
 const LineChart = (props) => {
   const FacialData = {
-    labels: [...Array(((props.data[0].type=='facial')?props.data[0].emotions:props.data[1].emotions).length-1).keys()],
+    labels: [...Array(((props.data[0].type==='facial')?props.data[0].emotions:props.data[1].emotions).length-1).keys()],
     datasets: [
       {
         label: '# of Votes',
-        data: (props.data[0].type=='facial')?props.data[0].emotions:props.data[1].emotions,
+        data: (props.data[0].type==='facial')?props.data[0].emotions:props.data[1].emotions,
         fill: false,
         backgroundColor: 'rgb(255, 99, 132)',
         borderColor: 'rgba(255, 99, 132, 0.2)',
@@ -15,11 +15,11 @@ const LineChart = (props) => {
     ],
   };
   const VocalData = {
-    labels: [...Array(((props.data[0].type=='vocal')?props.data[0].emotions:props.data[1].emotions).length-1).keys()],
+    labels: [...Array(((props.data[0].type==='vocal')?props.data[0].emotions:props.data[1].emotions).length-1).keys()],
     datasets: [
       {
         label: '# of Votes',
-        data: (props.data[0].type=='vocal')?props.data[0].emotions:props.data[1].emotions,
+        data: (props.data[0].type==='vocal')?props.data[0].emotions:props.data[1].emotions,
         fill: false,
         backgroundColor: 'rgb(255, 99, 132)',
         borderColor: 'rgba(255, 99, 132, 0.2)',

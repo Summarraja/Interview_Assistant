@@ -1,11 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-// import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import bgInterview5 from "../../shared/components/UIElements/Images/bgInterview5.jpg";
 import Box from "@material-ui/core/Box";
-import { Paper, Typography } from "@material-ui/core";
+import { Paper} from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import { Link, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import Button from "@material-ui/core/Button";
@@ -63,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 const Certificate = () => {
   const [loadedCertificates, setLoadedCertificates] = useState([]);
   const { uid } = useParams();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   const [approvedCertCount, setApprovedCertCount] = useState(0);
   const auth = useContext(AuthContext);
   const classes = useStyles();
@@ -80,7 +79,7 @@ const Certificate = () => {
     const fetchCertificates = async (usID) => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/certificates/user/" + usID,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/user/` + usID,
           "GET",
           null,
           {
@@ -95,15 +94,15 @@ const Certificate = () => {
     };
     if (uid) fetchCertificates(uid);
     else fetchCertificates(auth.userId);
-  }, [uid]);  
+  }, [uid,auth.token,auth.userId,sendRequest]);  
 
 
 
   useEffect (()=>{
     const countApprovedCert = () =>{
       if(uid){
-        loadedCertificates.map((cert)=>{
-        cert.isApproved == true && setApprovedCertCount(approvedCertCount+1);
+        loadedCertificates.forEach((cert)=>{
+        cert.isApproved === true && setApprovedCertCount(approvedCertCount+1);
       })
     }
     else{
@@ -116,9 +115,9 @@ const Certificate = () => {
       
       }
   
-  }, [uid, loadedCertificates]);
+  }, [uid, loadedCertificates,approvedCertCount]);
 
-  const hasDeleteAccess = uid && uid == auth.userId;
+  const hasDeleteAccess = uid && uid === auth.userId;
 
   return (
     <div className={classes.root}>

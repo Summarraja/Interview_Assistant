@@ -18,7 +18,6 @@ function BottomBar({ newMessage, setNewMessage, pushMessage,previewUrl,setPrevie
     setOpen(true);
   };
   const handleCloseDialog = () => {
-    console.log("close")
     setOpen(false);
   };
   function handleClickOutside(event) {

@@ -1,9 +1,8 @@
 import React, { useState , useEffect, useContext} from "react";
 import Toolbar from "@material-ui/core/Toolbar";
 import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles, fade } from "@material-ui/core/styles";
-import { Button, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import CreateProblem from "../Components/CreateProblem";
 import ProblemCollection from "../Components/ProblemCollection";
@@ -46,7 +45,7 @@ export default function ReportProblem() {
   const [open, setOpen] = useState(false);
   const auth = useContext(AuthContext);
   const [faqs, setFaqs] = useState();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading,  sendRequest } = useHttpClient();
 
   const handleOpenDialog = () => {
     setOpen(true);
@@ -59,11 +58,10 @@ export default function ReportProblem() {
     const getData = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/api/problems/user/'+ auth.userId
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/problems/user/`+ auth.userId
         );
         if(responseData)
         setFaqs(responseData.problems);
-        console.log(responseData)
       } catch (err) {
         console.log(err)
       }
@@ -72,7 +70,7 @@ export default function ReportProblem() {
     if (!faqs)
       getData();
 
-  }, [faqs])
+  }, [faqs,auth.userId,sendRequest])
 
   return (
     <>

@@ -67,7 +67,7 @@ const Interview = () => {
   const [userReceivedRequests, setUserReceivedRequests] = useState();
   const [userAddedInterviews, setUserAddedInterviews] = useState();
 
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   
 
   const auth = useContext(AuthContext);
@@ -77,7 +77,7 @@ const Interview = () => {
     const getUserRole = async (usID) => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/settings/user/" + usID,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/user/` + usID,
           "GET",
           null,
           {
@@ -90,15 +90,15 @@ const Interview = () => {
         console.log(err);
       }
     };
-    if (uid == auth.userId) setRole(auth.setting.role);
+    if (uid === auth.userId) setRole(auth.setting.role);
     else getUserRole(uid);
-  }, [uid]);
+  }, [uid,auth.setting.role,auth.token,auth.userId,sendRequest]);
 
   useEffect(() => {
     const getData = async (usID) => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/interviews/user/" + usID,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/interviews/user/` + usID,
           "GET",
           null,
           {
@@ -113,13 +113,13 @@ const Interview = () => {
     };
     if (uid) getData(uid);
     else getData(auth.userId);
-  }, [uid, role]);
+  }, [uid, role,auth.token,auth.userId,sendRequest]);
 
   useEffect(() => {
     const getCandidateRequestsData = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/users/${auth.userId}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/users/${auth.userId}`,
           "GET",
           null,
           {
@@ -135,12 +135,12 @@ const Interview = () => {
       }
     };
 
-    if (auth.setting.role == "Candidate") {
+    if (auth.setting.role === "Candidate") {
       getCandidateRequestsData();
     }
-  }, []);
+  }, [auth.setting.role,auth.token,auth.userId,sendRequest]);
 
-  const hasAccess = uid && uid == auth.userId;
+  const hasAccess = uid && uid === auth.userId;
 
   const [open, setOpen] = useState(false);
 
@@ -163,7 +163,7 @@ const Interview = () => {
         </Box>
         <Container maxWidth="lg" component="main">
           <Paper elevation={5} className={classes.paper}>
-            {role && role == "Interviewer" && (
+            {role && role === "Interviewer" && (
               <Button
                 variant="contained"
                 color="primary"
@@ -187,7 +187,7 @@ const Interview = () => {
 
           
             <LoadingSpinner open={isLoading} />
-            {uid == auth.userId && auth.setting.role == "Candidate"
+            {uid === auth.userId && auth.setting.role === "Candidate"
               ? !isLoading &&
                 role &&
                 userSentRequests &&

@@ -2,15 +2,12 @@ import React, { useEffect, useState, useContext} from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { Button, Card, Grid } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TiEdit } from "react-icons/ti";
 import { useHttpClient } from '../../shared/hooks/http-hook';
 import UpdateProblem from './UpdateProblem';
 import DeleteProblem from './DeleteProblem';
 import { AuthContext } from '../../shared/context/auth-context';
-
-
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -50,7 +47,7 @@ const ProblemListItems = (props) =>{
   
 
 
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {  sendRequest } = useHttpClient();
     const classes = useStyles();
     const auth = useContext(AuthContext);
     const [loadedFaqs, setLoadedFaqs]= useState();
@@ -72,7 +69,7 @@ const ProblemListItems = (props) =>{
     const getData = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/api/problems/user/'+ auth.userId
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/problems/user/`+ auth.userId
         );
     
         props.setFaqs(responseData.problems);
@@ -87,7 +84,7 @@ const ProblemListItems = (props) =>{
       const fetchFaq = async () => {
         try {
           const responseData = await sendRequest(
-            `http://localhost:5000/api/problems/${props.id}`,
+            `${process.env.REACT_APP_BACKEND_NODE_URL}/problems/${props.id}`,
             "GET",
             null,
             {
@@ -99,7 +96,7 @@ const ProblemListItems = (props) =>{
         } catch (err) {}
       } ;
       fetchFaq()
-    }, [open, loadedFaqs]);
+    }, [open, loadedFaqs,auth.token,props.id,sendRequest]);
 
 return (
 

@@ -45,7 +45,7 @@ const UploadPhoto = (props) => {
             props.setPreviewUrl(fileReader.result);
         };
         fileReader.readAsDataURL(props.file);
-    }, [props.file]);
+    }, [props]);
 
     const pickedHandler = event => {
         let pickedFile;

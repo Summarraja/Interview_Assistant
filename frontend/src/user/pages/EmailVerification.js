@@ -75,7 +75,7 @@ export default function ForgetPassword(props) {
     setUserEmail(values.username);
     try {
       const responseData = await sendRequest(
-        'http://localhost:5000/api/users/sendCode',
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/users/sendCode`,
         'POST',
         JSON.stringify({
           email: values.username,

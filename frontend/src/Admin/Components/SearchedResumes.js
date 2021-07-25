@@ -49,7 +49,7 @@ const auth = useContext(AuthContext);
 
  
 return(
-props.userId != auth.userId && (
+props.userId !== auth.userId && (
   <List className={classes.list}>
   <Grid container>
     <Grid item xs={9} className={classes.responsive}>
@@ -59,7 +59,7 @@ props.userId != auth.userId && (
       >
         <ListItemAvatar>
           <Avatar
-           src={"http://localhost:5000/" + props.file}
+           src={process.env.REACT_APP_BACKEND_ASSET_URL + props.file}
             style={{
               height: "50px",
               width: "50px",

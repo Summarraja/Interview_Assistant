@@ -13,6 +13,7 @@ import { AiFillCloseSquare } from "react-icons/ai";
 import { AuthContext } from "../../context/auth-context";
 import { SocketContext } from "../../context/socket-context";
 import { useHttpClient } from "../../hooks/http-hook";
+import { useCallback } from 'react';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -59,12 +60,24 @@ const Notifications = (props) => {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [notiRef]);
+    }, [notiRef,props]);
 
+    const openNotifications = useCallback( async () => {
+        try {
+            await sendRequest(
+                `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/openNotifications/${auth.userId}`,
+                "PATCH",
+                null,
+                {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + auth.token,
+                }
+            );
+        } catch (err) { }
+    },[auth.token,auth.userId,sendRequest]);
     useEffect(() => {
         if (!socket) return;
         socket.on("notification", (data) => {
-            console.log("notification")
             setNotifications([data, ...notifications]);
             openNotifications();
         });
@@ -72,16 +85,12 @@ const Notifications = (props) => {
         return () => {
             socket.off("notification");
         };
-    }, [socket, notifications]);
+    }, [socket, notifications,openNotifications]);
 
-    useEffect(() => {
-        if (!auth.userId) return;
-        getNotifications();
-    }, [auth.userId]);
-    const getNotifications = async () => {
+    const getNotifications = useCallback(async () => {
         try {
             const responseData = await sendRequest(
-                `http://localhost:5000/api/notifications/${auth.userId}`,
+                `${process.env.REACT_APP_BACKEND_NODE_URL}/notifications/${auth.userId}`,
                 "GET",
                 null,
                 {
@@ -91,11 +100,15 @@ const Notifications = (props) => {
             );
             setNotifications(responseData.notifications);
         } catch (err) { }
-    };
+    },[auth.token,auth.userId,sendRequest]) ;
+    useEffect(() => {
+        if (!auth.userId) return;
+        getNotifications();
+    }, [auth.userId,getNotifications]);
     const clearNotifications = async () => {
         try {
-            const responseData = await sendRequest(
-                `http://localhost:5000/api/notifications/clear/${auth.userId}`,
+            await sendRequest(
+                `${process.env.REACT_APP_BACKEND_NODE_URL}/notifications/clear/${auth.userId}`,
                 "GET",
                 null,
                 {
@@ -104,19 +117,6 @@ const Notifications = (props) => {
                 }
             );
             setNotifications([]);
-        } catch (err) { }
-    };
-    const openNotifications = async () => {
-        try {
-            const responseData = await sendRequest(
-                `http://localhost:5000/api/settings/openNotifications/${auth.userId}`,
-                "PATCH",
-                null,
-                {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + auth.token,
-                }
-            );
         } catch (err) { }
     };
     const getDate = (datetime) => {

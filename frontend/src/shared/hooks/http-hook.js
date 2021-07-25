@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 export const useHttpClient = () => {
@@ -6,11 +7,11 @@ export const useHttpClient = () => {
   const [status, setStatus] = useState();
 
   const activeHttpRequests = useRef([]);
-  const httpAbortCtrl = new AbortController();
+  const httpAbortCtrl = useMemo(() => new AbortController(), []);
   const sendRequest = useCallback(
     async (url, method = 'GET', body = null, headers = {}) => {
       setIsLoading(true);
-    
+
       activeHttpRequests.current.push(httpAbortCtrl);
       let response;
       try {
@@ -28,7 +29,6 @@ export const useHttpClient = () => {
         );
         setStatus(response.status);
         if (!response.ok) {
-          console.log(responseData)
           throw new Error(responseData.message);
         }
 
@@ -40,14 +40,14 @@ export const useHttpClient = () => {
           setStatus(400);
         setIsLoading(false);
         throw err;
-      
+
       }
-    
-   
+
+
     },
-    []
+    [httpAbortCtrl]
   );
-  
+
 
   const clearError = () => {
     setError(null);
@@ -56,12 +56,12 @@ export const useHttpClient = () => {
   useEffect(() => {
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      activeHttpRequests.current.forEach(abortCtrl => abortCtrl.abort()); 
+      activeHttpRequests.current.forEach(abortCtrl => abortCtrl.abort());
       httpAbortCtrl.abort();
-       
-    };
-  }, []);
 
- 
+    };
+  }, [httpAbortCtrl]);
+
+
   return { isLoading, error, status, sendRequest, clearError };
 };

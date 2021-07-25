@@ -116,7 +116,7 @@ export default function SignUp() {
   const signUpSubmitHandler = async (values, props) => {
     try {
       const responseData = await sendRequest(
-        'http://localhost:5000/api/users/signup',
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/users/signup`,
         'POST',
         JSON.stringify({
           firstname: values.firstName,

@@ -6,16 +6,15 @@ import ProblemListAdmin from "./ProblemListAdmin";
 
 const ProblemCollectionAdmin = () => {
   const [problems, setproblems] = useState();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading,  sendRequest } = useHttpClient();
 
   useEffect(() => {
     const getData = async () => {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/api/problems/unanswer'
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/problems/unanswer`
         );
         setproblems(responseData.unanswerdproblems);
-        {console.log("responsedata" +" "+ responseData.unanswerdproblems.length)}
       } catch (err) {
         console.log(err)
       }
@@ -24,7 +23,7 @@ const ProblemCollectionAdmin = () => {
     if (!problems)
       getData();
 
-  }, [problems])
+  }, [problems,sendRequest])
 
 
 

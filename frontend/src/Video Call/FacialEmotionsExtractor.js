@@ -1,9 +1,8 @@
-import { useState, useContext, useEffect } from "react";
+import {  useEffect } from "react";
 import io from 'socket.io-client';
-let socket = io.connect("http://localhost:5001");
+let socket = io.connect(process.env.REACT_APP_BACKEND_PYTHON_URL);
 
 function FacialEmotionsExtractor(props) {
-  const [stats, setStats] = useState([0, 0, 0, 0, 0, 0, 0]);
   useEffect(() => {
     const timer = setInterval(() => {
       takepicture();
@@ -16,7 +15,7 @@ function FacialEmotionsExtractor(props) {
   useEffect(() => {
     socket.on("image-emotions", arg => {
       let arr = [0, 0, 0, 0, 0, 0, 0]
-      if(arg.emotion==-1){
+      if(arg.emotion===-1){
         props.setProgress(arr)
       }
       else{
@@ -28,7 +27,7 @@ function FacialEmotionsExtractor(props) {
     return () => {
       socket.off("image-emotions");
     };
-  }, [props.stats])
+  }, [props.stats,props])
 
   function takepicture() {
     var canvas = document.createElement('canvas');
@@ -36,10 +35,9 @@ function FacialEmotionsExtractor(props) {
     canvas.height = 768;
 
     let ctx = canvas.getContext('2d');
-    var userVideo = document.getElementById("userVideo");
+    var userVideo = document.getElementById("partnerVideo");
     ctx.drawImage(userVideo, 0, 0, 240, 200)
     socket.emit("image-emotions", canvas.toDataURL());
-    console.log("sent")
   }
   return (
     <>

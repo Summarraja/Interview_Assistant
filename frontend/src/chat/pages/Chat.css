@@ -8,10 +8,10 @@
   }
   
   .app {
-    /* display: flex;
+     display: flex;
     
-    margin-top:"0px"; */
     height: 90vh;
+    min-height: 100vh;
   }
   
  

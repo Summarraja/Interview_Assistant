@@ -31,23 +31,18 @@ const useStyles = makeStyles((theme) => ({
 
 const CreateProblem = (props) => {
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {  sendRequest } = useHttpClient();
 
   const getData = async () => {
     try {
       const responseData = await sendRequest(
-        'http://localhost:5000/api/problems/user/'+ auth.userId
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/problems/user/`+ auth.userId
       );
       props.setFaqs(responseData.problems);
     } catch (err) {
       console.log(err)
     }
   }
-  const paperStyle = {
-    width: 400,
-    padding: 20,
-    margin: "100px auto",
-  };
   const avatarStyle = {
     backgroundColor: "primary",
   };

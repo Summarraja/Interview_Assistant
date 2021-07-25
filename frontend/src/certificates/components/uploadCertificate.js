@@ -6,7 +6,6 @@ import "./uploadCertificate.css";
 const UploadCertificate = (props) => {
   const filePickerRef = useRef();
   const pickedHandler = (event) => {
-    console.log(event.target);
   };
   const pickImageHandler = () => {
     filePickerRef.current.click();

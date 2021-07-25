@@ -59,14 +59,12 @@ const createOrUpdateEmotionStats = async (req, res, next) => {
             await stats.save();
         }
         catch(err){
-            console.log(err)
             const error = new HttpError(
                 'Updating Emotions failed, please try again.',
                 500
             );
             return next(error);
         }
-        console.log("updated")
         res.status(200).json({ stats: stats });
 
     }
@@ -128,7 +126,6 @@ const createOrUpdateEmotionStats = async (req, res, next) => {
             );
             return next(error);
         }
-        console.log("created")
 
         res.status(200).json({ stats: createdStats });
     

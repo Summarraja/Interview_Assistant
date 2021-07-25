@@ -1,27 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Typography from "@material-ui/core/Typography";
 import "../../pages/Charts.css";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   typoStyle: {
     fontFamily: "Calisto MT, Footlight MT Light",
   },
 }));
 const TakenInterviewItems = (props) => {
   const classes = useStyles();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
-  const [interCandidates, setinterCandidates] = useState([]);
+  const { isLoading} = useHttpClient();
 
   useEffect(() => {
     if (props.selectedInterview)
       props.setCandidates(props.selectedInterview.candidates);
-  }, [props.selectedInterview]);
+  }, [props.selectedInterview,props]);
 
   const getClass = () => {
-    if (props.selectedInterview && props.selectedInterview == props.interview)
+    if (props.selectedInterview && props.selectedInterview === props.interview)
       return "selected";
     return "contact-box";
   };
@@ -44,7 +43,7 @@ const TakenInterviewItems = (props) => {
           </div>
           <div className="last-msg">
             <Typography
-              className="text"
+              // className="text"
               variant="body2"
               className={classes.typoStyle}
             >

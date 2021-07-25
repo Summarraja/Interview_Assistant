@@ -34,7 +34,7 @@ const socketHandler = (users, socket,io) => {
         msgdata.append('receiver', data.message.receiver);
         msgdata.append('content', data.message.content);
         msgdata.append('image', data.file, { filename: data.fileName });
-        axios.post('http://localhost:5000/api/messages/',
+        axios.post(process.env.LOCALHOST+':'+process.env.PORT+'/api/messages/',
             msgdata, {
             headers: {
                 ...msgdata.getHeaders(),
@@ -43,7 +43,6 @@ const socketHandler = (users, socket,io) => {
         })
             .then(function (response) {
                 callback(false, true);
-                console.log(response.status);
                 if (users[data.message.receiver]) {
                     users[data.message.receiver].forEach(soc => {
                         io.to(soc).emit('message', response.data.Message)
@@ -56,14 +55,13 @@ const socketHandler = (users, socket,io) => {
             });
     })
     socket.on('deleteMessage', (data) => {
-        axios.patch('http://localhost:5000/api/messages/' + data.msg.id,
+        axios.patch(process.env.LOCALHOST+':'+process.env.PORT+'/api/messages/' + data.msg.id,
             null, {
             headers: {
                 'Authorization': data.token
             }
         })
             .then(function (response) {
-                console.log(response.status);
                 if (users[data.msg.receiver]) {
                     users[data.msg.receiver].forEach(soc => {
                         io.to(soc).emit('deleteMessage', data.msg)
@@ -111,7 +109,6 @@ const socketHandler = (users, socket,io) => {
         }
     })
     socket.on('notification', (data) => {
-        console.log(data)
         if (users[data.userId]) {
             users[data.userId].forEach(soc => {
                 io.to(soc).emit('notification',data.notification);

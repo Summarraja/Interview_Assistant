@@ -11,7 +11,6 @@ const getProblemById = async (req, res, next) => {
     try {
         problem = await ReportProblem.findById(ProblemId);
     } catch (err) {
-        console.log(err)
         const error = new HttpError(
             'Something went wrong, could not find a problem.',
             500
@@ -191,7 +190,6 @@ const updateProblem = async (req, res, next) => {
     try {
         problem = await ReportProblem.findById(problemId);
     } catch (error) {
-        {console.log("error manhoos"+ error)}
         return next(
             new HttpError('Invalid inputs passed, please check your data.', 422)
         );
@@ -257,7 +255,6 @@ const updateProblemAdmin = async (req, res, next) => {
     try {
         await problem.save();
     } catch (err) {
-        console.log("error is ::" + err)
         const error = new HttpError(
             'Something went wrong, could not update problem.',
             500

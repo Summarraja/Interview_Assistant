@@ -122,7 +122,6 @@ const sendCode = async (req, res, next) => {
   try {
     await user.save();
   } catch (err) {
-    console.log(err)
     const error = new HttpError(
       "Something went wrong, could not send code.",
       500
@@ -132,13 +131,13 @@ const sendCode = async (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "lawara41@gmail.com",
-      pass: "fypproject",
+      user: process.env.GMAIL_EMAIL,
+      pass: process.env.GMAIL_PASSWORD,
     },
   });
 
   const mailOptions = {
-    from: "lawara41@gmail.com",
+    from: process.env.GMAIL_EMAIL,
     to: user.email,
     subject: "SmartHire Password Reset Code",
     text:
@@ -147,8 +146,6 @@ const sendCode = async (req, res, next) => {
   };
   transporter.sendMail(mailOptions, (err, response) => {
     if (err) {
-      console.log(err);
-      console.log(response);
       const error = new HttpError("Something went wrong, code not sent", 500);
       return next(error);
     }
@@ -194,7 +191,6 @@ const verifyCode = async (req, res, next) => {
   try {
     await user.save();
   } catch (err) {
-    console.log(err)
     const error = new HttpError(
       "Something went wrong, could not verify email",
       500
@@ -205,7 +201,7 @@ const verifyCode = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: user.id, email: user.email },
-      "supersecret_dont_share",
+      process.env.JWT_KEY,
       { expiresIn: "12h" }
     );
   } catch (err) {
@@ -390,13 +386,13 @@ const signup = async (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "lawara41@gmail.com",
-      pass: "fypproject",
+      user: process.env.GMAIL_EMAIL,
+      pass: process.env.GMAIL_PASSWORD,
     },
   });
 
   const mailOptions = {
-    from: "lawara41@gmail.com",
+    from: process.env.GMAIL_EMAIL,
     to: createdUser.email,
     subject: "SmartHire Email Verification Code",
     text:
@@ -469,7 +465,7 @@ const login = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: existingUser.id, email: existingUser.email },
-      "supersecret_dont_share",
+      process.env.JWT_KEY,
       { expiresIn: "12h" }
     );
   } catch (err) {
@@ -505,7 +501,6 @@ const deleteuser = async (req, res, next) => {
       .populate({ path: 'calls', model: Call })
       .populate({ path: 'notifications', model: Notification });
   } catch (err) {
-    console.log(err)
     const error = new HttpError(
       'Something went wrong, could not delete a user.',
       500
@@ -549,7 +544,6 @@ const deleteuser = async (req, res, next) => {
     await Message.remove({ receiver: user.id} , {session: sess })
     await sess.commitTransaction();
   } catch (err) {
-    console.log(err)
     const error = new HttpError(
       'Something went wrong, could not delete user.',
       500

@@ -26,6 +26,7 @@ import Badge from "@material-ui/core/Badge";
 import { useHttpClient } from "../../hooks/http-hook";
 import { useHistory } from "react-router-dom";
 import { IoIosArrowDropleft } from "react-icons/io";
+import { useCallback } from "react";
 
 const drawerWidth = 200;
 const useStyles = makeStyles((theme) => ({
@@ -94,14 +95,10 @@ const MainNavigation = () => {
     };
   }, [socket, unreadChats]);
 
-  useEffect(() => {
-    if (!auth.userId) return;
-    getBadges();
-  }, [auth.userId]);
-  const getBadges = async () => {
+  const getBadges = useCallback( async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/settings/notifications/${auth.userId}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/notifications/${auth.userId}`,
         "GET",
         null,
         {
@@ -111,11 +108,15 @@ const MainNavigation = () => {
       );
       setUnreadChats(responseData.unreadChats);
     } catch (err) {}
-  };
+  },[auth.token,auth.userId,sendRequest]);
+  useEffect(() => {
+    if (!auth.userId) return;
+    getBadges();
+  }, [auth.userId,getBadges]);
   const openChat = async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/settings/openChat/${auth.userId}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/openChat/${auth.userId}`,
         "PATCH",
         null,
         {
@@ -131,7 +132,6 @@ const MainNavigation = () => {
     SetOpenDrawer(!OpenDrawer);
   };
 
-  // console.log("GO: "+history.goBack())
   const drawerItems = (
     <List>
       <Tooltip
@@ -326,7 +326,7 @@ const MainNavigation = () => {
             className={classes.drawer}
             variant="permanent"
             classes={{
-              paper: classes.drawerPaper,
+              // paper: classes.drawerPaper,
               paper: classes.drawerWidthLgSc,
             }}
           >

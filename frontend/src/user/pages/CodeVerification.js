@@ -105,7 +105,7 @@ export default function CodeVerification(props) {
         const code = otp.join("");
         try {
             const responseData = await sendRequest(
-                'http://localhost:5000/api/users/verifyCode',
+                `${process.env.REACT_APP_BACKEND_NODE_URL}/users/verifyCode`,
                 'POST',
                 JSON.stringify({
                     email: props.location.state.email,
@@ -132,10 +132,8 @@ export default function CodeVerification(props) {
 
 
     const onCancelHandler = (e) => {
-        console.log("cancel")
         setOtp([...otp.map(v => "")]);
         if (otp.join("")) {
-            console.log("in");
         }
     }
 
@@ -156,7 +154,7 @@ export default function CodeVerification(props) {
     const onResendHandler = async (e) => {
         try {
             const responseData = await sendRequest(
-              'http://localhost:5000/api/users/sendCode',
+              `${process.env.REACT_APP_BACKEND_NODE_URL}/users/sendCode`,
               'POST',
               JSON.stringify({
                 email: userEmail,
@@ -173,7 +171,6 @@ export default function CodeVerification(props) {
         SetIsPlay(true);
         setDisableBtn(true);
     }
-    console.log("useStateL "+ isForgotPass)
     if (isForgotPass) {
         return <Redirect
           to={{

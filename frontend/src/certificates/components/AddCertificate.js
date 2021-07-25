@@ -30,10 +30,9 @@ const useStyles = makeStyles((theme) => ({
 
 const AddCertificate = (props) => {
   var curr = new Date();
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {  sendRequest } = useHttpClient();
   const auth = useContext(AuthContext);
   curr.setDate(curr.getDate() + 3);
-  var date = curr.toISOString().substr(0, 10);
   const [field, setField] = useState("Computer Science");
 
   const avatarStyle = {
@@ -44,7 +43,7 @@ const AddCertificate = (props) => {
   const fetchCertificates = async () => {
     try {
       const responseData = await sendRequest(
-        "http://localhost:5000/api/certificates/user/" + auth.userId,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/user/` + auth.userId,
         'GET',
         null,
         {

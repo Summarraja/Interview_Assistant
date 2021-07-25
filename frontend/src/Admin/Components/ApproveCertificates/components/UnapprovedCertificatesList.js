@@ -21,12 +21,12 @@ const useStyles = makeStyles((theme) => ({
 const UnapprovedCertificatesList = (props) => {
   const classes = useStyles();
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const {  sendRequest } = useHttpClient();
 
   const fetchUnapprovedCertificates = async () => {
     try {
       const responseData = await sendRequest(
-        "http://localhost:5000/api/certificates/",
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/`,
         "GET",
         null,
         {

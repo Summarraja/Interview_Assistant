@@ -15,7 +15,7 @@ const MultiAxisLine = (props) => {
     datasets: [
       {
         label: 'Facial Emotions',
-        data: createData((props.data[0].type=='facial')?props.data[0].emotions:props.data[1].emotions),
+        data: createData((props.data[0].type==='facial')?props.data[0].emotions:props.data[1].emotions),
         fill: false,
         backgroundColor: 'rgb(255, 99, 132)',
         borderColor: 'rgba(255, 99, 132, 0.2)',
@@ -23,7 +23,7 @@ const MultiAxisLine = (props) => {
       },
       {
         label: 'Vocal Emotions',
-        data: createData((props.data[0].type=='vocal')?props.data[0].emotions:props.data[1].emotions),
+        data: createData((props.data[0].type==='vocal')?props.data[0].emotions:props.data[1].emotions),
         fill: false,
         backgroundColor: 'rgb(54, 162, 235)',
         borderColor: 'rgba(54, 162, 235, 0.2)',

@@ -37,6 +37,7 @@ import { SocketContext } from "../../../shared/context/socket-context";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import UserBlockedListDialog from "../../../user/components/UserBlockedListDialog";
 import Notification from './Notifications';
+import { useCallback } from "react";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -152,24 +153,18 @@ export default function Navbar(props) {
   useEffect(() => {
     if (!socket) return;
     socket.on("notification", (data) => {
-      console.log('notification')
       setUnreadNotifications(unreadNotifications + 1);
     });
 
     return () => {
-      console.log("off")
       socket.off("notification");
     };
-  }, [socket]);
+  }, [socket,unreadNotifications]);
 
-  useEffect(() => {
-    if (!auth.userId) return;
-    getBadges();
-  }, [auth.userId]);
-  const getBadges = async () => {
+  const getBadges = useCallback( async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/settings/notifications/${auth.userId}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/notifications/${auth.userId}`,
         "GET",
         null,
         {
@@ -179,11 +174,15 @@ export default function Navbar(props) {
       );
       setUnreadNotifications(responseData.unreadNotis);
     } catch (err) { }
-  }
+  },[auth.token,auth.userId,sendRequest])
+  useEffect(() => {
+    if (!auth.userId) return;
+    getBadges();
+  }, [auth.userId,getBadges]);
   const openNotifications = async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/settings/openNotifications/${auth.userId}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/openNotifications/${auth.userId}`,
         "PATCH",
         null,
         {
@@ -196,7 +195,7 @@ export default function Navbar(props) {
   };
   useEffect(() => {
     setSuccess(status === 200 && switchResMsg);
-  }, [status]);
+  }, [status,switchResMsg]);
 
   useEffect(() => {
     if (auth.setting) setRole(auth.setting.role);
@@ -257,7 +256,6 @@ export default function Navbar(props) {
   };
 
   const Reporthandler = () => {
-    console.log("report");
   };
   const matches = useMediaQuery("(min-width:960px)");
 
@@ -269,7 +267,7 @@ export default function Navbar(props) {
     const SetRole = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/settings/role/${auth.setting._id}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/role/${auth.setting._id}`,
           "PATCH",
           JSON.stringify({
             role: role === "Candidate" ? "Interviewer" : "Candidate",
@@ -298,7 +296,7 @@ export default function Navbar(props) {
   const GetBlockedUsersHandler = async () => {
     try {
       const responseData = await sendRequest(
-        `http://localhost:5000/api/settings/blockedUsers/${auth.userId}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/settings/blockedUsers/${auth.userId}`,
         "GET",
         null,
         {
@@ -423,7 +421,7 @@ export default function Navbar(props) {
       >
         {auth.resume && (
           <Avatar
-            src={"http://localhost:5000/" + auth.resume.image}
+            src={process.env.REACT_APP_BACKEND_ASSET_URL + auth.resume.image}
             alt={null}
             style={{ height: "70px", width: "70px", marginRight: 10 }}
           />
@@ -570,7 +568,7 @@ export default function Navbar(props) {
                   className={classes.switchControl}
                   control={
                     <Switch
-                      checked={role == "Candidate"}
+                      checked={role === "Candidate"}
                       onChange={switchRole}
                       name="checked"
                       classes={{

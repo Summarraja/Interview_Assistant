@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AdminHome(props) {
   const classes = useStyles();
   const auth = useContext(AuthContext);
-  const { isLoading, error, status, sendRequest, clearError } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
 
   const [searchItem, setSearchItem] = useState("");
   const [resume, setResume] = useState([]);
@@ -59,18 +59,12 @@ export default function AdminHome(props) {
     setCloseIcon(false);
   }, [searchItem]);
 
-  const handleCloseDialog = () => {
-    props.setOpen(false);
-    setSearchItem("");
-    setCloseIcon(false);
-  };
-
   const getSearchItem = () => {
     setCloseIcon(!closeIcon);
     const fetchSearchedResumes = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/resumes/admin/${searchItem}`,
+          `${process.env.REACT_APP_BACKEND_NODE_URL}/resumes/admin/${searchItem}`,
           "GET",
           null,
           {
@@ -78,7 +72,6 @@ export default function AdminHome(props) {
             Authorization: "Bearer " + auth.token,
           }
         );
-        console.log(responseData.resumes)
         setResume(responseData.resumes);
       } catch (err) {
         console.log(err);

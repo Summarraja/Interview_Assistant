@@ -1,21 +1,13 @@
-import { Paper, Typography } from "@material-ui/core";
+import {  Typography } from "@material-ui/core";
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import ProblemListItems from "./ProblemListItems";
 import AppBar from "@material-ui/core/AppBar";
 
 import Container from "@material-ui/core/Container";
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    margin: "30px auto",
-    padding: "20px 50px",
-  },
-}));
+
 
 const ProblemList = (props) => {
-  console.log(props.items)
-  const classes = useStyles();
 
   const heading = {
     paddingTop: "16px",

@@ -26,7 +26,7 @@ export default function Header(props) {
       professional: user.resume.professional ? user.resume.professional : { desc1: ["", "", ""], desc2: ["", "", ""] },
       education: user.resume.education ? user.resume.education : {},
       additional: user.resume.additional ? user.resume.additional : [],
-    });  }, [])
+    });  }, [setContent])
 
 
   const { register, handleSubmit } = useForm();

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Badge from "@material-ui/core/Badge";
 import Typography from "@material-ui/core/Typography";
@@ -33,13 +33,13 @@ function ConversationList(props) {
     }
   }
   const getName=()=>{
-    return(props.chat.from == auth.userId) ? props.chat.withName : props.chat.fromName
+    return(props.chat.from === auth.userId) ? props.chat.withName : props.chat.fromName
   }
   const getImage=()=>{
-    return(props.chat.from == auth.userId) ? props.chat.withImage : props.chat.fromImage
+    return(props.chat.from === auth.userId) ? props.chat.withImage : props.chat.fromImage
   }
   const getUnread=()=>{
-    return(props.chat.from != auth.userId) ? props.chat.withUnread : props.chat.fromUnread
+    return(props.chat.from !== auth.userId) ? props.chat.withUnread : props.chat.fromUnread
   }
   const getDate = (datetime) => {
     let d = new Date(datetime);
@@ -52,7 +52,7 @@ function ConversationList(props) {
   const getClass = () => {
     if(getUnread()>0)
     return "unread"
-    if (props.selectedChat && props.selectedChat.id == props.chat.id)
+    if (props.selectedChat && props.selectedChat.id === props.chat.id)
       return "selected"
     return "contact-box"
   }
@@ -60,7 +60,7 @@ function ConversationList(props) {
     <React.Fragment >
       <div className={getClass()} onClick={() => props.setSelectedChat(props.chat)}>
         <div className="avatar-component">
-          <Avatar src={'http://localhost:5000/'+getImage()} className={classes.Avatar}>
+          <Avatar src={process.env.REACT_APP_BACKEND_ASSET_URL+getImage()} className={classes.Avatar}>
           </Avatar>
         </div>
         <div className="right-section">

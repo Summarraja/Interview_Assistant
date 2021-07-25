@@ -34,7 +34,7 @@ const DeleteCertificate = (props) => {
     // props.setOpen(false);
   };
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status]);
 
   const CloseDeleteDialogHandler = () => {
@@ -44,7 +44,7 @@ const DeleteCertificate = (props) => {
   const CertificateDeleteHandler = async () => {
     try {
       await sendRequest(
-        `http://localhost:5000/api/certificates/${props.certId}`,
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/${props.certId}`,
         "DELETE",
         null,
         {
@@ -66,15 +66,15 @@ const DeleteCertificate = (props) => {
       <Snackbar
         open={success || !!error}
         autoHideDuration={6000}
-        onClose={status == "200" ? clearSuccess : clearError}
+        onClose={status === 200 ? clearSuccess : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "200" ? "success" : "error"}
-          onClose={status == "200" ? clearSuccess : clearError}
+          severity={status === 200 ? "success" : "error"}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
-          {status == "200" ? "Certificate Deleted Successfully!" : error}
+          {status === 200 ? "Certificate Deleted Successfully!" : error}
         </MuiAlert>
       </Snackbar>
       <Dialog

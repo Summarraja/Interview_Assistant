@@ -10,13 +10,12 @@ const createData = (stats)=>{
   return arr;
 }
 const Polar = (props) => {
-  console.log(props.data)
   const FacialData = {
     labels: ["Angry","Disgusted", "Fearful","Happy", "Neutral", "Sad", "Surprised"],
     datasets: [
       {
         label: '# of Votes',
-        data: createData((props.data[0].type=='facial')?props.data[0].emotions:props.data[1].emotions),
+        data: createData((props.data[0].type==='facial')?props.data[0].emotions:props.data[1].emotions),
         backgroundColor: [
           'rgba(255, 99, 132, 0.5)',
           'rgba(54, 162, 235, 0.5)',
@@ -36,7 +35,7 @@ const Polar = (props) => {
     datasets: [
       {
         label: '# of Votes',
-        data: createData((props.data[0].type=='vocal')?props.data[0].emotions:props.data[1].emotions),
+        data: createData((props.data[0].type==='vocal')?props.data[0].emotions:props.data[1].emotions),
         backgroundColor: [
           'rgba(255, 99, 132, 0.5)',
           'rgba(54, 162, 235, 0.5)',

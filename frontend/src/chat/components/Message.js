@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from '@material-ui/icons/Delete';
 import './Message.css';
 import { AuthContext } from "../../shared/context/auth-context";
@@ -17,8 +16,8 @@ function Message(props) {
     return (
         <>
             <div className={props.message.sender !== auth.userId ? "message sent" : "message received"}>
-                {props.message.file && (<img className={"image"} src={'http://localhost:5000/'+props.message.file} />)}
-                {props.message.previewUrl && (<img className={"image"} src={props.message.previewUrl} />)}
+                {props.message.file && (<img className={"image"} src={process.env.REACT_APP_BACKEND_ASSET_URL+props.message.file} alt="msg-img" />)}
+                {props.message.previewUrl && (<img className={"image"} src={props.message.previewUrl} alt = "msg-img"/>)}
                 {props.message.content}
                 <div className="metadata">
                     <span className="date">{getTime(props.message.time) + " " + getDate(props.message.time)}</span>

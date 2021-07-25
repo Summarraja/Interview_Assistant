@@ -1,43 +1,49 @@
-import React, { useEffect, useState, useContext } from "react";
-import "./App.css";
+import React, { useEffect, useState, useContext, Suspense } from "react";
 import { Redirect, Route, Switch, useLocation } from "react-router-dom";
-
-import Auth from "./user/pages/Auth";
-import signUp from "./user/pages/signUp";
-import EmailVerification from "./user/pages/EmailVerification";
-import CodeVerification from "./user/pages/CodeVerification";
-import ResetPassword from "./user/pages/ResetPassword";
-import Faq from "./faq/pages/Faq";
-import MainNavigation from "./shared/components/NavigationElements/MainNavigation";
-import { AuthContext } from "./shared/context/auth-context";
-import { SocketContext } from "./shared/context/socket-context";
-
-import { useAuth } from "./shared/hooks/auth-hook";
-import UserProfile from "./user/pages/UserProfile";
-import Interview from "./Interviews/pages/Interview";
-import CreateInterview from "./Interviews/components/CreateInterview";
-import Chat from "./chat/pages/Chat";
-import Charts from "./charts/pages/Charts";
-import CandidateList from "./Interviews/components/CandidatesList";
-import ViewInterview from "./Interviews/pages/ViewInterview";
-
-import Certificate from "./certificates/pages/Certificate";
-import ViewCertificate from "./certificates/pages/ViewCertificate";
 import io from "socket.io-client";
 
-import AdminHome from "./Admin/pages/AdminHome";
-
-import ReportProblem from "./ReportProblems/pages/ReportProblem";
-import ReportProblemAdmin from "./Admin/Components/ReportProblems/pages/ReportProblemAdmin";
+import Auth from "./user/pages/Auth";
+import Home from "./user/pages/Home";
 
 import RTC from "./RTC";
-import Resume from "./Resumes/Pages/Resume";
-import VideoCall from "./Video Call/VideoCall";
-import Home from "./user/pages/Home";
-import SideBar from "./Admin/Components/SideBar";
-import ViewFaqs from "./Admin/Components/Faqs/ViewFaqs";
-import ApproveCertificate from "./Admin/Components/ApproveCertificates/pages/ApproveCertificate";
+import AdminHome from "./Admin/pages/AdminHome";
 
+import MainNavigation from "./shared/components/NavigationElements/MainNavigation";
+import { SocketContext } from "./shared/context/socket-context";
+import { AuthContext } from "./shared/context/auth-context";
+import { useAuth } from "./shared/hooks/auth-hook";
+import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
+
+import "./App.css";
+const signUp = React.lazy(()=> import("./user/pages/signUp"));
+const EmailVerification = React.lazy(()=> import("./user/pages/EmailVerification"));
+const CodeVerification = React.lazy(()=> import("./user/pages/CodeVerification"));
+const ResetPassword = React.lazy(()=> import("./user/pages/ResetPassword"));
+const UserProfile = React.lazy(()=> import("./user/pages/UserProfile"));
+
+const Faq = React.lazy(()=> import("./faq/pages/Faq"));
+
+const Interview = React.lazy(()=> import("./Interviews/pages/Interview"));
+const CreateInterview = React.lazy(()=> import("./Interviews/components/CreateInterview"));
+const CandidateList = React.lazy(()=> import("./Interviews/components/CandidatesList"));
+const ViewInterview = React.lazy(()=> import("./Interviews/pages/ViewInterview"));
+
+const Chat = React.lazy(()=> import("./chat/pages/Chat"));
+
+const Charts = React.lazy(()=> import("./charts/pages/Charts"));
+
+const Certificate = React.lazy(()=> import("./certificates/pages/Certificate"));
+const ViewCertificate = React.lazy(()=> import("./certificates/pages/ViewCertificate"));
+const ReportProblem = React.lazy(()=> import("./ReportProblems/pages/ReportProblem"));
+
+const Resume = React.lazy(()=> import("./Resumes/Pages/Resume"));
+
+const VideoCall = React.lazy(()=> import("./Video Call/VideoCall"));
+
+const ReportProblemAdmin = React.lazy(()=> import("./Admin/Components/ReportProblems/pages/ReportProblemAdmin"));
+const SideBar = React.lazy(()=> import("./Admin/Components/SideBar"));
+const ViewFaqs = React.lazy(()=> import("./Admin/Components/Faqs/ViewFaqs"));
+const ApproveCertificate = React.lazy(()=> import("./Admin/Components/ApproveCertificates/pages/ApproveCertificate"));
 
 const App = () => {
   let location = useLocation();
@@ -56,7 +62,7 @@ const App = () => {
 
   let routes;
   if (token) {
-    if (setting && setting.role == "Admin") {
+    if (setting && setting.role === "Admin") {
       routes = (
         <Switch>
           <Route path="/admin/home" exact component={AdminHome} />
@@ -161,11 +167,11 @@ const App = () => {
             setSetting: updateSetting,
           }}
         >
-          {location.pathname == "/videocall" ? (
+          {location.pathname === "/videocall" ? (
             ""
           ) : setting &&
             !auth.isLoggedIn &&
-            setting.role == "Admin" &&
+            setting.role === "Admin" &&
             location.pathname !== "/auth" &&
             location.pathname !== "/Faq" && 
             location.pathname !== "/forgotpassword" && 
@@ -180,7 +186,7 @@ const App = () => {
             </>
           )}
 
-          <main>{routes}</main>
+          <main><Suspense fallback={<LoadingSpinner open={true}/>}>{routes}</Suspense></main>
         </AuthContext.Provider>
       </SocketContext.Provider>
     </React.Fragment>

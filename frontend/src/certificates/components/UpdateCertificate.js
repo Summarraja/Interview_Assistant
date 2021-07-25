@@ -75,7 +75,7 @@ const UpdateCertificate = (props) => {
   };
 
   useEffect(() => {
-    setSuccess(status == 200);
+    setSuccess(status === 200);
   }, [status]);
 
   const classes = useStyles();
@@ -88,8 +88,8 @@ const UpdateCertificate = (props) => {
 
   const onSubmitHandler = async (values) => {
     try {
-      const responseData = await sendRequest(
-        `http://localhost:5000/api/certificates/${certificateId}`,
+      await sendRequest(
+        `${process.env.REACT_APP_BACKEND_NODE_URL}/certificates/${certificateId}`,
         "PATCH",
         JSON.stringify({
           title: values.title,
@@ -103,8 +103,8 @@ const UpdateCertificate = (props) => {
           Authorization: "Bearer " + auth.token,
         }
       );
-      status == 200 && props.setDisableField(true);
-      status == 200 ? setSuccess(true) : setSuccess(false);
+      status === 200 && props.setDisableField(true);
+      status === 200 ? setSuccess(true) : setSuccess(false);
     } catch (err) {}
   };
 
@@ -114,15 +114,15 @@ const UpdateCertificate = (props) => {
       <Snackbar
         open={success || !!error}
         autoHideDuration={3000}
-        onClose={status == "200" ? clearSuccess : clearError}
+        onClose={status === 200 ? clearSuccess : clearError}
       >
         <MuiAlert
           elevation={6}
           variant="filled"
-          severity={status == "200" ? "success" : "error"}
-          onClose={status == "200" ? clearSuccess : clearError}
+          severity={status === 200 ? "success" : "error"}
+          onClose={status === 200 ? clearSuccess : clearError}
         >
-          {status == "200" ? "Certificate Updated Successfully!" : error}
+          {status === 200 ? "Certificate Updated Successfully!" : error}
         </MuiAlert>
       </Snackbar>
 
@@ -228,8 +228,8 @@ const UpdateCertificate = (props) => {
               <Grid className={classes.content}>
                 <img
                   className={classes.preview}
-                  src={"http://localhost:5000/" + props.loadedCertificate.file}
-                  alt="Certificate Image"
+                  src={process.env.REACT_APP_BACKEND_ASSET_URL + props.loadedCertificate.file}
+                  alt="CertificateImage"
                 />
 
                 <br />
